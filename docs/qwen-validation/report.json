@@ -1,0 +1,37 @@
+{
+  "startedAt": "2026-10-15T07:52:59.850Z",
+  "version": "0.39.1",
+  "tasks": [
+    {
+      "kind": "matte",
+      "name": "white-clothes",
+      "promptId": "d5fb00e1-859d-4060-8a49-41690a5201bb",
+      "alpha": {
+        "width": 768,
+        "height": 1024,
+        "foregroundRatio": 0.22006607055664062,
+        "transparentRatio": 0.7898445129394531,
+        "hasTransparency": true
+      }
+    },
+    {
+      "kind": "qwen-edit",
+      "promptId": "db078303-d789-4636-b8e7-eb3dc3c5604f",
+      "bytes": 685885
+    },
+    {
+      "kind": "matte",
+      "name": "qwen-chibi",
+      "promptId": "411336bf-0aec-4887-a897-c64af4bbc772",
+      "alpha": {
+        "width": 672,
+        "height": 864,
+        "foregroundRatio": 0.24228739528218696,
+        "transparentRatio": 0.7657955109126984,
+        "hasTransparency": true
+      }
+    }
+  ],
+  "rgbPreserved": true,
+  "completedAt": "2026-10-15T07:53:17.091Z"
+}

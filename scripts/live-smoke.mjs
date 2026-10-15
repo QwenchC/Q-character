@@ -1,0 +1,46 @@
+import fs from 'node:fs/promises';
+import path from 'node:path';
+import { ComfyClient } from '../electron/comfy.mjs';
+import { buildDesignWorkflow, buildShapeWorkflow, buildMatteWorkflow, validateWorkflow } from '../electron/workflows.mjs';
+import { prepareShapeImage, applyForegroundMask } from '../electron/background.mjs';
+const client = new ComfyClient(process.env.QCHARACTER_TEST_SERVER || 'http://127.0.0.1:8199');
+const root = path.resolve('docs/smoke-assets'); await fs.mkdir(root, { recursive: true });
+const { stats, info } = await client.capabilities();
+const report = { startedAt: new Date().toISOString(), system: stats.system, devices: stats.devices, tasks: [] };
+let currentId;
+const close = client.watch(event => { if (event.data?.prompt_id === currentId && event.type === 'progress') console.log('progress', event.data.value, '/', event.data.max); });
+try {
+  const options = { checkpoint: 'sdXL_v10VAEFix.safetensors', description: 'one young girl with short brown hair, green apron dress, round face, simple rounded hands, gentle smile, simple standing pose, no accessories', ratio: '2.5', style: 'clay', seed: 123456, steps: 24 };
+  const design = buildDesignWorkflow(options);
+  validateWorkflow(design, info);
+  let response = await client.json('/prompt', { prompt: design, client_id: client.clientId }); currentId = response.prompt_id;
+  if (!currentId) throw new Error(JSON.stringify(response)); console.log('DESIGN_SUBMITTED', currentId);
+  const images = await client.waitFor(currentId, 'design', () => false, console.log);
+  const imageBytes = await client.download(images[0]); await fs.writeFile(path.join(root, 'design.png'), imageBytes);
+  report.tasks.push({ kind: 'design', promptId: currentId, output: images[0], bytes: imageBytes.length });
+  await fs.writeFile('docs/live-validation.json', JSON.stringify(report, null, 2));
+  console.log('DESIGN_COMPLETED', imageBytes.length);
+  const matteImage = await client.upload(imageBytes, 'design.png');
+  const matteGraph = buildMatteWorkflow({ image: matteImage, model: 'birefnet.safetensors' });
+  validateWorkflow(matteGraph, info);
+  const matteResponse = await client.json('/prompt', { prompt: matteGraph, client_id: client.clientId }); currentId = matteResponse.prompt_id;
+  const matteOutputs = await client.waitFor(currentId, 'matte', () => false, console.log);
+  const cutout = applyForegroundMask(imageBytes, await client.download(matteOutputs[0]));
+  const prepared = prepareShapeImage(cutout);
+  await fs.writeFile(path.join(root, 'shape-input.png'), prepared);
+  const uploaded = await client.upload(prepared, 'design.png');
+  const graph = buildShapeWorkflow({ checkpoint: 'hunyuan_3d_v2.1.safetensors', image: uploaded, seed: 123456, quality: 'draft' });
+  validateWorkflow(graph, info);
+  response = await client.json('/prompt', { prompt: graph, client_id: client.clientId }); currentId = response.prompt_id;
+  if (!currentId) throw new Error(JSON.stringify(response)); console.log('SHAPE_SUBMITTED', currentId);
+  const models = await client.waitFor(currentId, 'shape', () => false, console.log);
+  const glb = await client.download(models[0]); await fs.writeFile(path.join(root, 'model.glb'), glb);
+  if (glb.subarray(0, 4).toString() !== 'glTF') throw new Error('Invalid GLB magic');
+  const jsonLength = glb.readUInt32LE(12); const gltf = JSON.parse(glb.subarray(20, 20 + jsonLength).toString());
+  const primitives = gltf.meshes.flatMap(mesh => mesh.primitives);
+  const triangles = primitives.reduce((sum, primitive) => sum + gltf.accessors[primitive.indices].count / 3, 0);
+  report.tasks.push({ kind: 'shape', promptId: currentId, output: models[0], bytes: glb.length, meshes: gltf.meshes.length, triangles });
+  report.completedAt = new Date().toISOString();
+  console.log('SHAPE_COMPLETED', glb.length, triangles);
+} catch (error) { report.error = error.message; console.error(error); process.exitCode = 1; }
+finally { close(); await fs.writeFile('docs/live-validation.json', JSON.stringify(report, null, 2)); }

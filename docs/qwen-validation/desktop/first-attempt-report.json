@@ -1,0 +1,28 @@
+{
+  "startedAt": "2026-10-15T07:55:21.954Z",
+  "checks": [
+    "Real Qwen 2.1 and native BiRefNet capabilities",
+    "Opaque original rejected before 3D submission",
+    "Photo-to-chibi via actual UI, Qwen reference conditioning and persistent output"
+  ],
+  "errors": [],
+  "jobs": [
+    {
+      "kind": "shape",
+      "status": "failed"
+    },
+    {
+      "kind": "design",
+      "status": "completed",
+      "engine": "qwen21",
+      "promptId": "357d3edf-df0c-4fd4-8f76-a5fc2edcbbc7"
+    },
+    {
+      "kind": "matte",
+      "status": "completed",
+      "engine": "birefnet",
+      "promptId": "fdecc83a-eb0f-470c-9f4e-721519872de8"
+    }
+  ],
+  "error": "UnknownVizError"
+}

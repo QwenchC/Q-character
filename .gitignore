@@ -1,0 +1,14 @@
+node_modules/
+dist/
+release/
+.runtime/
+*.log
+docs/smoke-assets/*
+docs/**/*.glb
+docs/**/*.stl
+docs/**/*.blend
+docs/**/*.blend1
+docs/**/*-pid.txt
+*.tmp
+!docs/smoke-assets/design.png
+!docs/smoke-assets/model.glb

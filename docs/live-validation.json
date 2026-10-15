@@ -1,0 +1,88 @@
+{
+  "startedAt": "2026-10-15T07:28:29.629Z",
+  "system": {
+    "os": "win32",
+    "ram_total": 68336500736,
+    "ram_free": 39434940416,
+    "comfyui_version": "0.39.1",
+    "required_frontend_version": "1.53.10",
+    "installed_templates_version": "0.11.77",
+    "required_templates_version": "0.11.77",
+    "comfy_package_versions": [
+      {
+        "name": "comfyui-frontend-package",
+        "installed": "1.53.10",
+        "required": "1.53.10"
+      },
+      {
+        "name": "comfyui-workflow-templates",
+        "installed": "0.11.77",
+        "required": "0.11.77"
+      },
+      {
+        "name": "comfyui-embedded-docs",
+        "installed": "0.5.13",
+        "required": "0.5.13"
+      },
+      {
+        "name": "comfy-kitchen",
+        "installed": "0.2.37",
+        "required": "0.2.37"
+      },
+      {
+        "name": "comfy-aimdo",
+        "installed": "0.5.5",
+        "required": "0.5.5"
+      }
+    ],
+    "python_version": "3.11.15 | packaged by Anaconda, Inc. | (main, Mar 11 2026, 17:12:15) [MSC v.1942 64 bit (AMD64)]",
+    "pytorch_version": "2.9.1+cu128",
+    "embedded_python": false,
+    "deploy_environment": "local-git",
+    "argv": [
+      "main.py",
+      "--listen",
+      "127.0.0.1",
+      "--port",
+      "8199",
+      "--disable-all-custom-nodes",
+      "--disable-auto-launch"
+    ]
+  },
+  "devices": [
+    {
+      "name": "cuda:0 NVIDIA GeForce RTX 5090 : cudaMallocAsync",
+      "type": "cuda",
+      "index": 0,
+      "vram_total": 34162016256,
+      "vram_free": 25342221050,
+      "torch_vram_total": 33554432,
+      "torch_vram_free": 22256378
+    }
+  ],
+  "tasks": [
+    {
+      "kind": "design",
+      "promptId": "b71a99dc-6d60-4ddb-96ff-869e1526ca1c",
+      "output": {
+        "filename": "design_00003_.png",
+        "subfolder": "QCharacter",
+        "type": "output"
+      },
+      "bytes": 719413
+    },
+    {
+      "kind": "shape",
+      "promptId": "2b8e7577-832c-4537-ba8c-22ed8137137c",
+      "output": {
+        "filename": "mesh_00002_.glb",
+        "subfolder": "QCharacter",
+        "type": "output"
+      },
+      "bytes": 858520,
+      "meshes": 1,
+      "triangles": 47856
+    }
+  ],
+  "completedAt": "2026-10-15T07:28:38.823Z"
+}

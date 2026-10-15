@@ -1,0 +1,4 @@
+Error: 请选择有效的 GLB 2.0 文件。
+    at validateTexturedGlb (file:///E:/Lumi/Q-character/electron/texture.mjs:2:212)
+    at Module.runDesktopSmoke (file:///E:/Lumi/Q-character/scripts/color-desktop-smoke.mjs:46:26)
+    at async file:///E:/Lumi/Q-character/electron/main.mjs:251:11

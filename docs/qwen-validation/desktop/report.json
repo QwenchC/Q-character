@@ -1,0 +1,75 @@
+{
+  "startedAt": "2026-10-15T07:58:33.134Z",
+  "checks": [
+    "Real Qwen 2.1 and native BiRefNet capabilities",
+    "Opaque original rejected before 3D submission",
+    "Photo-to-chibi via actual UI, Qwen reference conditioning and persistent output",
+    "Cutout, white background, foreground mask and original comparison controls",
+    "Transparent PNG export retains actual alpha",
+    "Qwen design -> BiRefNet cutout -> standard Hunyuan3D model through desktop UI",
+    "导出 GLB: 3343524 bytes",
+    "STL: 9420884 bytes",
+    "三视图参考: 735483 bytes",
+    "White sleeve regression: both known clothing pixels remain opaque",
+    "Existing transparency preserved without a generation request"
+  ],
+  "errors": [],
+  "jobs": [
+    {
+      "kind": "shape",
+      "status": "failed"
+    },
+    {
+      "kind": "design",
+      "status": "completed",
+      "engine": "qwen21",
+      "promptId": "39a28022-c578-48bb-8ab5-98a5abe4d380"
+    },
+    {
+      "kind": "matte",
+      "status": "completed",
+      "engine": "birefnet",
+      "promptId": "903e169e-ea8e-4772-9585-ac44960a2532"
+    },
+    {
+      "kind": "shape",
+      "status": "completed",
+      "engine": "hunyuan3d",
+      "promptId": "70492712-d572-44f2-990d-6abf4d580f72"
+    },
+    {
+      "kind": "matte",
+      "status": "completed",
+      "engine": "birefnet",
+      "promptId": "f175b42b-9014-4730-a34a-8ee1a09d7d23"
+    },
+    {
+      "kind": "matte",
+      "status": "completed",
+      "engine": "existing-alpha"
+    }
+  ],
+  "whiteClothingPixels": [
+    {
+      "x": 310,
+      "y": 480,
+      "rgba": [
+        243,
+        241,
+        240,
+        254
+      ]
+    },
+    {
+      "x": 470,
+      "y": 450,
+      "rgba": [
+        139,
+        128,
+        117,
+        254
+      ]
+    }
+  ],
+  "completedAt": "2026-10-15T07:59:11.192Z"
+}

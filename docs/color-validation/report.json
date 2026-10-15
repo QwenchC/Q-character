@@ -1,0 +1,29 @@
+{
+  "startedAt": "2026-10-15T09:01:57.811Z",
+  "checks": [
+    "Manual foreground color pick adds a swatch; transparent background excluded; swatch can be removed",
+    "Offline desktop reference-to-texture, UVs and embedded PNG; new model version; geometry parent bytes unchanged",
+    "GLB export retains texture in clay display mode; STL and color reference sheet; clay recipe PNG exported",
+    "Target color edit is persisted and creates a distinct recolored model version",
+    "Reopened project retains recipe and texture; malformed model rejected"
+  ],
+  "errors": [],
+  "palette": [
+    "#A3A161",
+    "#544E21",
+    "#2C1F17",
+    "#F4E3D5",
+    "#D8BEA0",
+    "#735B4D",
+    "#B0886A"
+  ],
+  "glb": {
+    "meshes": 1,
+    "textures": 1
+  },
+  "exportedGlb": {
+    "meshes": 1,
+    "textures": 1
+  },
+  "completedAt": "2026-10-15T09:02:02.352Z"
+}

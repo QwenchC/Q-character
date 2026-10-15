@@ -1,0 +1,22 @@
+{
+  "startedAt": "2026-10-15T08:40:33.513Z",
+  "checks": [
+    "Actual mouse brush restores deleted white sleeve; erases background after zoom and pan; undo and keyboard redo",
+    "Saved new cutout and grayscale mask; original RGB preserved; parent bytes unchanged",
+    "Reload/reopen retains mask; unsaved edits protected; undo to clean; invalid PNG rejected without asset mutation",
+    "导出 GLB: 3765668 bytes",
+    "STL: 10497084 bytes",
+    "三视图参考: 655062 bytes",
+    "Corrected cutout selected automatically and consumed by real Hunyuan3D standard workflow"
+  ],
+  "errors": [],
+  "correctedAssetId": "81c69dca-5117-49df-9253-c83d92b5c0af",
+  "parentHash": "e40b035ff7e1fde411373e03b549fc51163ed4c377754d0d2c99ee43e34cf7bf",
+  "shape": {
+    "inputAssetId": "81c69dca-5117-49df-9253-c83d92b5c0af",
+    "promptId": "17aab959-d41d-443a-98c3-c3600621a6f8",
+    "engine": "hunyuan3d",
+    "status": "completed"
+  },
+  "completedAt": "2026-10-15T08:40:58.124Z"
+}

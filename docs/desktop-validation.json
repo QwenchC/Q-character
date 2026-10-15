@@ -1,0 +1,33 @@
+{
+  "startedAt": "2026-10-15T07:35:01.466Z",
+  "errors": [],
+  "checks": [
+    "Electron preload IPC and live ComfyUI capabilities",
+    "Real image-to-image generation through renderer IPC, upload, job lifecycle and asset persistence",
+    "Standard 30-step / 256-resolution shape generation through renderer IPC, foreground preparation and model persistence",
+    "GLB asset protocol, real WebGL model loading and mesh count",
+    "导出 GLB: 4053028 bytes",
+    "STL: 11305584 bytes",
+    "三视图参考: 660223 bytes",
+    "Library navigation"
+  ],
+  "imageToImageJob": {
+    "id": "6175d886-1852-47de-a4be-fe496a449503",
+    "promptId": "158bbab1-8a8b-4c47-88ca-f4818ba2b622",
+    "assets": 3
+  },
+  "shapeJob": {
+    "id": "10f73de6-9044-4d21-91b6-e69f3528ceef",
+    "promptId": "03b9f680-74c5-4106-bd79-210e05f208df"
+  },
+  "glb": {
+    "magic": "glTF",
+    "meshes": 1,
+    "nodes": 3
+  },
+  "stl": {
+    "triangles": 226110,
+    "heightMm": 80
+  },
+  "completedAt": "2026-10-15T07:35:32.954Z"
+}

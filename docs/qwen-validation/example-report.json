@@ -1,0 +1,123 @@
+{
+  "promptId": "3b8d28d7-40cc-4d1e-9d41-2897412bc0e9",
+  "triangles": 198532,
+  "bytes": 3568708,
+  "workflow": {
+    "1": {
+      "class_type": "ImageOnlyCheckpointLoader",
+      "inputs": {
+        "ckpt_name": "hunyuan_3d_v2.1.safetensors"
+      }
+    },
+    "2": {
+      "class_type": "LoadImage",
+      "inputs": {
+        "image": "qcharacter-da5fefb6-4357-42df-9ee8-fa4d8a271df8.png"
+      }
+    },
+    "3": {
+      "class_type": "CLIPVisionEncode",
+      "inputs": {
+        "clip_vision": [
+          "1",
+          1
+        ],
+        "image": [
+          "2",
+          0
+        ],
+        "crop": "none"
+      }
+    },
+    "4": {
+      "class_type": "Hunyuan3Dv2Conditioning",
+      "inputs": {
+        "clip_vision_output": [
+          "3",
+          0
+        ]
+      }
+    },
+    "5": {
+      "class_type": "EmptyLatentHunyuan3Dv2",
+      "inputs": {
+        "resolution": 3072,
+        "batch_size": 1
+      }
+    },
+    "6": {
+      "class_type": "ModelSamplingAuraFlow",
+      "inputs": {
+        "model": [
+          "1",
+          0
+        ],
+        "shift": 1
+      }
+    },
+    "7": {
+      "class_type": "KSampler",
+      "inputs": {
+        "model": [
+          "6",
+          0
+        ],
+        "positive": [
+          "4",
+          0
+        ],
+        "negative": [
+          "4",
+          1
+        ],
+        "latent_image": [
+          "5",
+          0
+        ],
+        "seed": 123456,
+        "steps": 30,
+        "cfg": 5,
+        "sampler_name": "euler",
+        "scheduler": "normal",
+        "denoise": 1
+      }
+    },
+    "8": {
+      "class_type": "VAEDecodeHunyuan3D",
+      "inputs": {
+        "samples": [
+          "7",
+          0
+        ],
+        "vae": [
+          "1",
+          2
+        ],
+        "num_chunks": 8000,
+        "octree_resolution": 256
+      }
+    },
+    "9": {
+      "class_type": "VoxelToMesh",
+      "inputs": {
+        "voxel": [
+          "8",
+          0
+        ],
+        "algorithm": "surface net",
+        "threshold": 0.6
+      }
+    },
+    "10": {
+      "class_type": "SaveGLB",
+      "inputs": {
+        "mesh": [
+          "9",
+          0
+        ],
+        "filename_prefix": "QCharacter/mesh"
+      }
+    }
+  },
+  "completedAt": "2026-10-15T07:57:54.766Z"
+}
