@@ -1,0 +1,41 @@
+[
+  {
+    "model": "hunyuan",
+    "triangles": 198532,
+    "vertices": 595596,
+    "colorAttributes": [
+      []
+    ],
+    "uvLayers": [
+      [
+        "UVMap"
+      ]
+    ]
+  },
+  {
+    "model": "triposplat",
+    "triangles": 1235744,
+    "vertices": 597568,
+    "colorAttributes": [
+      [
+        "Color"
+      ]
+    ],
+    "uvLayers": [
+      []
+    ]
+  },
+  {
+    "model": "triposplat-smooth",
+    "triangles": 1235744,
+    "vertices": 597568,
+    "colorAttributes": [
+      [
+        "Color"
+      ]
+    ],
+    "uvLayers": [
+      []
+    ]
+  }
+]

@@ -1,0 +1,19 @@
+{
+  "startedAt": "2026-10-16T08:40:49.006Z",
+  "checks": [
+    "Real desktop Pixal3D generation preserves corrected alpha and saves validated PBR GLB",
+    "Palette edit creates a new model while preserving geometry, UV, normals and PBR normal/MR image pixels",
+    "Repeated identical recolor does not accumulate color shifts; original model is immutable",
+    "Clay preview retains original PBR on scaled GLB export; STL and clay guide export succeed"
+  ],
+  "job": {
+    "id": "4966036e-050b-45a2-921e-98549191d300",
+    "promptId": "53ae6a4f-1aa3-474e-9584-7621ed57390a",
+    "seed": 3860066142,
+    "quality": "draft"
+  },
+  "captureError": "UnknownVizError",
+  "projectId": "8eb705ca-4bec-4d08-8cc7-50079b8558d4",
+  "dataPath": "E:\\Lumi\\Q-character\\.runtime\\pixal-smoke\\projects",
+  "completedAt": "2026-10-16T08:40:55.810Z"
+}

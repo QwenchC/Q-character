@@ -1,0 +1,43 @@
+{
+  "model": ".runtime\\pixal3d-evaluation\\standard\\pixal3d-pbr.glb",
+  "blender": "5.1.1",
+  "heightMeters": 0.938627153635025,
+  "triangles": 199754,
+  "materials": [
+    {
+      "name": "Material_0",
+      "channels": [
+        "baseColor",
+        "metallic",
+        "roughness",
+        "normal"
+      ],
+      "images": [
+        {
+          "name": "Image_0",
+          "size": [
+            2048,
+            2048
+          ],
+          "packed": true
+        },
+        {
+          "name": "Image_1",
+          "size": [
+            2048,
+            2048
+          ],
+          "packed": true
+        },
+        {
+          "name": "Image_2",
+          "size": [
+            2048,
+            2048
+          ],
+          "packed": true
+        }
+      ]
+    }
+  ]
+}

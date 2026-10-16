@@ -11,7 +11,15 @@ export async function writeJson(file, value) {
   await fs.mkdir(path.dirname(file), { recursive: true });
   const temp = `${file}.${randomUUID()}.tmp`;
   await fs.writeFile(temp, JSON.stringify(value, null, 2), 'utf8');
-  await fs.rename(temp, file);
+  // Windows can briefly deny replacement while a reader or virus scanner holds
+  // the destination. Keep the old JSON intact and retry the atomic operation.
+  for (let attempt = 0; ; attempt++) {
+    try { await fs.rename(temp, file); break; }
+    catch (error) {
+      if (process.platform !== 'win32' || !['EPERM', 'EBUSY', 'EACCES'].includes(error.code) || attempt >= 5) throw error;
+      await new Promise(resolve => setTimeout(resolve, 30 * 2 ** attempt));
+    }
+  }
 }
 
 export class ProjectStore {

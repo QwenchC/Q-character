@@ -56,7 +56,7 @@ final class ProjectStore {
     synchronized JSONObject add(String projectId, File input, String extension, String kind, String label, JSONObject metadata) throws Exception {
         if(!Arrays.asList(".png",".glb",".stl",".obj").contains(extension) || !Arrays.asList("reference","design","mask","cutout","prepared","model").contains(kind)) throw new IOException("素材类型无效。");
         if(input.length()>LIMIT) throw new IOException("手机端单个素材不能超过 64 MB，请降低生成精度。");
-        if(extension.equals(".glb")) validateGlb(input, false);
+        if(extension.equals(".glb")) validateGlb(input, metadata.optString("textureMethod").startsWith("pixal3d-pbr"));
         JSONObject p=read(projectId), a=new JSONObject().put("id",id()).put("filename",id()+extension).put("kind",kind).put("label",label).put("createdAt",now());
         for(String key:new String[]{"sourceAssetId","maskAssetId","parentCutoutId","revisionType","parentModelId","textureSourceId","textureMethod","textureConfig","jobId"}) if(metadata.has(key)) a.put(key,metadata.get(key));
         File target=file(projectId,a.getString("filename"));

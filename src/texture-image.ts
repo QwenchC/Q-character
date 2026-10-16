@@ -8,16 +8,29 @@ export function foregroundBounds(rgba: Uint8ClampedArray | Uint8Array, width: nu
   return { left, top, right, bottom };
 }
 
-export function buildTextureAtlas(rgba: Uint8ClampedArray | Uint8Array, width: number, height: number, swatches: Swatch[], side = 1024, headFraction = 0.34) {
-  const bounds = foregroundBounds(rgba, width, height);
-  if (![512, 1024].includes(side)) throw new Error('请选择支持的贴图尺寸。');
+export function colorRemapper(swatches: Swatch[]) {
   const original = swatches.map(s => fromHex(s.original)), targets = swatches.map(s => fromHex(s.target)), labs = original.map(lab), cache = new Map<number, RGB>();
-  const recolor = (r: number, g: number, b: number): RGB => {
+  return (r: number, g: number, b: number): RGB => {
     if (!swatches.some(s => s.target.toLowerCase() !== s.original.toLowerCase())) return [r, g, b];
     const key = (r >> 3) << 10 | (g >> 3) << 5 | (b >> 3); let delta = cache.get(key);
     if (!delta) { const point = lab([r, g, b]); let best = Infinity, nearest = 0; labs.forEach((c, j) => { const d = distance(point, c); if (d < best) { best = d; nearest = j; } }); delta = targets[nearest].map((v, c) => v - original[nearest][c]) as RGB; cache.set(key, delta); }
     return [r, g, b].map((v, c) => Math.max(0, Math.min(255, v + delta![c]))) as RGB;
   };
+}
+
+export function recolorPixels(rgba: Uint8ClampedArray, swatches: Swatch[]) {
+  const recolor = colorRemapper(swatches);
+  for (let i = 0; i < rgba.length; i += 4) {
+    if (rgba[i + 3] === 0) continue;
+    const rgb = recolor(rgba[i], rgba[i + 1], rgba[i + 2]);
+    rgba[i] = rgb[0]; rgba[i + 1] = rgb[1]; rgba[i + 2] = rgb[2];
+  }
+}
+
+export function buildTextureAtlas(rgba: Uint8ClampedArray | Uint8Array, width: number, height: number, swatches: Swatch[], side = 1024, headFraction = 0.34) {
+  const bounds = foregroundBounds(rgba, width, height);
+  if (![512, 1024].includes(side)) throw new Error('请选择支持的贴图尺寸。');
+  const recolor = colorRemapper(swatches);
   const front = new Uint8ClampedArray(side * side * 4), known = new Uint8Array(side * side), queue = new Int32Array(side * side); let tail = 0;
   for (let y = 0; y < side; y++) for (let x = 0; x < side; x++) {
     const sx = Math.round(bounds.left + x / (side - 1) * (bounds.right - bounds.left)), sy = Math.round(bounds.top + y / (side - 1) * (bounds.bottom - bounds.top)), src = (sy * width + sx) * 4, index = y * side + x, dst = index * 4;

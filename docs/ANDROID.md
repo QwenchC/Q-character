@@ -1,10 +1,10 @@
 # Android 版
 
-Android 0.2.0 与 Windows 0.5.0 共用角色工作流、蒙版编辑器、3D 预览、设计图上色和黏土调色逻辑。手机通过原生网络层连接远程 ComfyUI，适用于内网地址、FRP 穿透地址，以及带端口或路径前缀的反向代理。
+Android 0.3.0 与 Windows 0.6.0 共用角色工作流、蒙版编辑器、3D 预览、设计图上色和黏土调色逻辑。手机通过原生网络层连接远程 ComfyUI，适用于内网地址、FRP 穿透地址，以及带端口或路径前缀的反向代理。
 
 ## 安装与连接
 
-在手机打开 [Windows 0.5.0 / Android 0.2.0 Release](https://github.com/QwenchC/Q-character/releases/tag/v0.5.0)，点击 `Q-Character-Android-0.2.0.apk` 下载后安装；也可使用 [APK 直接下载链接](https://github.com/QwenchC/Q-character/releases/download/v0.5.0/Q-Character-Android-0.2.0.apk)。按系统提示允许当前浏览器安装此来源的应用。Release 中的 `SHA256SUMS.txt` 可用于校验下载文件。
+在手机打开 [Windows 0.6.0 / Android 0.3.0 Release](https://github.com/QwenchC/Q-character/releases/tag/v0.6.0)，点击 `Q-Character-Android-0.3.0.apk` 下载后安装；也可使用 [APK 直接下载链接](https://github.com/QwenchC/Q-character/releases/download/v0.6.0/Q-Character-Android-0.3.0.apk)。按系统提示允许当前浏览器安装此来源的应用。Release 中的 `SHA256SUMS.txt` 可用于校验下载文件。
 
 最低 Android 8.0，需要支持 WebGL 2 和 WebMessageListener 的 Android System WebView／Chrome；首次打开即有可离线预览的示例作品。应用不包含生成模型，也不在手机上运行 ComfyUI。
 
@@ -25,7 +25,7 @@ Android 0.2.0 与 Windows 0.5.0 共用角色工作流、蒙版编辑器、3D 预
 - “导出 GLB”保存内嵌贴图与材质；在 Blender 使用“文件 → 导入 → glTF 2.0”即可显示。STL 只保留几何。GLB 按米、STL 按毫米导出；目标 80 mm 对应 Blender 高度约 0.08 m。
 - 三视图、透明 PNG 和黏土调色指引均可导出。导出时由 Android 系统选择保存位置，可选 Downloads 或文件提供器支持的其他位置，再传到电脑。需要在系统保存窗口完成“保存”。取消文件选择不会覆盖已有作品。
 
-贴图与 Windows 当前实现一致：正面图像投影，侧背面按前景色块近似延展，尚非 AI 多视角纹理。黏土配方是试配起点，需要小样和干燥后校色。
+默认 Pixal3D 在远程 ComfyUI 生成几何与 AI PBR 贴图，手机可预览、保留材质换色和导出 GLB；权重只需安装在服务端，见 [Pixal3D](PIXAL3D.md)。混元模型仍使用正面投影与侧背色块延展。黏土配方是试配起点，需要小样和干燥后校色。
 
 ## 任务、保存与限制
 

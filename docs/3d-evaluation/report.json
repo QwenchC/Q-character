@@ -1,0 +1,27 @@
+{
+  "startedAt": "2026-10-16T08:07:04.138Z",
+  "input": "examples/cutout.png",
+  "seed": 123456,
+  "steps": 40,
+  "resolution": 384,
+  "promptId": "2b770329-0375-4894-ab10-e86f2ca8683e",
+  "bytes": 29173712,
+  "vertexColors": true,
+  "uvs": false,
+  "textureCount": 0,
+  "triangles": 1235744,
+  "extensions": [
+    "KHR_materials_unlit"
+  ],
+  "completedAt": "2026-10-16T08:07:28.575Z",
+  "elapsedSeconds": 24.437,
+  "interpretation": {
+    "meshExport": "Experimental Gaussian-to-mesh conversion",
+    "appearance": "Generated vertex colors; no UV atlas or image textures",
+    "visualFindings": "Surface noise remains in clay view, including after 6 Taubin iterations",
+    "comparisonAlignment": "TripoSplat renders rotated -90 degrees around Blender Z; both assets normalized to 80 mm and rendered with smooth shading",
+    "scope": "Single bundled character, one seed; not a general model quality benchmark",
+    "application": "Evaluation only; default app workflow unchanged",
+    "pixal3D": "Native nodes and bundled template found; weights missing; inference not tested"
+  }
+}

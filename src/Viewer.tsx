@@ -7,12 +7,21 @@ import { STLLoader } from 'three/examples/jsm/loaders/STLLoader.js';
 import { GLTFExporter } from 'three/examples/jsm/exporters/GLTFExporter.js';
 import { STLExporter } from 'three/examples/jsm/exporters/STLExporter.js';
 import { RotateCcw, Scan, Box, Grid2X2, Camera } from 'lucide-react';
-import { textureModel } from './texturing';
+import { textureModel, recolorPbrModel } from './texturing';
 import type { Swatch } from './color';
 import type { Projection } from './texture-image';
 
-export interface ViewerHandle { exportModel(format: 'glb' | 'stl', heightMm: number): Promise<Uint8Array>; referenceSheet(heightMm: number, name: string): Promise<Uint8Array>; texture(reference: string, swatches: Swatch[], projection: Projection): Promise<Uint8Array> }
+export interface ViewerHandle { exportModel(format: 'glb' | 'stl', heightMm: number): Promise<Uint8Array>; referenceSheet(heightMm: number, name: string): Promise<Uint8Array>; texture(reference: string, swatches: Swatch[], projection: Projection, originalPbrUrl?: string): Promise<Uint8Array> }
 interface Props { url?: string; filename?: string; onLoaded?: (info: { faces: number; meshes: number }) => void }
+
+function assetManager() {
+  const manager = new THREE.LoadingManager();
+  manager.setURLModifier(resource => {
+    if (/^(data:|blob:|qasset:)/.test(resource) || (window.QNative && resource.startsWith('https://appassets.androidplatform.net/projects/'))) return resource;
+    throw new Error('模型引用了外部资源。请导出为包含贴图的 GLB。');
+  });
+  return manager;
+}
 
 function sampleCharacter() {
   const group = new THREE.Group();
@@ -49,8 +58,12 @@ export const Viewer = forwardRef<ViewerHandle, Props>(function Viewer({ url, fil
   };
 
   useImperativeHandle(ref, () => ({
-    async texture(reference, swatches, projection) {
+    async texture(reference, swatches, projection, originalPbrUrl) {
       const state = runtime.current; if (!state || !url || loading || error) throw new Error('请先等待模型加载完成。');
+      if (originalPbrUrl) {
+        const source = (await new GLTFLoader(assetManager()).loadAsync(originalPbrUrl)).scene;
+        try { return await recolorPbrModel(source, swatches); } finally { disposeObject(source); }
+      }
       return textureModel(state.source, reference, swatches, projection);
     },
     async exportModel(format, heightMm) {
@@ -121,9 +134,7 @@ export const Viewer = forwardRef<ViewerHandle, Props>(function Viewer({ url, fil
         else if (/\.stl$/i.test(filename || '')) { const geometry = await new STLLoader().loadAsync(url); geometry.computeVertexNormals(); object = new THREE.Mesh(geometry, new THREE.MeshStandardMaterial({ color: '#d1bfa6', roughness: 0.9 })); }
         else if (/\.obj$/i.test(filename || '')) object = await new OBJLoader().loadAsync(url);
         else {
-          const manager = new THREE.LoadingManager();
-          manager.setURLModifier(resource => { if (/^(data:|blob:|qasset:)/.test(resource) || (window.QNative && resource.startsWith('https://appassets.androidplatform.net/projects/'))) return resource; throw new Error('模型引用了外部资源。请导出为包含贴图的 GLB。'); });
-          object = (await new GLTFLoader(manager).loadAsync(url)).scene;
+          object = (await new GLTFLoader(assetManager()).loadAsync(url)).scene;
         }
         if (stopped) { disposeObject(object); return; }
         object.updateMatrixWorld(true); const box = new THREE.Box3().setFromObject(object); const size = box.getSize(new THREE.Vector3()); const center = box.getCenter(new THREE.Vector3());

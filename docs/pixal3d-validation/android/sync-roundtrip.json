@@ -1,0 +1,82 @@
+{
+  "result": {
+    "changed": 1,
+    "conflicts": 0,
+    "uploadedFiles": 0,
+    "downloadedFiles": 0,
+    "errors": []
+  },
+  "grams": 7.5,
+  "model": {
+    "id": "563e262b-8ab1-435d-9337-f6b8949803c7",
+    "filename": "8186b915-24b0-4925-85dd-ad54e067ec81.glb",
+    "kind": "model",
+    "label": "Pixal3D · 保留 AI 材质的换色模型",
+    "createdAt": "2026-10-16T08:38:59.033Z",
+    "sourceAssetId": "6933a1d3-e3af-48e3-9ac6-af78c6ad6f2e",
+    "parentModelId": "ca5dfbde-f539-4c37-b211-a1f5d663a34e",
+    "textureSourceId": "6933a1d3-e3af-48e3-9ac6-af78c6ad6f2e",
+    "textureMethod": "pixal3d-pbr-recolor",
+    "textureConfig": {
+      "swatches": [
+        {
+          "id": "color-0",
+          "name": "黄绿色",
+          "original": "#a3a161",
+          "target": "#416db3",
+          "share": 0.25410704822469526
+        },
+        {
+          "id": "color-1",
+          "name": "橄榄绿",
+          "original": "#544e21",
+          "target": "#544e21",
+          "share": 0.18124006359300476
+        },
+        {
+          "id": "color-2",
+          "name": "棕色",
+          "original": "#2c1f17",
+          "target": "#2c1f17",
+          "share": 0.14016958134605192
+        },
+        {
+          "id": "color-3",
+          "name": "浅肤色",
+          "original": "#f4e3d5",
+          "target": "#f4e3d5",
+          "share": 0.11764705882352941
+        },
+        {
+          "id": "color-4",
+          "name": "暖肤色",
+          "original": "#d8bea0",
+          "target": "#d8bea0",
+          "share": 0.11764705882352941
+        },
+        {
+          "id": "color-5",
+          "name": "棕色",
+          "original": "#735b4d",
+          "target": "#735b4d",
+          "share": 0.0951245363010069
+        },
+        {
+          "id": "color-6",
+          "name": "暖棕色",
+          "original": "#b0886a",
+          "target": "#b0886a",
+          "share": 0.0940646528881823
+        }
+      ],
+      "projection": {
+        "turn": 0,
+        "scale": 1,
+        "offsetX": 0,
+        "offsetY": 0,
+        "headFraction": 0.34
+      }
+    }
+  },
+  "completedAt": "2026-10-16T08:42:04.686Z"
+}

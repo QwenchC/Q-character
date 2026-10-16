@@ -1,0 +1,55 @@
+{
+  "input": "examples/cutout.png",
+  "quality": "high",
+  "seed": 123456,
+  "startedAt": "2026-10-16T08:35:07.103Z",
+  "promptId": "84b7197f-2379-4532-9137-7b7335b5d267",
+  "bytes": 28117028,
+  "triangles": 299179,
+  "textures": [
+    {
+      "bufferView": 5,
+      "mimeType": "image/png"
+    },
+    {
+      "bufferView": 6,
+      "mimeType": "image/png"
+    },
+    {
+      "bufferView": 7,
+      "mimeType": "image/png"
+    }
+  ],
+  "materials": [
+    {
+      "pbrMetallicRoughness": {
+        "metallicFactor": 1,
+        "roughnessFactor": 1,
+        "baseColorFactor": [
+          1,
+          1,
+          1,
+          1
+        ],
+        "baseColorTexture": {
+          "index": 0,
+          "texCoord": 0
+        },
+        "metallicRoughnessTexture": {
+          "index": 1,
+          "texCoord": 0
+        }
+      },
+      "doubleSided": true,
+      "normalTexture": {
+        "index": 2,
+        "texCoord": 0,
+        "scale": 1
+      }
+    }
+  ],
+  "uvs": true,
+  "normals": true,
+  "completedAt": "2026-10-16T08:37:00.702Z",
+  "seconds": 113.599
+}

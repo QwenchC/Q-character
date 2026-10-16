@@ -1,7 +1,39 @@
 import * as THREE from 'three';
 import { GLTFExporter } from 'three/examples/jsm/exporters/GLTFExporter.js';
-import { buildTextureAtlas, type Projection } from './texture-image';
+import { buildTextureAtlas, recolorPixels, type Projection } from './texture-image';
 import type { Swatch } from './color';
+
+export async function recolorPbrModel(source: THREE.Object3D, swatches: Swatch[]) {
+  const root = source.clone(true), materials: THREE.Material[] = [], textures = new Map<THREE.Texture, THREE.Texture>();
+  let meshes = 0;
+  try {
+    root.traverse(object => {
+      if (!(object instanceof THREE.Mesh)) return;
+      if (object instanceof THREE.SkinnedMesh || object instanceof THREE.InstancedMesh) throw new Error('请先将模型转换为静态网格。');
+      meshes++;
+      const recolor = (original: THREE.Material) => {
+        if (!(original instanceof THREE.MeshStandardMaterial) || !original.map || !object.geometry.getAttribute('uv')) throw new Error('该模型没有完整的 PBR 颜色贴图与 UV。');
+        const material = original.clone(); materials.push(material);
+        let texture = textures.get(original.map);
+        if (!texture) {
+          const image = original.map.image as CanvasImageSource & { width: number; height: number };
+          if (!image || image.width * image.height > 4096 * 4096) throw new Error('颜色贴图过大或尚未载入。');
+          const canvas = document.createElement('canvas'); canvas.width = image.width; canvas.height = image.height;
+          const context = canvas.getContext('2d', { willReadFrequently: true })!; context.drawImage(image, 0, 0);
+          const pixels = context.getImageData(0, 0, canvas.width, canvas.height); recolorPixels(pixels.data, swatches); context.putImageData(pixels, 0, 0);
+          texture = original.map.clone(); texture.image = canvas; texture.needsUpdate = true; textures.set(original.map, texture);
+        }
+        material.map = texture;
+        return material;
+      };
+      object.material = Array.isArray(object.material) ? object.material.map(recolor) : recolor(object.material);
+    });
+    if (!meshes) throw new Error('模型没有可换色的网格。');
+    const result = await new GLTFExporter().parseAsync(root, { binary: true, onlyVisible: false });
+    if (!(result instanceof ArrayBuffer)) throw new Error('AI 贴图换色失败。');
+    return new Uint8Array(result);
+  } finally { materials.forEach(m => m.dispose()); textures.forEach(t => t.dispose()); }
+}
 
 export async function readReference(url: string) {
   const image = await new Promise<HTMLImageElement>((resolve, reject) => { const img = new Image(); img.crossOrigin = 'anonymous'; img.onload = () => resolve(img); img.onerror = () => reject(new Error('无法读取上色参考图。')); img.src = url; });

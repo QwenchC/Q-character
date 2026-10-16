@@ -1,3 +1,4 @@
+import { PIXAL_DEFAULTS, buildPixal3DWorkflow, pixalCapabilities } from './pixal3d.mjs';
 import { app, BrowserWindow, ipcMain, dialog, protocol, net, shell, nativeImage, safeStorage } from 'electron';
 import fs from 'node:fs/promises';
 import path from 'node:path';
@@ -22,8 +23,8 @@ async function writeExport(file, bytes) {
   try { await writing; } finally { pendingExports.delete(writing); }
 }
 const smokeMode = process.env.QCHARACTER_SMOKE && !app.isPackaged;
-if (smokeMode) app.setPath('userData', path.join(here, '..', '.runtime', process.env.QCHARACTER_SMOKE === 'color' ? 'color-desktop' : process.env.QCHARACTER_SMOKE === 'mask' ? 'mask-desktop' : process.env.QCHARACTER_SMOKE === 'qwen' ? 'qwen-desktop' : 'desktop-smoke'));
-const defaults = { server: 'http://127.0.0.1:8188', comfyPath: 'F:\\ComfyUI-aki\\ComfyUI', designCheckpoint: 'sdXL_v10VAEFix.safetensors', shapeCheckpoint: 'hunyuan_3d_v2.1.safetensors', imageEngine: 'qwen21', qwenModel: 'qwen_image_2.1_int8_convrot.safetensors', qwenEncoder: 'qwen3vl_8b_int8_convrot.safetensors', qwenVae: 'qwen_image_2.1_vae_bf16.safetensors', backgroundModel: 'birefnet.safetensors' };
+if (smokeMode) app.setPath('userData', path.join(here, '..', '.runtime', process.env.QCHARACTER_SMOKE === 'pixal' ? 'pixal-smoke' : process.env.QCHARACTER_SMOKE === 'color' ? 'color-desktop' : process.env.QCHARACTER_SMOKE === 'mask' ? 'mask-desktop' : process.env.QCHARACTER_SMOKE === 'qwen' ? 'qwen-desktop' : 'desktop-smoke'));
+const defaults = { server: 'http://127.0.0.1:8188', comfyPath: 'F:\\ComfyUI-aki\\ComfyUI', designCheckpoint: 'sdXL_v10VAEFix.safetensors', shapeCheckpoint: 'hunyuan_3d_v2.1.safetensors', imageEngine: 'qwen21', qwenModel: 'qwen_image_2.1_int8_convrot.safetensors', qwenEncoder: 'qwen3vl_8b_int8_convrot.safetensors', qwenVae: 'qwen_image_2.1_vae_bf16.safetensors', backgroundModel: 'birefnet.safetensors', ...PIXAL_DEFAULTS };
 
 function emit(job) { if (window && !window.isDestroyed()) window.webContents.send('job', job); }
 function handler(name, fn) {
@@ -37,7 +38,7 @@ async function bootstrap() { return { settings, projects: await store.list(), da
 async function connect() {
   const result = await new ComfyClient(settings.server).capabilities();
   const required = ['ImageOnlyCheckpointLoader', 'Hunyuan3Dv2Conditioning', 'EmptyLatentHunyuan3Dv2', 'ModelSamplingAuraFlow', 'VAEDecodeHunyuan3D', 'VoxelToMesh', 'SaveGLB', 'CLIPVisionEncode', 'LoadImage', 'KSampler'];
-  return { stats: result.stats, checkpoints: result.checkpoints.filter(name => /sdxl|illustrious|hassaku/i.test(name)), shapeCheckpoints: result.shapeCheckpoints, missingShapeNodes: required.filter(name => !result.info[name]), qwenModels: result.qwenModels, qwenEncoders: result.qwenEncoders, qwenVaes: result.qwenVaes, backgroundModels: result.backgroundModels, missingEditNodes: ['UNETLoader', 'CLIPLoader', 'VAELoader', 'TextEncodeQwenImage21'].filter(name => !result.info[name]), missingMatteNodes: ['LoadBackgroundRemovalModel', 'RemoveBackground', 'MaskToImage'].filter(name => !result.info[name]) };
+  return { pixal: pixalCapabilities(result.info), stats: result.stats, checkpoints: result.checkpoints.filter(name => /sdxl|illustrious|hassaku/i.test(name)), shapeCheckpoints: result.shapeCheckpoints, missingShapeNodes: required.filter(name => !result.info[name]), qwenModels: result.qwenModels, qwenEncoders: result.qwenEncoders, qwenVaes: result.qwenVaes, backgroundModels: result.backgroundModels, missingEditNodes: ['UNETLoader', 'CLIPLoader', 'VAELoader', 'TextEncodeQwenImage21'].filter(name => !result.info[name]), missingMatteNodes: ['LoadBackgroundRemovalModel', 'RemoveBackground', 'MaskToImage'].filter(name => !result.info[name]) };
 }
 function normalizedImage(bytes) {
   let decoded = nativeImage.createFromBuffer(bytes);
@@ -80,8 +81,8 @@ async function runGeneration(projectId, options) {
         }
         if (options.kind === 'shape') {
           if (source.kind !== 'cutout') throw new Error('请先自动抠图，检查透明轮廓后再生成 3D。旧版颜色清理图不能直接用于此流程。');
-          const bytes = prepareShapeImage(sourceBytes);
-          await store.addAsset(projectId, bytes, '.png', 'prepared', '3D 输入 · 前景蒙版合成白底', job.id, { sourceAssetId: source.id });
+          const bytes = settings.shapeEngine === 'hunyuan3d' ? prepareShapeImage(sourceBytes) : sourceBytes;
+          await store.addAsset(projectId, bytes, '.png', 'prepared', settings.shapeEngine === 'hunyuan3d' ? '3D 输入 · 前景蒙版合成白底' : 'Pixal3D 输入 · 保留修正后的透明蒙版', job.id, { sourceAssetId: source.id });
           image = await client.upload(bytes, 'shape-input.png');
         } else {
           image = await client.upload(sourceBytes, 'source.png');
@@ -92,11 +93,11 @@ async function runGeneration(projectId, options) {
       const cap = await client.capabilities();
       const parts = (cap.stats.system.comfyui_version || '').split('.').map(Number);
       state.targetedInterrupt = parts[0] > 0 || parts[1] > 39 || (parts[1] === 39 && parts[2] >= 1);
-      const params = { checkpoint: options.kind === 'shape' ? settings.shapeCheckpoint : settings.designCheckpoint, description: project.description, ratio: project.ratio, style: project.style, seed: job.seed, image, quality: options.quality === 'draft' ? 'draft' : 'standard', denoise: Math.min(0.95, Math.max(0.2, Number(options.denoise) || 0.65)) };
+      const params = { checkpoint: options.kind === 'shape' ? settings.shapeCheckpoint : settings.designCheckpoint, description: project.description, ratio: project.ratio, style: project.style, seed: job.seed, image, quality: ['draft', 'standard', 'high'].includes(options.quality) ? options.quality : 'standard', denoise: Math.min(0.95, Math.max(0.2, Number(options.denoise) || 0.65)) };
       const useQwen = options.kind === 'design' && image && settings.imageEngine === 'qwen21';
-      const graph = options.kind === 'shape' ? buildShapeWorkflow(params) : options.kind === 'matte' ? buildMatteWorkflow({ image, model: settings.backgroundModel }) : useQwen ? buildQwenEditWorkflow({ ...params, model: settings.qwenModel, encoder: settings.qwenEncoder, vae: settings.qwenVae }) : buildDesignWorkflow(params);
+      const graph = options.kind === 'shape' ? (settings.shapeEngine === 'hunyuan3d' ? buildShapeWorkflow(params) : buildPixal3DWorkflow({ ...params, ...settings })) : options.kind === 'matte' ? buildMatteWorkflow({ image, model: settings.backgroundModel }) : useQwen ? buildQwenEditWorkflow({ ...params, model: settings.qwenModel, encoder: settings.qwenEncoder, vae: settings.qwenVae }) : buildDesignWorkflow(params);
       validateWorkflow(graph, cap.info);
-      job.workflow = graph; job.engine = options.kind === 'shape' ? 'hunyuan3d' : options.kind === 'matte' ? 'birefnet' : useQwen ? 'qwen21' : 'sdxl';
+      job.workflow = graph; job.engine = options.kind === 'shape' ? (settings.shapeEngine === 'hunyuan3d' ? 'hunyuan3d' : 'pixal3d') : options.kind === 'matte' ? 'birefnet' : useQwen ? 'qwen21' : 'sdxl';
       state.closeSocket = client.watch(event => {
         if (event.data?.prompt_id !== job.promptId || state.cancelRequested) return;
         if (event.type === 'progress') { job.progress = Math.round(event.data.value / event.data.max * 100); job.message = `采样中 · ${event.data.value} / ${event.data.max}`; emit(job); }
@@ -120,7 +121,8 @@ async function runGeneration(projectId, options) {
         }
         const extension = path.extname(output.filename).toLowerCase();
         if (options.kind === 'shape' && bytes.subarray(0, 4).toString() !== 'glTF') throw new Error('生成服务返回的文件不是有效的 GLB。');
-        const updated = await store.addAsset(projectId, bytes, extension, options.kind === 'shape' ? 'model' : 'design', options.kind === 'shape' ? '混元 3D 泥模' : useQwen ? 'Qwen 2.1 人物 Q 版设计' : 'Q 版设计图', job.id, { sourceAssetId: source?.id });
+        if (job.engine === 'pixal3d') validateTexturedGlb(bytes);
+        const updated = await store.addAsset(projectId, bytes, extension, options.kind === 'shape' ? 'model' : 'design', options.kind === 'shape' ? (job.engine === 'pixal3d' ? 'Pixal3D · AI 贴图模型' : '混元 3D 泥模') : useQwen ? 'Qwen 2.1 人物 Q 版设计' : 'Q 版设计图', job.id, { sourceAssetId: source?.id, ...(job.engine === 'pixal3d' ? { textureMethod: 'pixal3d-pbr', textureSourceId: source.id } : {}) });
         job.resultAssetId = updated.assets.at(-1).id;
       }
       job.status = 'completed'; job.message = options.kind === 'matte' ? '自动抠图完成。请对照原图检查衣服、头发和配饰，再生成 3D。' : '生成完成，已保存到作品。';
@@ -193,8 +195,8 @@ app.whenReady().then(async () => {
   handler('sync-editing',(id,editing)=>{if(editing)syncEditing.add(id);else syncEditing.delete(id);});
   handler('settings', async value => {
     assertIdle();
-    const next = { server: normalizeServer(value.server), imageEngine: value.imageEngine === 'sdxl' ? 'sdxl' : 'qwen21' };
-    for (const key of ['comfyPath', 'designCheckpoint', 'shapeCheckpoint', 'qwenModel', 'qwenEncoder', 'qwenVae', 'backgroundModel']) next[key] = String(value[key] ?? defaults[key]).slice(0, 500);
+    const next = { server: normalizeServer(value.server), imageEngine: value.imageEngine === 'sdxl' ? 'sdxl' : 'qwen21', shapeEngine: value.shapeEngine === 'hunyuan3d' ? 'hunyuan3d' : 'pixal3d' };
+    for (const key of ['comfyPath', 'designCheckpoint', 'shapeCheckpoint', 'qwenModel', 'qwenEncoder', 'qwenVae', 'backgroundModel', 'pixalModel', 'pixalEncoder', 'pixalShapeVae', 'pixalTextureVae']) next[key] = String(value[key] ?? defaults[key]).slice(0, 500);
     settings = next;
     await writeJson(settingsFile, settings); return settings;
   });
@@ -250,7 +252,8 @@ app.whenReady().then(async () => {
     const project = await store.read(id);
     if (!project.assets.some(a => a.id === modelId && a.kind === 'model') || !project.assets.some(a => a.id === referenceId && a.kind === 'cutout')) throw new Error('请选择模型和已经检查的透明抠图。');
     validateTexturedGlb(Buffer.from(bytes)); const textureConfig = normalizeTextureConfig(config);
-    return store.addAsset(id, bytes, '.glb', 'model', '彩色模型 · 设计图贴图', undefined, { parentModelId: modelId, sourceAssetId: referenceId, textureSourceId: referenceId, textureMethod: 'reference-projection', textureConfig });
+    const pbr = project.assets.find(a => a.id === modelId)?.textureMethod?.startsWith('pixal3d-pbr');
+    return store.addAsset(id, bytes, '.glb', 'model', pbr ? 'Pixal3D · 保留 AI 材质的换色模型' : '彩色模型 · 设计图贴图', undefined, { parentModelId: modelId, sourceAssetId: referenceId, textureSourceId: referenceId, textureMethod: pbr ? 'pixal3d-pbr-recolor' : 'reference-projection', textureConfig });
   });
   handler('cancel', async () => {
     if (!active) return;
@@ -275,7 +278,7 @@ app.whenReady().then(async () => {
   handler('open-comfy', () => shell.openExternal(normalizeServer(settings.server)));
   await window.loadFile(path.join(here, '..', 'dist', 'index.html'));
   if (smokeMode) {
-    try { await (await import(process.env.QCHARACTER_SMOKE === 'color' ? '../scripts/color-desktop-smoke.mjs' : process.env.QCHARACTER_SMOKE === 'mask' ? '../scripts/mask-desktop-smoke.mjs' : process.env.QCHARACTER_SMOKE === 'qwen' ? '../scripts/qwen-desktop-smoke.mjs' : '../scripts/desktop-smoke.mjs')).runDesktopSmoke({ window, store, projectId: smokeProject.id, root: path.join(here, '..'), mode: process.env.QCHARACTER_SMOKE }); }
+    try { await (await import(process.env.QCHARACTER_SMOKE === 'pixal' ? '../scripts/pixal-desktop-smoke.mjs' : process.env.QCHARACTER_SMOKE === 'color' ? '../scripts/color-desktop-smoke.mjs' : process.env.QCHARACTER_SMOKE === 'mask' ? '../scripts/mask-desktop-smoke.mjs' : process.env.QCHARACTER_SMOKE === 'qwen' ? '../scripts/qwen-desktop-smoke.mjs' : '../scripts/desktop-smoke.mjs')).runDesktopSmoke({ window, store, projectId: smokeProject.id, root: path.join(here, '..'), mode: process.env.QCHARACTER_SMOKE }); }
     catch (error) { await fs.writeFile(path.join(here, '..', 'docs', 'desktop-validation-error.txt'), error.stack); }
     finally { app.quit(); }
   }
