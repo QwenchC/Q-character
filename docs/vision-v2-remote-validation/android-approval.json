@@ -1,0 +1,35 @@
+{
+  "reportId": "a2aa7090-7749-42f6-b64c-9e476538bc6f",
+  "findingId": "a2aa7090-7749-42f6-b64c-9e476538bc6f:0",
+  "states": {
+    "initial": {
+      "start": true,
+      "undo": true,
+      "redo": false
+    },
+    "undoInitial": {
+      "start": false,
+      "undo": false,
+      "redo": true
+    },
+    "painted": {
+      "start": true,
+      "undo": true,
+      "redo": false
+    },
+    "undoPaint": {
+      "start": false,
+      "undo": false,
+      "redo": true
+    },
+    "redoPaint": {
+      "start": true,
+      "undo": true,
+      "redo": false
+    }
+  },
+  "assetsBefore": 9,
+  "assetsAfterAccept": 9,
+  "jobsBefore": 5,
+  "jobsAfterAccept": 5
+}

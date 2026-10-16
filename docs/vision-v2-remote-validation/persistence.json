@@ -1,0 +1,24 @@
+{
+  "windows": {
+    "version": "0.10.1",
+    "reportId": "556cb342-5206-478b-ad32-509a9c8a317b",
+    "confirmed": true,
+    "assets": 11,
+    "jobs": 8,
+    "historyReports": 4,
+    "projects": 3,
+    "active": null,
+    "reportUnchangedAfterReload": true
+  },
+  "android": {
+    "version": "0.7.1 · Android",
+    "reportId": "ad8a87ba-28a4-4a37-8ac5-574fc32ad1c7",
+    "confirmed": true,
+    "assets": 15,
+    "jobs": 8,
+    "historyReports": 4,
+    "projects": 27,
+    "active": null,
+    "reportUnchangedAfterReload": true
+  }
+}

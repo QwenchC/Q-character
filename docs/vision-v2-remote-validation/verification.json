@@ -1,0 +1,75 @@
+{
+  "windows": {
+    "version": "0.10.1",
+    "server": "http://127.0.0.1:8188",
+    "jobId": "94fa9584-12a2-4a29-974f-9095ae480175",
+    "promptId": "98c8eddc-ca69-4de3-927e-46e7527a5d8a",
+    "width": 640,
+    "height": 800,
+    "outside": 507742,
+    "outsideChanged": 0,
+    "inside": 4258,
+    "insideChanged": 3928,
+    "selectionAdjusted": 18069,
+    "buttonColors": {
+      "top": {
+        "before": 861,
+        "after": 861
+      },
+      "middle": {
+        "before": 849,
+        "after": 0
+      },
+      "bottom": {
+        "before": 861,
+        "after": 861
+      }
+    },
+    "slotAdvanced": true,
+    "oldReportState": "stale",
+    "sourceRetained": true,
+    "alphaRetained": true,
+    "staleGate": {
+      "status": "failed",
+      "message": "视图已更新，请重新运行本地视觉检测并确认。",
+      "noSubmission": true
+    }
+  },
+  "android": {
+    "version": "0.7.1 · Android",
+    "server": "https://frp-rib.com:35961",
+    "jobId": "5b6ec20d-5826-4ac3-89e8-494562acb537",
+    "promptId": "026087df-a6af-44af-9253-bcc0b236358a",
+    "width": 640,
+    "height": 800,
+    "outside": 507536,
+    "outsideChanged": 0,
+    "inside": 4464,
+    "insideChanged": 4092,
+    "selectionAdjusted": 17947,
+    "buttonColors": {
+      "top": {
+        "before": 861,
+        "after": 861
+      },
+      "middle": {
+        "before": 856,
+        "after": 0
+      },
+      "bottom": {
+        "before": 861,
+        "after": 861
+      }
+    },
+    "slotAdvanced": true,
+    "oldReportState": "stale",
+    "sourceRetained": true,
+    "alphaRetained": true,
+    "pin": "02:2A:5F:0B:7B:62:F7:34:6B:D6:76:D2:C0:49:EC:08:56:1F:D4:B3:0B:2F:27:6B:D4:6E:61:56:C5:30:05:A6",
+    "staleGate": {
+      "status": "failed",
+      "message": "视图已更新，请重新运行本地视觉检测并确认。",
+      "noSubmission": true
+    }
+  }
+}

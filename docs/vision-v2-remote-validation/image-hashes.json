@@ -1,0 +1,18 @@
+{
+  "android-after.png": "528c23df77e9bdb0fffff6bc22b5fce1a3f524d585ba643d70587b828bf1a237",
+  "android-before.png": "957fe6969879f41f541ed4d07866e6e91a603f7a01fb97fa8abe2d977e3b825a",
+  "android-confirmed-selection.png": "85443d7ce8a067dbc4b7f92c9b1c5ec8e63631d827178630245223f57d9f16e9",
+  "android-manual-disposition.png": "b69c2cb808830e1e89b7818c7fd0ec9762f2ee24f24324a94e5533620949e06d",
+  "android-mask.png": "1fb55edef6bac22033ff175a3c9a093dc3221a639b6ed6d28583cb0a7b656fe2",
+  "android-normal-perspective.png": "851011cc003d79c1d6c2115ca7925abdd2f7c7dd45f5529862295ed0a1f1f6b0",
+  "android-rechecked.png": "09efe955c6a9d91bc454239aeb7eff821c93ee642a912660e740531bfbbd3485",
+  "android-selected-region.png": "065ce6c1ff791d79abbc3ea9f2b55f9635f4dad3cae662c581d8b496f2001418",
+  "probe-full-noise.png": "46cb40d7578d3f3946b716e32abb57abadf0ec01d4540c07c41bb5420df0a96e",
+  "windows-after.png": "03ca97a7751d8c43531077a38a3ff22c7fc428bd414efccc32945e199bcd06bd",
+  "windows-before.png": "5f6d66e0117ea610f595364c7ce97a10a9bf2ca242e956c1f212ddfdd69905ea",
+  "windows-confirmed-selection.png": "dcb29d4a8dda2263a525222bad2a99be1867cdb1de8d1159a6f2cc201f253bf6",
+  "windows-mask.png": "16af8384ba3e2fed64bffd515a933baa8b00d44185215a47e079bc9ac0595e67",
+  "windows-normal-perspective.png": "0d88b909e8bc96317806a7db514bf3fe5fb2cd1ed22e1f958fd7a683896f87bf",
+  "windows-rechecked.png": "b67fda4d0a37e1e847a81c3490e9257691c8286db5bcf1bc16720ee4337bfbf2",
+  "windows-selected-region.png": "60380190a89b6e6410b354fcaa8716ea4b8c4aac83d74c9856c9f0b00cd369dc"
+}

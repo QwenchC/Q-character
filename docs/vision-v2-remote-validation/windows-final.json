@@ -1,0 +1,193 @@
+{
+  "version": "0.10.1",
+  "report": {
+    "version": 2,
+    "analysis": {
+      "policy": "visibility-v2",
+      "candidateCount": 3,
+      "overviewMs": 19140,
+      "verificationMs": 10672,
+      "checks": [
+        {
+          "candidate_index": 0,
+          "role": "left",
+          "part": "clothes",
+          "kind": "count",
+          "title": "左侧面视图上衣纽扣数量不一致",
+          "reason": "正面可见2个纽扣，侧面视图中由于透视压缩，纽扣在垂直方向上重叠或仅显示为一个（取决于具体角度），这是正常的视觉现象。候选结论正确，无需修改。",
+          "reference_evidence": "Front view shows 2 distinct yellow buttons vertically aligned on the green shirt.",
+          "target_evidence": "Left side view shows a compressed vertical line of buttons, appearing as one or two overlapping circles due to perspective.",
+          "suggestion": "人工核对，暂不重绘",
+          "confidence": 0.95,
+          "reference_count": 2,
+          "target_count": 1,
+          "bbox": [
+            638,
+            571,
+            740,
+            773
+          ],
+          "reference_bbox": [
+            469,
+            571,
+            571,
+            773
+          ],
+          "verdict": "perspective",
+          "reference_visibility": "clear",
+          "target_visibility": "clear",
+          "correspondence": "same_component",
+          "basis": "outline",
+          "alternative": "perspective",
+          "count_unit": "per_component",
+          "model_verdict": "perspective",
+          "gates": []
+        },
+        {
+          "candidate_index": 1,
+          "role": "left",
+          "part": "hair",
+          "kind": "structure",
+          "title": "左侧面视图发型结构不完整",
+          "reason": "正面有两个丸子头，侧面视图中由于视角原因，其中一个丸子头被头部遮挡或位于后方不可见，这是正常的透视现象。候选结论正确，无需修改。",
+          "reference_evidence": "Front view shows two distinct hair buns on top of the head.",
+          "target_evidence": "Left side view shows only one visible bun, with the other likely occluded by the head or positioned behind.",
+          "suggestion": "人工核对，暂不重绘",
+          "confidence": 0.95,
+          "reference_count": 2,
+          "target_count": 1,
+          "bbox": [
+            638,
+            124,
+            740,
+            266
+          ],
+          "reference_bbox": null,
+          "verdict": "perspective",
+          "reference_visibility": "clear",
+          "target_visibility": "clear",
+          "correspondence": "same_component",
+          "basis": "outline",
+          "alternative": "perspective",
+          "count_unit": "per_component",
+          "model_verdict": "perspective",
+          "gates": []
+        },
+        {
+          "candidate_index": 2,
+          "role": "back",
+          "part": "clothes",
+          "kind": "structure",
+          "title": "背面视图缺少正面纽扣装饰",
+          "reason": "正面有纽扣，背面没有是服装设计的正常逻辑（如开衫、T恤等）。候选结论正确，无需修改。",
+          "reference_evidence": "Front view shows 2 yellow buttons on the green shirt.",
+          "target_evidence": "Back view of the green shirt is plain, with no buttons visible, which is consistent with typical clothing design where buttons are on the front.",
+          "suggestion": "人工核对，暂不重绘",
+          "confidence": 0.95,
+          "reference_count": 2,
+          "target_count": 0,
+          "bbox": [
+            375,
+            521,
+            625,
+            784
+          ],
+          "reference_bbox": null,
+          "verdict": "perspective",
+          "reference_visibility": "clear",
+          "target_visibility": "clear",
+          "correspondence": "same_component",
+          "basis": "outline",
+          "alternative": "perspective",
+          "count_unit": "per_component",
+          "model_verdict": "perspective",
+          "gates": []
+        }
+      ]
+    },
+    "id": "556cb342-5206-478b-ad32-509a9c8a317b",
+    "createdAt": "2026-10-16T17:36:37.333Z",
+    "model": "qwen3.6:35b-a3b",
+    "elapsedMs": 29812,
+    "views": {
+      "front": "44ff8222-7f38-4300-91a2-28f5ef87cbde",
+      "left": "bb249cb1-5665-489e-b6dd-4549f879762a",
+      "back": "dca4def1-4155-47af-97cc-b7b16b5f898f"
+    },
+    "confirmed": true,
+    "summary": "复核结论：左侧视图纽扣可见性正常，发型结构符合透视逻辑；背面视图无纽扣为正常设计。候选结论均正确，无需修改。",
+    "observations": [
+      {
+        "role": "front",
+        "part": "hair",
+        "name": "发型结构",
+        "visible_count": null,
+        "description": "正面可见两个丸子头（buns），位于头顶两侧，棕色。"
+      },
+      {
+        "role": "front",
+        "part": "clothes",
+        "name": "服装结构",
+        "visible_count": 2,
+        "description": "绿色上衣正面可见两个黄色圆形纽扣（buttons），垂直排列。"
+      },
+      {
+        "role": "front",
+        "part": "accessories",
+        "name": "配饰形状与可见数量",
+        "visible_count": 0,
+        "description": "无可见配饰。"
+      },
+      {
+        "role": "left",
+        "part": "hair",
+        "name": "发型结构",
+        "visible_count": null,
+        "description": "左侧面视角，可见右侧丸子头（bun），左侧丸子头被遮挡或不可见。"
+      },
+      {
+        "role": "left",
+        "part": "clothes",
+        "name": "服装结构",
+        "visible_count": 2,
+        "description": "绿色上衣正面可见两个黄色圆形纽扣（buttons），垂直排列。"
+      },
+      {
+        "role": "left",
+        "part": "accessories",
+        "name": "配饰形状与可见数量",
+        "visible_count": 0,
+        "description": "无可见配饰。"
+      },
+      {
+        "role": "back",
+        "part": "hair",
+        "name": "发型结构",
+        "visible_count": null,
+        "description": "背面视角，可见两个丸子头（buns），位于头顶两侧。"
+      },
+      {
+        "role": "back",
+        "part": "clothes",
+        "name": "服装结构",
+        "visible_count": 0,
+        "description": "绿色上衣背面平整，无可见纽扣或装饰。"
+      },
+      {
+        "role": "back",
+        "part": "accessories",
+        "name": "配饰形状与可见数量",
+        "visible_count": 0,
+        "description": "无可见配饰。"
+      }
+    ],
+    "findings": [],
+    "uncertainties": []
+  },
+  "reportState": "confirmed",
+  "historyReports": 4,
+  "assets": 11,
+  "jobs": 8,
+  "generated3D": false,
+  "server": "http://127.0.0.1:8188"
+}

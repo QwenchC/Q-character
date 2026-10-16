@@ -1,0 +1,160 @@
+{
+  "jobId": "a2aa7090-7749-42f6-b64c-9e476538bc6f",
+  "promptId": "3ff69451-59ad-4e89-9b4d-db6fcf940bf6",
+  "server": "https://frp-rib.com:35961",
+  "report": {
+    "version": 2,
+    "analysis": {
+      "policy": "visibility-v2",
+      "candidateCount": 1,
+      "overviewMs": 11047,
+      "verificationMs": 9266,
+      "checks": [
+        {
+          "candidate_index": 0,
+          "role": "left",
+          "part": "clothes",
+          "kind": "count",
+          "title": "纽扣数量不一致",
+          "reason": "正面视图（Front）中绿色上衣可见2个黄色纽扣，而左侧视图（Left）中同一位置的上衣可见3个垂直排列的纽扣。这是同一部件上明确的数量差异，非透视或遮挡导致。",
+          "reference_evidence": "Front图中绿色上衣区域清晰显示上下两个黄色圆形纽扣。",
+          "target_evidence": "Left图中绿色上衣区域清晰显示三个垂直排列的黄色圆形纽扣。",
+          "suggestion": "以Front图为准，修改Left图中多余的中间纽扣，使其数量与Front图一致（2个）。",
+          "confidence": 0.95,
+          "reference_count": 2,
+          "target_count": 3,
+          "bbox": [
+            416,
+            578,
+            584,
+            781
+          ],
+          "reference_bbox": [
+            416,
+            578,
+            584,
+            781
+          ],
+          "verdict": "structural",
+          "reference_visibility": "clear",
+          "target_visibility": "clear",
+          "correspondence": "same_component",
+          "basis": "count",
+          "alternative": "none",
+          "count_unit": "per_component",
+          "model_verdict": "structural",
+          "gates": []
+        }
+      ]
+    },
+    "id": "a2aa7090-7749-42f6-b64c-9e476538bc6f",
+    "createdAt": "2026-10-16T17:35:27.013Z",
+    "model": "qwen3.6:35b-a3b",
+    "elapsedMs": 20313,
+    "views": {
+      "front": "820c1fc2-e09c-4de5-8452-3262158d7357",
+      "left": "26fb9481-bf8d-446c-9aaa-bd94692a9665",
+      "back": "3f364633-dd6f-4589-a681-d13ecdb67f5d"
+    },
+    "confirmed": false,
+    "summary": "复核发现目标图（Left）在正面视图的基础上增加了纽扣数量，属于同一可见部件上的独立细节差异。根据规则4和7，这应判定为structural差异。",
+    "observations": [
+      {
+        "role": "front",
+        "part": "hair",
+        "name": "发型结构",
+        "visible_count": null,
+        "description": "深棕色头发，顶部有两个丸子头（buns），面部可见。"
+      },
+      {
+        "role": "front",
+        "part": "clothes",
+        "name": "服装结构",
+        "visible_count": 2,
+        "description": "绿色上衣，胸前垂直排列着2个黄色圆形纽扣。下身是卡其色裤子/裙子。"
+      },
+      {
+        "role": "front",
+        "part": "accessories",
+        "name": "配饰",
+        "visible_count": null,
+        "description": "未见明显配饰，仅有服装上的纽扣。"
+      },
+      {
+        "role": "left",
+        "part": "hair",
+        "name": "发型结构",
+        "visible_count": null,
+        "description": "深棕色头发，侧面可见丸子头轮廓，面部可见。"
+      },
+      {
+        "role": "left",
+        "part": "clothes",
+        "name": "服装结构",
+        "visible_count": 3,
+        "description": "绿色上衣，胸前垂直排列着3个黄色圆形纽扣。下身是卡其色裤子/裙子。"
+      },
+      {
+        "role": "left",
+        "part": "accessories",
+        "name": "配饰",
+        "visible_count": null,
+        "description": "未见明显配饰，仅有服装上的纽扣。"
+      },
+      {
+        "role": "back",
+        "part": "hair",
+        "name": "发型结构",
+        "visible_count": null,
+        "description": "深棕色头发，背面可见丸子头轮廓，面部不可见。"
+      },
+      {
+        "role": "back",
+        "part": "clothes",
+        "name": "服装结构",
+        "visible_count": 0,
+        "description": "绿色上衣背部平整，无纽扣或其他装饰可见。下身是卡其色裤子/裙子。"
+      },
+      {
+        "role": "back",
+        "part": "accessories",
+        "name": "配饰",
+        "visible_count": null,
+        "description": "未见明显配饰，背部无装饰。"
+      }
+    ],
+    "findings": [
+      {
+        "role": "left",
+        "part": "clothes",
+        "kind": "count",
+        "title": "纽扣数量不一致",
+        "evidence": "正面：Front图中绿色上衣区域清晰显示上下两个黄色圆形纽扣。；目标：Left图中绿色上衣区域清晰显示三个垂直排列的黄色圆形纽扣。；复核：正面视图（Front）中绿色上衣可见2个黄色纽扣，而左侧视图（Left）中同一位置的上衣可见3个垂直排列的纽扣。这是同一部件上明确的数量差异，非透视或遮挡导致。",
+        "suggestion": "以Front图为准，修改Left图中多余的中间纽扣，使其数量与Front图一致（2个）。",
+        "confidence": 0.95,
+        "reference_count": 2,
+        "target_count": 3,
+        "bbox": [
+          416,
+          578,
+          584,
+          781
+        ],
+        "reference_bbox": [
+          416,
+          578,
+          584,
+          781
+        ],
+        "assessmentIndex": 0,
+        "id": "a2aa7090-7749-42f6-b64c-9e476538bc6f:0",
+        "decision": "pending",
+        "note": ""
+      }
+    ],
+    "uncertainties": [
+      "Front和Left图中纽扣数量不一致，需确认设计意图。",
+      "Back图未显示任何装饰，若角色背部有设计（如拉链、图案），则当前视图缺失该部分。"
+    ]
+  }
+}

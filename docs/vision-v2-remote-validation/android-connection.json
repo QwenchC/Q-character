@@ -1,0 +1,7 @@
+{
+  "version": "0.7.1 · Android",
+  "server": "https://frp-rib.com:35961",
+  "policy": "visibility-v2",
+  "comfyVersion": "0.39.1",
+  "pin": "02:2A:5F:0B:7B:62:F7:34:6B:D6:76:D2:C0:49:EC:08:56:1F:D4:B3:0B:2F:27:6B:D4:6E:61:56:C5:30:05:A6"
+}

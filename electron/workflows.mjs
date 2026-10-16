@@ -52,7 +52,8 @@ export function buildRepairWorkflow({ mask, width, height, instruction, backgrou
   graph['60']=node('VAEEncode',{pixels:['59',0],vae:['3',0]});
   graph['52']=node('SetLatentNoiseMask',{samples:['60',0],mask:['51',0]});
   graph['6'].inputs.latent_image=['52',0];
-  graph['6'].inputs.denoise=.7;
+  // Resample the selected structure fully; the two compositing steps preserve everything outside it.
+  graph['6'].inputs.denoise=1;
   graph['53']=node('ImageScale',{image:['7',0],upscale_method:'lanczos',width,height,crop:'disabled'});
   graph['54']=node('ImageCompositeMasked',{destination:['4',0],source:['53',0],x:0,y:0,resize_source:false,mask:['51',0]});
   graph['55']=node('LoadBackgroundRemovalModel',{bg_removal_name:backgroundModel});

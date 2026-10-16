@@ -1,12 +1,12 @@
 # Android 版
 
-Android 0.7.0 与 Windows 0.10.0 共用角色工作流、蒙版编辑器、3D 预览、设计图上色和黏土调色逻辑。手机通过原生网络层连接远程 ComfyUI，适用于内网地址、FRP 穿透地址，以及带端口或路径前缀的反向代理。
+Android 0.7.1 与 Windows 0.10.1 共用角色工作流、蒙版编辑器、3D 预览、设计图上色和黏土调色逻辑。手机通过原生网络层连接远程 ComfyUI，适用于内网地址、FRP 穿透地址，以及带端口或路径前缀的反向代理。
 
-本版增加多视图透视与遮挡独立复核，显示四类结果及定位证据，完整记录可以和 Windows 双向同步。需要电脑、手机和 QCharacterVision 节点一起更新，并在空闲时重启 ComfyUI。旧节点会显示更新提示，不会自动回退到单轮结果。[使用步骤与限制](LOCAL-VISION.md) · [本版验证](vision-accuracy-validation/REPORT.md)。
+本版包含多视图透视与遮挡独立复核，显示四类结果及定位证据，完整记录可以和 Windows 双向同步，并修复小选区重绘保留原有结构的问题。首次启用需安装新版 QCharacterVision 节点并重启 ComfyUI；已经加载 visibility-v2 的用户只需更新客户端，无需再次重启。旧节点会显示更新提示，不会自动回退到单轮结果。[使用步骤与限制](LOCAL-VISION.md) · [本版原外网实测](vision-v2-remote-validation/REPORT.md)。
 
 ## 安装与连接
 
-在手机打开 [Windows 0.10.0 / Android 0.7.0 Release](https://github.com/QwenchC/Q-character/releases/tag/v0.10.0)，点击 `Q-Character-Android-0.7.0.apk` 下载后安装；也可使用 [APK 直接下载链接](https://github.com/QwenchC/Q-character/releases/download/v0.10.0/Q-Character-Android-0.7.0.apk)。按系统提示允许当前浏览器安装此来源的应用。Release 中的 `SHA256SUMS.txt` 可用于校验下载文件。
+在手机打开 [Windows 0.10.1 / Android 0.7.1 Release](https://github.com/QwenchC/Q-character/releases/tag/v0.10.1)，点击 `Q-Character-Android-0.7.1.apk` 下载后安装；也可使用 [APK 直接下载链接](https://github.com/QwenchC/Q-character/releases/download/v0.10.1/Q-Character-Android-0.7.1.apk)。按系统提示允许当前浏览器安装此来源的应用。Release 中的 `SHA256SUMS.txt` 可用于校验下载文件。
 
 最低 Android 8.0，需要支持 WebGL 2 和 WebMessageListener 的 Android System WebView／Chrome；首次打开即有可离线预览的示例作品。应用不包含生成模型，也不在手机上运行 ComfyUI。
 

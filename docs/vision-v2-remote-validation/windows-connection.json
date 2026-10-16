@@ -1,0 +1,6 @@
+{
+  "version": "0.10.1",
+  "server": "http://127.0.0.1:8188",
+  "policy": "visibility-v2",
+  "comfyVersion": "0.39.1"
+}

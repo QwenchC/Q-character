@@ -1,0 +1,10 @@
+{
+  "baselinePromptId": "3a24dd64-8847-4d7e-9f46-131868f4bd1b",
+  "probePromptId": "60d239be-05a8-42af-80f9-98a460894136",
+  "sameGraphExceptDenoiseAndOutputPrefix": true,
+  "seed": 1452882608,
+  "denoiseBefore": 0.7,
+  "denoiseAfter": 1,
+  "sameInputImage": true,
+  "sameSelection": true
+}

@@ -1,0 +1,22 @@
+{
+  "windows": "0.10.1",
+  "android": "0.7.1",
+  "androidVersionCode": 9,
+  "artifacts": [
+    {
+      "name": "Q-Character-Studio-0.10.1-Windows.exe",
+      "bytes": 105391386,
+      "sha256": "fefdab73b5bf4b9dd91f028bdc3101cf3e6e7b57c31ba7cbe7de659891d53d6e"
+    },
+    {
+      "name": "Q-Character-Android-0.7.1.apk",
+      "bytes": 4706326,
+      "sha256": "0afea67b42539daf01bd768cbb4f1405fc9761e4c24a7f2b3834ffc24c25b6cb"
+    },
+    {
+      "name": "QCharacterVision-node.zip",
+      "bytes": 8578,
+      "sha256": "ac7a09b521cbcee1df727f479c7ce141b22e3d63edf1d7987050b071234425c3"
+    }
+  ]
+}

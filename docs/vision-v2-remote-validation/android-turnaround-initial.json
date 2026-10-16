@@ -1,0 +1,151 @@
+{
+  "jobId": "c75326ea-802a-4c89-8eda-38d68717d7c1",
+  "promptId": "06f513c5-fb5b-4f96-ace2-39ffc7083e22",
+  "server": "https://frp-rib.com:35961",
+  "report": {
+    "version": 2,
+    "analysis": {
+      "policy": "visibility-v2",
+      "candidateCount": 1,
+      "overviewMs": 11906,
+      "verificationMs": 9375,
+      "checks": [
+        {
+          "candidate_index": 0,
+          "role": "left",
+          "part": "clothes",
+          "kind": "structure",
+          "title": "围裙口袋位置错误",
+          "reason": "正面图显示口袋位于角色的左侧（画面右侧）。左视图展示了角色的左侧身体，因此口袋应清晰可见。候选结论认为口袋位置错误并建议移除，这是错误的，因为该视角下口袋理应出现。判定为正常透视/不同表面。",
+          "reference_evidence": "Front view shows a large pocket on the character's left side (viewer's right).",
+          "target_evidence": "Left view shows the character's left side, where the pocket is clearly visible as a curved flap.",
+          "suggestion": "人工核对，暂不重绘",
+          "confidence": 0.95,
+          "reference_count": null,
+          "target_count": null,
+          "bbox": [
+            376,
+            412,
+            686,
+            788
+          ],
+          "reference_bbox": [
+            326,
+            410,
+            716,
+            785
+          ],
+          "verdict": "perspective",
+          "reference_visibility": "clear",
+          "target_visibility": "clear",
+          "correspondence": "different_surface",
+          "basis": "outline",
+          "alternative": "perspective",
+          "count_unit": "per_component",
+          "model_verdict": "perspective",
+          "gates": []
+        }
+      ]
+    },
+    "id": "c75326ea-802a-4c89-8eda-38d68717d7c1",
+    "createdAt": "2026-10-16T17:34:57.437Z",
+    "model": "qwen3.6:35b-a3b",
+    "elapsedMs": 21281,
+    "views": {
+      "front": "823553c6-f85d-4d75-8532-b88000d33f61",
+      "left": "fc221a41-4959-44a1-8060-6fb1dcdb76bc",
+      "back": "3ea81f12-597b-4710-aad2-c8d1bc13d9dc",
+      "right": "ae69e54e-ca23-47d2-9f61-b1754372557d"
+    },
+    "confirmed": false,
+    "summary": "复核了围裙口袋在侧视图中的可见性。正面图显示口袋位于角色左侧（画面右侧）。左视图展示了角色的左侧身体，因此口袋应清晰可见。候选结论认为口袋位置错误并建议移除，这是错误的，因为该视角下口袋理应出现。判定为正常透视/不同表面。",
+    "observations": [
+      {
+        "role": "front",
+        "part": "hair",
+        "name": "棕色短发",
+        "visible_count": null,
+        "description": "棕色齐肩短发，刘海向两侧分开。"
+      },
+      {
+        "role": "front",
+        "part": "clothes",
+        "name": "绿色围裙与白色T恤",
+        "visible_count": null,
+        "description": "内穿白色短袖T恤，外搭橄榄绿背带围裙。围裙胸前有一个大口袋，下摆呈弧形。"
+      },
+      {
+        "role": "front",
+        "part": "accessories",
+        "name": "无配饰",
+        "visible_count": null,
+        "description": "未见明显配饰。"
+      },
+      {
+        "role": "left",
+        "part": "hair",
+        "name": "棕色短发",
+        "visible_count": null,
+        "description": "侧面可见齐肩短发，发尾内扣。"
+      },
+      {
+        "role": "left",
+        "part": "clothes",
+        "name": "绿色围裙与白色T恤",
+        "visible_count": null,
+        "description": "侧面视角。围裙口袋位于身体前方（靠近观察者一侧），下摆呈弧形。"
+      },
+      {
+        "role": "left",
+        "part": "accessories",
+        "name": "无配饰",
+        "visible_count": null,
+        "description": "未见明显配饰。"
+      },
+      {
+        "role": "back",
+        "part": "hair",
+        "name": "棕色短发",
+        "visible_count": null,
+        "description": "背面可见齐肩短发，发尾整齐。"
+      },
+      {
+        "role": "back",
+        "part": "clothes",
+        "name": "绿色围裙与白色T恤",
+        "visible_count": null,
+        "description": "背面视角。可见背带连接处，围裙背部平整无口袋，下摆呈弧形。"
+      },
+      {
+        "role": "back",
+        "part": "accessories",
+        "name": "无配饰",
+        "visible_count": null,
+        "description": "未见明显配饰。"
+      },
+      {
+        "role": "right",
+        "part": "hair",
+        "name": "棕色短发",
+        "visible_count": null,
+        "description": "侧面视角，可见发丝纹理。"
+      },
+      {
+        "role": "right",
+        "part": "clothes",
+        "name": "绿色围裙与白色T恤",
+        "visible_count": null,
+        "description": "侧面视角。围裙口袋位于身体后方（远离观察者一侧），下摆呈弧形。"
+      },
+      {
+        "role": "right",
+        "part": "accessories",
+        "name": "无配饰",
+        "visible_count": null,
+        "description": "未见明显配饰。"
+      }
+    ],
+    "findings": [],
+    "uncertainties": []
+  }
+}

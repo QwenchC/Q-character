@@ -25,7 +25,7 @@ type Page = 'design' | 'workbench' | 'library';
 export function App() {
   const api = window.studio;
   const android = !!window.QNative;
-  const [data, setData] = useState<Bootstrap>({ settings: defaultSettings, projects: [], dataPath: '', active: null, version: '0.10.0' });
+  const [data, setData] = useState<Bootstrap>({ settings: defaultSettings, projects: [], dataPath: '', active: null, version: '0.10.1' });
   const [currentId, setCurrentId] = useState(''); const [page, setPage] = useState<Page>('design');
   const [inputMode, setInputMode] = useState<'text' | 'image'>('text');
   const [sourceId, setSourceId] = useState(''); const [modelId, setModelId] = useState('');

@@ -1,0 +1,196 @@
+{
+  "jobId": "0608217c-ead3-44f4-83cc-f8b389556f63",
+  "promptId": "249e2d0d-d14a-418d-a7ed-69ffe79b06d3",
+  "server": "http://127.0.0.1:8188",
+  "report": {
+    "version": 2,
+    "analysis": {
+      "policy": "visibility-v2",
+      "candidateCount": 2,
+      "overviewMs": 11000,
+      "verificationMs": 10172,
+      "checks": [
+        {
+          "candidate_index": 0,
+          "role": "left",
+          "part": "clothes",
+          "kind": "count",
+          "title": "纽扣数量不一致",
+          "reason": "左侧视图（图2）中绿色上衣可见3个垂直排列的黄色纽扣，正面视图（图1）同样位置仅可见2个。在角色设计语境下，纽扣是离散部件，侧面视角不应凭空增加一个独立可见的纽扣；这属于真实结构差异。",
+          "reference_evidence": "正面视图（图1）中绿色上衣区域清晰显示2个黄色圆形纽扣，垂直排列。",
+          "target_evidence": "左侧视图（图2）中绿色上衣区域清晰显示3个黄色圆形纽扣，垂直排列。",
+          "suggestion": "以正面视图为准，修正左侧视图中纽扣数量为2个；或确认设计意图为3个并在正面视图中补全第3个纽扣。",
+          "confidence": 0.95,
+          "reference_count": 2,
+          "target_count": 3,
+          "bbox": [
+            416,
+            578,
+            584,
+            781
+          ],
+          "reference_bbox": [
+            416,
+            578,
+            584,
+            781
+          ],
+          "verdict": "structural",
+          "reference_visibility": "clear",
+          "target_visibility": "clear",
+          "correspondence": "same_component",
+          "basis": "count",
+          "alternative": "none",
+          "count_unit": "per_component",
+          "model_verdict": "structural",
+          "gates": []
+        },
+        {
+          "candidate_index": 1,
+          "role": "left",
+          "part": "hair",
+          "kind": "structure",
+          "title": "刘海形状不一致",
+          "reason": "左侧视图（图2）中刘海下缘为平滑弧线，正面视图（图1）中刘海中间有V形缺口。这是同一部件（刘海/发际线）的轮廓差异，非透视可解释。",
+          "reference_evidence": "正面视图（图1）中角色面部上方头发区域，刘海呈V形缺口状。",
+          "target_evidence": "左侧视图（图2）中角色头部侧面，刘海下缘为平滑弧线，无V形缺口。",
+          "suggestion": "统一刘海设计：若为V形款，请在左侧视图中补充缺口；若为平滑款，请在正面视图中抹平缺口。",
+          "confidence": 0.9,
+          "reference_count": null,
+          "target_count": null,
+          "bbox": [
+            375,
+            281,
+            625,
+            400
+          ],
+          "reference_bbox": [
+            375,
+            281,
+            625,
+            400
+          ],
+          "verdict": "uncertain",
+          "reference_visibility": "clear",
+          "target_visibility": "clear",
+          "correspondence": "same_component",
+          "basis": "outline",
+          "alternative": "none",
+          "count_unit": "per_component",
+          "model_verdict": "structural",
+          "gates": [
+            "仅有二维轮廓差异"
+          ]
+        }
+      ]
+    },
+    "id": "0608217c-ead3-44f4-83cc-f8b389556f63",
+    "createdAt": "2026-10-16T17:34:19.884Z",
+    "model": "qwen3.6:35b-a3b",
+    "elapsedMs": 21172,
+    "views": {
+      "front": "44ff8222-7f38-4300-91a2-28f5ef87cbde",
+      "left": "163cae29-174f-4ad0-9b05-a9437156ab8e",
+      "back": "dca4def1-4155-47af-97cc-b7b16b5f898f"
+    },
+    "confirmed": false,
+    "summary": "复核了纽扣数量和刘海形状两个候选项。左侧视图（图2）中绿色上衣可见3个纽扣，正面视图（图1）可见2个，属于同一部件数量差异；左侧视图中刘海为平滑弧线，正面视图为V形缺口，属于结构轮廓差异。",
+    "observations": [
+      {
+        "role": "front",
+        "part": "hair",
+        "name": "发型",
+        "visible_count": null,
+        "description": "棕色头发，顶部有两个丸子头（buns），刘海呈弧形覆盖额头。"
+      },
+      {
+        "role": "front",
+        "part": "clothes",
+        "name": "服装",
+        "visible_count": 2,
+        "description": "绿色上衣，胸前垂直排列着2个黄色圆形纽扣。下身是卡其色裤子。"
+      },
+      {
+        "role": "front",
+        "part": "accessories",
+        "name": "配饰",
+        "visible_count": null,
+        "description": "未见明显配饰，面部有两只眼睛和微笑的嘴巴。"
+      },
+      {
+        "role": "left",
+        "part": "hair",
+        "name": "发型",
+        "visible_count": null,
+        "description": "棕色头发，顶部有两个丸子头，刘海呈弧形覆盖额头。"
+      },
+      {
+        "role": "left",
+        "part": "clothes",
+        "name": "服装",
+        "visible_count": 3,
+        "description": "绿色上衣，胸前垂直排列着3个黄色圆形纽扣。下身是卡其色裤子。"
+      },
+      {
+        "role": "left",
+        "part": "accessories",
+        "name": "配饰",
+        "visible_count": null,
+        "description": "未见明显配饰，面部有一只眼睛和微笑的嘴巴。"
+      },
+      {
+        "role": "back",
+        "part": "hair",
+        "name": "发型",
+        "visible_count": null,
+        "description": "棕色头发，顶部有两个丸子头，后脑勺呈圆形。"
+      },
+      {
+        "role": "back",
+        "part": "clothes",
+        "name": "服装",
+        "visible_count": 0,
+        "description": "绿色上衣背面平整，无纽扣或口袋等装饰。下身是卡其色裤子。"
+      },
+      {
+        "role": "back",
+        "part": "accessories",
+        "name": "配饰",
+        "visible_count": null,
+        "description": "未见明显配饰，面部不可见。"
+      }
+    ],
+    "findings": [
+      {
+        "role": "left",
+        "part": "clothes",
+        "kind": "count",
+        "title": "纽扣数量不一致",
+        "evidence": "正面：正面视图（图1）中绿色上衣区域清晰显示2个黄色圆形纽扣，垂直排列。；目标：左侧视图（图2）中绿色上衣区域清晰显示3个黄色圆形纽扣，垂直排列。；复核：左侧视图（图2）中绿色上衣可见3个垂直排列的黄色纽扣，正面视图（图1）同样位置仅可见2个。在角色设计语境下，纽扣是离散部件，侧面视角不应凭空增加一个独立可见的纽扣；这属于真实结构差异。",
+        "suggestion": "以正面视图为准，修正左侧视图中纽扣数量为2个；或确认设计意图为3个并在正面视图中补全第3个纽扣。",
+        "confidence": 0.95,
+        "reference_count": 2,
+        "target_count": 3,
+        "bbox": [
+          416,
+          578,
+          584,
+          781
+        ],
+        "reference_bbox": [
+          416,
+          578,
+          584,
+          781
+        ],
+        "assessmentIndex": 0,
+        "id": "0608217c-ead3-44f4-83cc-f8b389556f63:0",
+        "decision": "pending",
+        "note": ""
+      }
+    ],
+    "uncertainties": [
+      "背面视图（图3）中，角色的后脑勺是纯色的圆形，没有表现出正面的丸子头结构。这可能是设计意图（如扁平化处理），也可能是遗漏。建议确认背面发型是否需要与正面保持一致的立体感。"
+    ]
+  }
+}
