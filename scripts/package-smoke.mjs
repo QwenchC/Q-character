@@ -65,10 +65,12 @@ try {
     if (!report.manualRevision) throw new Error('Packaged editor did not save manual mask revision');
   }
   await evaluate(`Array.from(document.querySelectorAll('nav button')).find(x => x.textContent.startsWith('3D 工作台')).click()`);
-  let count;
-  for (let i = 0; i < 100; i++) { count = await evaluate(`parseInt(document.querySelector('.generation-footer strong')?.textContent.replace(/,/g,''))`); if (count > 0) break; await pause(100); }
-  if (!(count > 0)) throw new Error('Bundled example failed to render.');
-  report.triangles = count;
+  if (fresh || bootstrap.projects[0].assets.some(asset=>asset.kind==='model')) {
+    let count;
+    for (let i = 0; i < 100; i++) { count = await evaluate(`parseInt(document.querySelector('.generation-footer strong')?.textContent.replace(/,/g,''))`); if (count > 0) break; await pause(100); }
+    if (!(count > 0)) throw new Error('Existing model failed to render.');
+    report.triangles = count;
+  } else report.modelPreview='not-applicable: design-only upgrade fixture';
   if (fresh) {
     for (let i = 0; i < 100; i++) { if (await evaluate(`document.querySelectorAll('.clay-swatches article').length >= 4`)) break; await pause(100); }
     const originalCutoutId = bootstrap.projects[0].assets.find(a => a.kind === 'cutout').id;

@@ -1,0 +1,191 @@
+{
+  "version": 2,
+  "summary": "复核发现左侧视图（Left）存在真实结构差异，正面图的双发髻在左侧视图中缺失；背面图（Back）发型与正面一致。颜色差异判定为正常渲染或光照变化。",
+  "observations": [
+    {
+      "role": "front",
+      "part": "hair",
+      "name": "发型",
+      "visible_count": 2,
+      "description": "正面视图，深棕色头发，两侧各有一个圆形的发髻（类似熊耳），刘海平整。"
+    },
+    {
+      "role": "front",
+      "part": "clothes",
+      "name": "服装",
+      "visible_count": 3,
+      "description": "绿色短袖上衣，卡其色长裤，深灰色鞋子。"
+    },
+    {
+      "role": "front",
+      "part": "accessories",
+      "name": "配饰",
+      "visible_count": null,
+      "description": "无明显配饰。"
+    },
+    {
+      "role": "left",
+      "part": "hair",
+      "name": "发型",
+      "visible_count": 1,
+      "description": "左侧视图，仅可见右侧的一个发髻，形状较圆，位置偏高。左侧头发部分缺失或不可见。"
+    },
+    {
+      "role": "left",
+      "part": "clothes",
+      "name": "服装",
+      "visible_count": 3,
+      "description": "绿色上衣，卡其色长裤（颜色偏黄），深灰色鞋子（仅可见一只）。"
+    },
+    {
+      "role": "left",
+      "part": "accessories",
+      "name": "配饰",
+      "visible_count": null,
+      "description": "无明显配饰。"
+    },
+    {
+      "role": "back",
+      "part": "hair",
+      "name": "发型",
+      "visible_count": 2,
+      "description": "背面视图，深棕色头发，两侧各有一个发髻，但位置比正面更高，形状更圆。"
+    },
+    {
+      "role": "back",
+      "part": "clothes",
+      "name": "服装",
+      "visible_count": 3,
+      "description": "绿色上衣背面，卡其色长裤背面，深灰色鞋子。"
+    },
+    {
+      "role": "back",
+      "part": "accessories",
+      "name": "配饰",
+      "visible_count": null,
+      "description": "无明显配饰。"
+    }
+  ],
+  "findings": [],
+  "uncertainties": [
+    "侧面视图中左侧发髻的缺失可能是设计意图，但根据正面图的双发髻设计，这更可能是一个遗漏。",
+    "背面图发髻位置偏高可能是为了展示背部发型细节，但需确认是否与正面设计一致。"
+  ],
+  "model": "qwen3.6:35b-a3b",
+  "elapsedMs": 10734,
+  "analysis": {
+    "policy": "visibility-v2",
+    "candidateCount": 3,
+    "overviewMs": 6047,
+    "verificationMs": 4687,
+    "checks": [
+      {
+        "verdict": "uncertain",
+        "reference_visibility": "clear",
+        "target_visibility": "clear",
+        "correspondence": "same_component",
+        "basis": "count",
+        "alternative": "none",
+        "count_unit": "per_component",
+        "candidate_index": 0,
+        "role": "left",
+        "part": "hair",
+        "kind": "structure",
+        "title": "左侧视图发型结构不一致（发髻缺失）",
+        "reason": "正面图（Front）明确显示两侧各有一个圆形发髻，共2个。左侧视图（Left）仅显示了右侧的一个发髻，左侧发髻完全缺失。这属于部件数量差异，不能通过透视解释。",
+        "reference_evidence": "正面图清晰可见左右对称的两个圆形发髻。",
+        "target_evidence": "左侧视图中仅保留了一个位于画面右侧的发髻，左侧空缺。",
+        "suggestion": "在左侧视图中补充左侧发髻的结构，使其与正面图的双发髻设计一致。",
+        "reference_count": 2,
+        "target_count": 1,
+        "bbox": [
+          350,
+          100,
+          650,
+          400
+        ],
+        "reference_bbox": [
+          250,
+          100,
+          750,
+          400
+        ],
+        "confidence": 0.9,
+        "model_verdict": "structural",
+        "gates": [
+          "数量与结构类型不匹配"
+        ]
+      },
+      {
+        "verdict": "perspective",
+        "reference_visibility": "clear",
+        "target_visibility": "clear",
+        "correspondence": "same_component",
+        "basis": "outline",
+        "alternative": "perspective",
+        "count_unit": "per_component",
+        "candidate_index": 1,
+        "role": "back",
+        "part": "hair",
+        "kind": "structure",
+        "title": "背面发型位置与形状差异",
+        "reason": "背面图（Back）展示了两个发髻，数量与正面一致。虽然视觉上看起来比正面略高或圆，但这属于3D模型在旋转至背面视角时的透视变形和轮廓变化，并非结构缺失或新增。",
+        "reference_evidence": "正面图显示双发髻位于头部两侧。",
+        "target_evidence": "背面图显示双发髻位于头部上方两侧，符合头骨后部视角的投影特征。",
+        "suggestion": "人工核对，暂不重绘。",
+        "reference_count": 2,
+        "target_count": 2,
+        "bbox": [
+          350,
+          100,
+          650,
+          400
+        ],
+        "reference_bbox": [
+          250,
+          100,
+          750,
+          400
+        ],
+        "confidence": 0.8,
+        "model_verdict": "perspective",
+        "gates": []
+      },
+      {
+        "verdict": "perspective",
+        "reference_visibility": "clear",
+        "target_visibility": "clear",
+        "correspondence": "same_component",
+        "basis": "surface_detail",
+        "alternative": "different_surface",
+        "count_unit": "per_component",
+        "candidate_index": 2,
+        "role": "left",
+        "part": "clothes",
+        "kind": "structure",
+        "title": "侧面下装颜色差异",
+        "reason": "左侧视图（Left）的下装颜色看起来比正面图略黄，这通常是由于侧向光照或材质渲染角度不同导致的表面细节变化，并非结构改变。",
+        "reference_evidence": "正面图下装为卡其色。",
+        "target_evidence": "左侧视图下装呈现偏黄的色调，属于同一部件在不同视角下的颜色表现。",
+        "suggestion": "人工核对，暂不重绘。",
+        "reference_count": null,
+        "target_count": null,
+        "bbox": [
+          350,
+          600,
+          650,
+          850
+        ],
+        "reference_bbox": [
+          350,
+          600,
+          650,
+          850
+        ],
+        "confidence": 0.7,
+        "model_verdict": "perspective",
+        "gates": []
+      }
+    ]
+  }
+}

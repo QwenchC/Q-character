@@ -1,0 +1,14 @@
+{
+  "startedAt": "2026-10-16T14:41:31.020Z",
+  "executable": "release/Q-Character-Studio-0.10.0-Windows.exe",
+  "version": "0.10.0",
+  "projectCount": 1,
+  "dataPath": "E:\\Lumi\\Q-character\\.runtime\\vision-accuracy-upgrade\\projects",
+  "imageEngine": "qwen21",
+  "hasCutout": true,
+  "modelPreview": "not-applicable: design-only upgrade fixture",
+  "completedAt": "2026-10-16T14:41:36.323Z",
+  "preservedFiles": 8,
+  "preservation": true,
+  "preservedMetadata": true
+}

@@ -1,0 +1,7 @@
+{
+  "server": "https://frp-rib.com:35961",
+  "status": "failed",
+  "message": "请先更新电脑端 QCharacterVision 节点并重启 ComfyUI，以启用透视与遮挡复核。",
+  "noSubmission": true,
+  "reportPreserved": true
+}

@@ -1,0 +1,108 @@
+{
+  "result": {
+    "changed": 2,
+    "conflicts": 0,
+    "uploadedFiles": 0,
+    "downloadedFiles": 0,
+    "errors": []
+  },
+  "phoneToWindows": {
+    "reportId": "99253406-5848-45a5-a88c-dbe9a4dc2d05",
+    "decision": "accepted",
+    "analysis": {
+      "policy": "visibility-v2",
+      "candidateCount": 1,
+      "overviewMs": 4797,
+      "verificationMs": 2687,
+      "checks": [
+        {
+          "candidate_index": 0,
+          "role": "left",
+          "part": "clothes",
+          "kind": "count",
+          "title": "纽扣数量不一致",
+          "reason": "正面视图（图1）中绿色上衣有2个黄色纽扣，左侧视图（图2）中同一位置有3个。这是同一部件上的明确数量差异，非透视或遮挡造成。",
+          "reference_evidence": "正面视图中可见两个垂直排列的黄色圆形纽扣。",
+          "target_evidence": "左侧视图中可见三个垂直排列的黄色圆形纽扣。",
+          "suggestion": "根据正面设计为准，将左侧视图中的纽扣数量减少为2个。",
+          "confidence": 0.95,
+          "reference_count": 2,
+          "target_count": 3,
+          "bbox": [
+            187,
+            526,
+            812,
+            784
+          ],
+          "reference_bbox": [
+            187,
+            526,
+            812,
+            784
+          ],
+          "verdict": "structural",
+          "reference_visibility": "clear",
+          "target_visibility": "clear",
+          "correspondence": "same_component",
+          "basis": "count",
+          "alternative": "none",
+          "count_unit": "per_component",
+          "model_verdict": "structural",
+          "gates": []
+        }
+      ]
+    }
+  },
+  "windowsToPhone": {
+    "reportId": "779c2380-667d-4d45-91da-a68fa82f0efa",
+    "analysis": {
+      "policy": "visibility-v2",
+      "candidateCount": 1,
+      "overviewMs": 5688,
+      "verificationMs": 3140,
+      "checks": [
+        {
+          "candidate_index": 0,
+          "role": "left",
+          "part": "clothes",
+          "kind": "structure",
+          "title": "围裙口袋位置错误",
+          "reason": "正面图显示口袋位于角色的左侧（画面右侧）。左视图展示了角色的左侧身体，因此口袋应清晰可见。候选结论认为口袋位置错误并建议移除，这是错误的，因为该视角下口袋理应出现。判定为正常透视/不同表面。",
+          "reference_evidence": "Front view shows a large pocket on the character's left side (viewer's right).",
+          "target_evidence": "Left view shows the character's left side, where the pocket is clearly visible as a curved flap.",
+          "suggestion": "人工核对，暂不重绘",
+          "confidence": 0.95,
+          "reference_count": null,
+          "target_count": null,
+          "bbox": [
+            376,
+            412,
+            686,
+            788
+          ],
+          "reference_bbox": [
+            326,
+            410,
+            716,
+            785
+          ],
+          "verdict": "perspective",
+          "reference_visibility": "clear",
+          "target_visibility": "clear",
+          "correspondence": "different_surface",
+          "basis": "outline",
+          "alternative": "perspective",
+          "count_unit": "per_component",
+          "model_verdict": "perspective",
+          "gates": []
+        }
+      ]
+    }
+  },
+  "approval": {
+    "jobsBefore": 1,
+    "jobsAfter": 1,
+    "assetsBefore": 3,
+    "assetsAfter": 3
+  }
+}

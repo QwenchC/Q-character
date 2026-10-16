@@ -1,3 +1,5 @@
+import { normalizeAnalysis, validateFindingLinks, VISION_POLICY } from './vision-analysis.mjs';
+export { CLASS_LABELS, VISIBILITY_LABELS, VISION_POLICY, visionPolicy, assertVisionPolicy } from './vision-analysis.mjs';
 import { VIEW_ROLES, readyMultiView } from './multiview.mjs';
 export const DEFAULT_VISION_MODEL='qwen3.6:35b-a3b';
 const uuid=/^[a-f0-9]{8}(-[a-f0-9]{4}){3}-[a-f0-9]{12}$/;
@@ -9,29 +11,33 @@ export function normalizeBox(value){
   return [...value];
 }
 function payload(value, roles){
+  if(!value||typeof value!=='object')throw new Error('视觉报告不完整。');
   const summary=text(value.summary,2000);
   if(!Array.isArray(value.observations)||!value.observations.length||value.observations.length>64||!Array.isArray(value.findings)||value.findings.length>24||!Array.isArray(value.uncertainties)||value.uncertainties.length>16)throw new Error('视觉报告不完整，不能视作检查通过。');
   const observations=value.observations.map(o=>{if(!roles.includes(o.role)||!parts.includes(o.part))throw new Error('视觉观察引用了不存在的方向或部件。');return {role:o.role,part:o.part,name:text(o.name,120),visible_count:count(o.visible_count),description:text(o.description,1000)};});
   for(const role of roles)for(const part of parts)if(!observations.some(o=>o.role===role&&o.part===part))throw new Error('视觉报告未完整检查各方向的服装、发型与配饰，请重新检测。');
   const findings=value.findings.map(f=>{
     if(f.role==='front'||!roles.includes(f.role)||!parts.includes(f.part)||!['structure','count'].includes(f.kind)||!Number.isFinite(f.confidence)||f.confidence<0||f.confidence>1)throw new Error('视觉差异条目无效。');
-    return {role:f.role,part:f.part,kind:f.kind,title:text(f.title,120),evidence:text(f.evidence,1000),suggestion:text(f.suggestion,2000),confidence:f.confidence,reference_count:count(f.reference_count),target_count:count(f.target_count),bbox:normalizeBox(f.bbox),reference_bbox:f.reference_bbox===null?null:normalizeBox(f.reference_bbox)};
+    return {role:f.role,part:f.part,kind:f.kind,title:text(f.title,120),evidence:text(f.evidence,1000),suggestion:text(f.suggestion,2000),confidence:f.confidence,reference_count:count(f.reference_count),target_count:count(f.target_count),bbox:normalizeBox(f.bbox),reference_bbox:f.reference_bbox===null?null:normalizeBox(f.reference_bbox),...(Number.isInteger(f.assessmentIndex)?{assessmentIndex:f.assessmentIndex}:{})};
   });
   return {summary,observations,findings,uncertainties:value.uncertainties.map(v=>text(v,1000))};
 }
 export function normalizeVisionReview(value,assets){
-  if(!value||value.version!==1||!uuid.test(value.id)||typeof value.createdAt!=='string'||value.createdAt.length>80||!Number.isFinite(Date.parse(value.createdAt))||typeof value.confirmed!=='boolean'||!Number.isFinite(value.elapsedMs)||value.elapsedMs<0||value.elapsedMs>3600000)throw new Error('本地视觉检查记录无效。');
+  if(!value||![1,2].includes(value.version)||!uuid.test(value.id)||typeof value.createdAt!=='string'||value.createdAt.length>80||!Number.isFinite(Date.parse(value.createdAt))||typeof value.confirmed!=='boolean'||!Number.isFinite(value.elapsedMs)||value.elapsedMs<0||value.elapsedMs>3600000)throw new Error('本地视觉检查记录无效。');
   const model=text(value.model,200),views=readyMultiView({assets,multiView:{enabled:true,fov:20,views:value.views}}).views;
   const data=payload(value,Object.keys(views)),used=new Set();
+  const analysis=value.version===2?normalizeAnalysis(value.analysis,Object.keys(views),normalizeBox):undefined;
+  if(value.version===1&&value.analysis)throw new Error('请更新应用后读取新版视觉报告。');
   const findings=data.findings.map((f,i)=>{const raw=value.findings[i];if(typeof raw.id!=='string'||!raw.id.startsWith(value.id+':')||raw.id.length>80||used.has(raw.id)||!['pending','accepted','dismissed'].includes(raw.decision)||typeof raw.note!=='string'||raw.note.length>1000)throw new Error('视觉建议的确认状态无效。');used.add(raw.id);return {...f,id:raw.id,decision:raw.decision,note:raw.note};});
+  if(analysis)validateFindingLinks(findings,analysis);
   if(findings.some(f=>f.decision==='dismissed'&&!f.note.trim()))throw new Error('请填写无需修正的原因，记录遮挡或合理差异。');
   if(value.confirmed&&findings.some(f=>f.decision!=='dismissed'))throw new Error('请先处理所有疑似差异，再确认本次检测。');
-  return {version:1,id:value.id,createdAt:value.createdAt,model,elapsedMs:value.elapsedMs,views,confirmed:value.confirmed,...data,findings};
+  return {version:value.version,...(analysis?{analysis}:{}),id:value.id,createdAt:value.createdAt,model,elapsedMs:value.elapsedMs,views,confirmed:value.confirmed,...data,findings};
 }
 export function createVisionReview(raw,project,job){
   const views=readyMultiView({assets:project.assets,multiView:{enabled:true,fov:20,views:job.inputViewIds}}).views;
   const data=payload(raw,Object.keys(views));
-  return normalizeVisionReview({version:1,id:job.id,createdAt:new Date().toISOString(),model:raw.model,elapsedMs:raw.elapsedMs,views,confirmed:false,...data,findings:data.findings.map((f,i)=>({...f,id:job.id+':'+i,decision:'pending',note:''}))},project.assets);
+  return normalizeVisionReview({version:raw.version===2?2:1,...(raw.version===2?{analysis:raw.analysis}:{}),id:job.id,createdAt:new Date().toISOString(),model:raw.model,elapsedMs:raw.elapsedMs,views,confirmed:false,...data,findings:data.findings.map((f,i)=>({...f,id:job.id+':'+i,decision:'pending',note:''}))},project.assets);
 }
 export function visionState(project){
   const r=project.visionReview;if(!r)return 'unchecked';
@@ -50,7 +56,7 @@ export function readVisionOutput(entry){
 }
 export function buildVisionWorkflow({views,model=DEFAULT_VISION_MODEL,description=''}){
   if(typeof model!=='string'||!model.trim()||model.length>200||/cloud/i.test(model))throw new Error('请选择本机已安装的视觉模型。');
-  const graph={},inputs={model,description};
+  const graph={},inputs={model,description,review_policy:VISION_POLICY};
   for(const [i,role]of VIEW_ROLES.entries())if(views[role]){const id=String(910+i),alpha=String(920+i);graph[id]={class_type:'LoadImage',inputs:{image:views[role]}};graph[alpha]={class_type:'JoinImageWithAlpha',inputs:{image:[id,0],alpha:[id,1]}};inputs[role]=[alpha,0];}
   graph['900']={class_type:'QCharacterVisionReview',inputs};return graph;
 }

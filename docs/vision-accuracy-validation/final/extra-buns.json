@@ -1,0 +1,249 @@
+{
+  "version": 2,
+  "summary": "复核发现左侧视图（图2）在头部两侧增加了两个圆形发髻，而正面图（图1）和背面图（图3）均无此部件。根据规则6，这属于真实结构差异（新增发髻），而非单纯的轮廓变化。",
+  "observations": [
+    {
+      "role": "front",
+      "part": "hair",
+      "name": "发型结构",
+      "visible_count": null,
+      "description": "正面视图，可见两个位于头顶两侧的丸子头（发髻），无其他侧边发饰。"
+    },
+    {
+      "role": "front",
+      "part": "clothes",
+      "name": "服装结构",
+      "visible_count": null,
+      "description": "正面视图，可见绿色上衣、卡其色裤子及深灰色鞋子。"
+    },
+    {
+      "role": "front",
+      "part": "accessories",
+      "name": "配饰",
+      "visible_count": 0,
+      "description": "无可见配饰。"
+    },
+    {
+      "role": "left",
+      "part": "hair",
+      "name": "发型结构",
+      "visible_count": null,
+      "description": "左侧面视图，除了头顶的两个丸子头外，在耳朵两侧各增加了一个圆形的发髻/发束。"
+    },
+    {
+      "role": "left",
+      "part": "clothes",
+      "name": "服装结构",
+      "visible_count": null,
+      "description": "左侧面视图，可见绿色上衣、卡其色裤子及深灰色鞋子。"
+    },
+    {
+      "role": "left",
+      "part": "accessories",
+      "name": "配饰",
+      "visible_count": 0,
+      "description": "无可见配饰。"
+    },
+    {
+      "role": "back",
+      "part": "hair",
+      "name": "发型结构",
+      "visible_count": null,
+      "description": "背面视图，仅显示头顶的两个丸子头，未见侧面增加的发髻。"
+    },
+    {
+      "role": "back",
+      "part": "clothes",
+      "name": "服装结构",
+      "visible_count": null,
+      "description": "背面视图，可见绿色上衣、卡其色裤子及深灰色鞋子。"
+    },
+    {
+      "role": "back",
+      "part": "accessories",
+      "name": "配饰",
+      "visible_count": 0,
+      "description": "无可见配饰。"
+    }
+  ],
+  "findings": [],
+  "uncertainties": [
+    "侧面图（图2）中耳朵两侧新增的发髻是设计意图还是错误添加，需用户确认。",
+    "侧面图中面部仅显示一只眼睛，符合透视逻辑，但需确认是否应保留双眼以保持一致性。"
+  ],
+  "model": "qwen3.6:35b-a3b",
+  "elapsedMs": 15250,
+  "analysis": {
+    "policy": "visibility-v2",
+    "candidateCount": 5,
+    "overviewMs": 7391,
+    "verificationMs": 7859,
+    "checks": [
+      {
+        "verdict": "uncertain",
+        "reference_visibility": "clear",
+        "target_visibility": "clear",
+        "correspondence": "same_component",
+        "basis": "count",
+        "alternative": "none",
+        "count_unit": "per_component",
+        "candidate_index": 0,
+        "role": "left",
+        "part": "hair",
+        "kind": "structure",
+        "title": "侧面发型结构不一致",
+        "reason": "左侧视图（图2）在头部两侧增加了两个圆形发髻，而正面图（图1）和背面图（图3）均无此部件。根据规则6，这属于真实结构差异（新增发髻），而非单纯的轮廓变化。",
+        "reference_evidence": "正面图（图1）显示角色头部仅有顶部两个丸子头，两侧无额外发髻。",
+        "target_evidence": "左侧视图（图2）在耳朵位置明显增加了两个圆形发髻。",
+        "suggestion": "若该设计为全身对称的丸子头造型，请在正面图和背面图中补充耳朵两侧的对应发髻；若侧面图的设计有误，请移除这两个额外的发髻以保持一致性。",
+        "reference_count": 2,
+        "target_count": 4,
+        "bbox": [
+          138,
+          246,
+          375,
+          438
+        ],
+        "reference_bbox": null,
+        "confidence": 0.95,
+        "model_verdict": "structural",
+        "gates": [
+          "缺少正面对应区域",
+          "数量与结构类型不匹配"
+        ]
+      },
+      {
+        "verdict": "uncertain",
+        "reference_visibility": "clear",
+        "target_visibility": "clear",
+        "correspondence": "same_component",
+        "basis": "count",
+        "alternative": "none",
+        "count_unit": "per_component",
+        "candidate_index": 1,
+        "role": "left",
+        "part": "hair",
+        "kind": "structure",
+        "title": "侧面发型结构不一致",
+        "reason": "左侧视图（图2）在头部两侧增加了两个圆形发髻，而正面图（图1）和背面图（图3）均无此部件。根据规则6，这属于真实结构差异（新增发髻），而非单纯的轮廓变化。",
+        "reference_evidence": "正面图（图1）显示角色头部仅有顶部两个丸子头，两侧无额外发髻。",
+        "target_evidence": "左侧视图（图2）在耳朵位置明显增加了两个圆形发髻。",
+        "suggestion": "若该设计为全身对称的丸子头造型，请在正面图和背面图中补充耳朵两侧的对应发髻；若侧面图的设计有误，请移除这两个额外的发髻以保持一致性。",
+        "reference_count": 2,
+        "target_count": 4,
+        "bbox": [
+          138,
+          246,
+          375,
+          438
+        ],
+        "reference_bbox": null,
+        "confidence": 0.95,
+        "model_verdict": "structural",
+        "gates": [
+          "缺少正面对应区域",
+          "数量与结构类型不匹配"
+        ]
+      },
+      {
+        "verdict": "uncertain",
+        "reference_visibility": "clear",
+        "target_visibility": "clear",
+        "correspondence": "same_component",
+        "basis": "count",
+        "alternative": "none",
+        "count_unit": "per_component",
+        "candidate_index": 2,
+        "role": "left",
+        "part": "hair",
+        "kind": "structure",
+        "title": "侧面发型结构不一致",
+        "reason": "左侧视图（图2）在头部两侧增加了两个圆形发髻，而正面图（图1）和背面图（图3）均无此部件。根据规则6，这属于真实结构差异（新增发髻），而非单纯的轮廓变化。",
+        "reference_evidence": "正面图（图1）显示角色头部仅有顶部两个丸子头，两侧无额外发髻。",
+        "target_evidence": "左侧视图（图2）在耳朵位置明显增加了两个圆形发髻。",
+        "suggestion": "若该设计为全身对称的丸子头造型，请在正面图和背面图中补充耳朵两侧的对应发髻；若侧面图的设计有误，请移除这两个额外的发髻以保持一致性。",
+        "reference_count": 2,
+        "target_count": 4,
+        "bbox": [
+          625,
+          246,
+          862,
+          438
+        ],
+        "reference_bbox": null,
+        "confidence": 0.95,
+        "model_verdict": "structural",
+        "gates": [
+          "缺少正面对应区域",
+          "数量与结构类型不匹配"
+        ]
+      },
+      {
+        "verdict": "uncertain",
+        "reference_visibility": "clear",
+        "target_visibility": "clear",
+        "correspondence": "same_component",
+        "basis": "count",
+        "alternative": "none",
+        "count_unit": "per_component",
+        "candidate_index": 3,
+        "role": "left",
+        "part": "hair",
+        "kind": "structure",
+        "title": "侧面发型结构不一致",
+        "reason": "左侧视图（图2）在头部两侧增加了两个圆形发髻，而正面图（图1）和背面图（图3）均无此部件。根据规则6，这属于真实结构差异（新增发髻），而非单纯的轮廓变化。",
+        "reference_evidence": "正面图（图1）显示角色头部仅有顶部两个丸子头，两侧无额外发髻。",
+        "target_evidence": "左侧视图（图2）在耳朵位置明显增加了两个圆形发髻。",
+        "suggestion": "若该设计为全身对称的丸子头造型，请在正面图和背面图中补充耳朵两侧的对应发髻；若侧面图的设计有误，请移除这两个额外的发髻以保持一致性。",
+        "reference_count": 2,
+        "target_count": 4,
+        "bbox": [
+          138,
+          246,
+          375,
+          438
+        ],
+        "reference_bbox": null,
+        "confidence": 0.95,
+        "model_verdict": "structural",
+        "gates": [
+          "缺少正面对应区域",
+          "数量与结构类型不匹配"
+        ]
+      },
+      {
+        "verdict": "uncertain",
+        "reference_visibility": "clear",
+        "target_visibility": "clear",
+        "correspondence": "same_component",
+        "basis": "count",
+        "alternative": "none",
+        "count_unit": "per_component",
+        "candidate_index": 4,
+        "role": "left",
+        "part": "hair",
+        "kind": "structure",
+        "title": "侧面发型结构不一致",
+        "reason": "左侧视图（图2）在头部两侧增加了两个圆形发髻，而正面图（图1）和背面图（图3）均无此部件。根据规则6，这属于真实结构差异（新增发髻），而非单纯的轮廓变化。",
+        "reference_evidence": "正面图（图1）显示角色头部仅有顶部两个丸子头，两侧无额外发髻。",
+        "target_evidence": "左侧视图（图2）在耳朵位置明显增加了两个圆形发髻。",
+        "suggestion": "若该设计为全身对称的丸子头造型，请在正面图和背面图中补充耳朵两侧的对应发髻；若侧面图的设计有误，请移除这两个额外的发髻以保持一致性。",
+        "reference_count": 2,
+        "target_count": 4,
+        "bbox": [
+          625,
+          246,
+          862,
+          438
+        ],
+        "reference_bbox": null,
+        "confidence": 0.95,
+        "model_verdict": "structural",
+        "gates": [
+          "缺少正面对应区域",
+          "数量与结构类型不匹配"
+        ]
+      }
+    ]
+  }
+}

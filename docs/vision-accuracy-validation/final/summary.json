@@ -1,0 +1,96 @@
+{
+  "model": "qwen3.6:35b-a3b",
+  "adapterSha256": "9d5741fae06424ed4ddb8e5ae7fda0f7863868ab8a1d0eeded6d6bdbf1982156",
+  "cases": [
+    {
+      "id": "turnaround",
+      "description": "棕色短发、白色短袖、绿色围裙的同一角色设计。",
+      "expected": "perspective_or_uncertain",
+      "target": "正常透视不能要求侧面口袋复制正面弧形，也不能混数鞋带和鞋眼。",
+      "elapsedMs": 12969,
+      "findings": 0,
+      "checks": [
+        "perspective",
+        "perspective",
+        "perspective"
+      ],
+      "inputs": {
+        "back": "1b71e238ea472c43abcd5d51f41f41cf6121c73905f00f9778a0a8612f4bdb4b",
+        "front": "f8f6b1668707ca842139e8b9b685df82418d7d6a0ed94ebb1d6d9de2beed4c06",
+        "left": "2b901d0d5e314605346ae5b0ee6bd902bf4de4d76762c1fcb94f6865184b1562",
+        "right": "6b78191d59fc88d9a2f13ec617dda9afa2ceff347e09325de94d2b32031d6dfc"
+      }
+    },
+    {
+      "id": "occluded-bun",
+      "description": "丸子头、绿色服装、卡其色下装的同一个角色。",
+      "expected": "no_structural_count",
+      "target": "侧面单个可见发髻不证明少了一束头发。",
+      "elapsedMs": 10734,
+      "findings": 0,
+      "checks": [
+        "uncertain",
+        "perspective",
+        "perspective"
+      ],
+      "inputs": {
+        "back": "8d93aff77cf3a6088e64c1cc366d381b93fb2b3f023ae8033b7a0a084a932079",
+        "front": "f2fbffd960b6e3a484132dd6c5de906cd5147affeefbb4daaf642054600732be",
+        "left": "b8ca9706fe20a473810f243d6fae185c68c777de68a268739522de24552babf4"
+      }
+    },
+    {
+      "id": "extra-buns",
+      "description": "丸子头、绿色服装、卡其色下装的同一个角色。",
+      "expected": "structural",
+      "target": "同一可见发型区域多出两个发髻。",
+      "elapsedMs": 15250,
+      "findings": 0,
+      "checks": [
+        "uncertain",
+        "uncertain",
+        "uncertain",
+        "uncertain",
+        "uncertain"
+      ],
+      "inputs": {
+        "back": "8d93aff77cf3a6088e64c1cc366d381b93fb2b3f023ae8033b7a0a084a932079",
+        "front": "f2fbffd960b6e3a484132dd6c5de906cd5147affeefbb4daaf642054600732be",
+        "left": "1d07129ff76fc9e648264a902e1c8fc761f7f00967d2431d01cadb34105fe37a"
+      }
+    },
+    {
+      "id": "skirt-to-trousers",
+      "description": "丸子头、绿色服装、卡其色下装的同一个角色。",
+      "expected": "structural",
+      "target": "侧面从裙装变成裤装。",
+      "elapsedMs": 8781,
+      "findings": 0,
+      "checks": [
+        "perspective",
+        "perspective"
+      ],
+      "inputs": {
+        "back": "5314cc4388d171c97d6c31848cbec784de6ccd406f68f64aa6aa5aaeb01249b3",
+        "front": "b9b130d83c9a2bd3b592882c2f0c1ac7974aa391081b13ce88ff2cbe8feeb1f2",
+        "left": "324241b89d54ee303f83ecc74c91c6b2581de93ee0cbac45495307bbd448bb04"
+      }
+    },
+    {
+      "id": "extra-buttons",
+      "description": "丸子头、绿色服装、卡其色下装的同一个角色。",
+      "expected": "structural",
+      "target": "同一清晰可见上衣面板从两个纽扣变成三个。",
+      "elapsedMs": 7219,
+      "findings": 1,
+      "checks": [
+        "structural"
+      ],
+      "inputs": {
+        "back": "8d93aff77cf3a6088e64c1cc366d381b93fb2b3f023ae8033b7a0a084a932079",
+        "front": "0c6edd81d58e51cf0cf4a11a90149f9d3f95481f29d214a059963bf82ab3b5f9",
+        "left": "90942e5ea710b1455a3de6f7e19b62612e649b5e18dd8dda0a8be13ac42d5f5e"
+      }
+    }
+  ]
+}

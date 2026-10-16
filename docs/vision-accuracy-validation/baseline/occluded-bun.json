@@ -1,0 +1,112 @@
+{
+  "summary": "对比了同一角色的正面、左侧面和背面视图。主要发现是发型结构在侧面视图中发生了改变（从双耳发髻变为单侧丸子头），且面部特征数量不一致。服装和配饰在各视角下保持一致，符合透视规律。",
+  "observations": [
+    {
+      "role": "front",
+      "part": "hair",
+      "name": "发型",
+      "visible_count": 2,
+      "description": "正面视图显示角色拥有深棕色头发，两侧各有一个圆形的发髻（双耳发髻），覆盖了耳朵位置。"
+    },
+    {
+      "role": "front",
+      "part": "clothes",
+      "name": "服装",
+      "visible_count": 1,
+      "description": "角色穿着一件绿色的短袖上衣，下身是卡其色的裤子（或连体衣的下半部分），脚穿深灰色鞋子。"
+    },
+    {
+      "role": "front",
+      "part": "accessories",
+      "name": "配饰",
+      "visible_count": 0,
+      "description": "未发现明显的配饰，面部特征（眼睛、嘴巴）清晰可见。"
+    },
+    {
+      "role": "left",
+      "part": "hair",
+      "name": "发型",
+      "visible_count": 1,
+      "description": "左侧面视图显示角色头顶右侧有一个丸子头，左侧头发向后梳理，未见另一侧的发髻。"
+    },
+    {
+      "role": "left",
+      "part": "clothes",
+      "name": "服装",
+      "visible_count": 1,
+      "description": "绿色上衣和卡其色下装可见，侧面透视正常。"
+    },
+    {
+      "role": "left",
+      "part": "accessories",
+      "name": "配饰",
+      "visible_count": null,
+      "description": "面部仅可见一只眼睛（左侧），另一侧被遮挡；未见其他配饰。"
+    },
+    {
+      "role": "back",
+      "part": "hair",
+      "name": "发型",
+      "visible_count": 2,
+      "description": "背面视图显示角色头部两侧各有一个圆形的发髻，与正面视图的双耳发髻结构一致。"
+    },
+    {
+      "role": "back",
+      "part": "clothes",
+      "name": "服装",
+      "visible_count": 1,
+      "description": "绿色上衣背面和卡其色下装可见，无额外背带或口袋结构。"
+    },
+    {
+      "role": "back",
+      "part": "accessories",
+      "name": "配饰",
+      "visible_count": 0,
+      "description": "背面未见任何配饰或装饰物。"
+    }
+  ],
+  "findings": [
+    {
+      "role": "left",
+      "part": "hair",
+      "kind": "structure",
+      "title": "发型结构不一致",
+      "evidence": "Front view shows two distinct buns on the sides of the head (bbox=[260, 120, 430, 280] and [570, 120, 740, 280]). Left view shows only one bun on the right side (bbox=[600, 130, 750, 290]) and smooth hair on the left, missing the second bun.",
+      "suggestion": "在左侧面视图中，应补充左侧（画面左侧）的发髻结构，使其与正面和背面的双耳发髻设计保持一致。",
+      "confidence": 0.95,
+      "reference_count": 2,
+      "target_count": 1,
+      "bbox": [
+        600,
+        130,
+        750,
+        290
+      ],
+      "reference_bbox": null
+    },
+    {
+      "role": "left",
+      "part": "accessories",
+      "kind": "count",
+      "title": "面部特征数量不一致",
+      "evidence": "Front view clearly shows two eyes (bbox=[410, 350, 440, 390] and [560, 350, 590, 390]). Left view only shows one eye (bbox=[480, 370, 500, 400]), which is expected for a side profile, but the facial structure implies a single-eye design rather than a turned head.",
+      "suggestion": "确认左侧面视图是否为纯侧面（90度）。如果是，单眼可见是正常的；但如果角色是微侧脸，应保留部分另一只眼睛的轮廓以符合正面设计。",
+      "confidence": 0.8,
+      "reference_count": 2,
+      "target_count": 1,
+      "bbox": [
+        480,
+        370,
+        500,
+        400
+      ],
+      "reference_bbox": null
+    }
+  ],
+  "uncertainties": [
+    "左侧面视图中，由于视角原因，无法完全排除另一只眼睛或发髻被头发完全遮挡的可能性，但发型结构的缺失（少一个发髻）是明显的结构差异。",
+    "服装在背面没有可见的背带或口袋，这与正面设计一致，因此不构成错误。"
+  ],
+  "model": "qwen3.6:35b-a3b",
+  "elapsedMs": 6125
+}

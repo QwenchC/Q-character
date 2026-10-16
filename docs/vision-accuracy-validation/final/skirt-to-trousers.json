@@ -1,0 +1,149 @@
+{
+  "version": 2,
+  "summary": "复核了左侧视图（Left View）的候选项。针对裙摆形状差异，判定为透视压缩导致的正常现象；针对眼睛数量差异，判定为侧面视角的正常遮挡结果。未发现真实结构差异。",
+  "observations": [
+    {
+      "role": "front",
+      "part": "hair",
+      "name": "发型",
+      "visible_count": null,
+      "description": "棕色头发，头顶有两个丸子头（buns），面部可见。"
+    },
+    {
+      "role": "front",
+      "part": "clothes",
+      "name": "服装",
+      "visible_count": null,
+      "description": "绿色上衣搭配卡其色裙摆的连衣裙，袖子为浅肤色圆柱体。"
+    },
+    {
+      "role": "front",
+      "part": "accessories",
+      "name": "配饰",
+      "visible_count": 0,
+      "description": "无可见配饰。"
+    },
+    {
+      "role": "left",
+      "part": "hair",
+      "name": "发型",
+      "visible_count": null,
+      "description": "棕色头发，头顶有两个丸子头，面部可见但眼睛数量减少。"
+    },
+    {
+      "role": "left",
+      "part": "clothes",
+      "name": "服装",
+      "visible_count": null,
+      "description": "绿色上衣搭配卡其色裙摆的连衣裙，袖子为浅肤色圆柱体。侧面视角下，裙摆部分呈现为矩形而非梯形。"
+    },
+    {
+      "role": "left",
+      "part": "accessories",
+      "name": "配饰",
+      "visible_count": 0,
+      "description": "无可见配饰。"
+    },
+    {
+      "role": "back",
+      "part": "hair",
+      "name": "发型",
+      "visible_count": null,
+      "description": "棕色头发，头顶有两个丸子头，面部不可见。"
+    },
+    {
+      "role": "back",
+      "part": "clothes",
+      "name": "服装",
+      "visible_count": null,
+      "description": "绿色上衣搭配卡其色裙摆的连衣裙，袖子为浅肤色圆柱体。背面视角下，裙摆呈现为梯形。"
+    },
+    {
+      "role": "back",
+      "part": "accessories",
+      "name": "配饰",
+      "visible_count": 0,
+      "description": "无可见配饰。"
+    }
+  ],
+  "findings": [],
+  "uncertainties": [
+    "侧面视图中裙摆呈现为矩形，可能是为了简化侧面结构或透视处理，需确认是否应保留梯形特征。",
+    "侧面视图中眼睛数量减少，通常侧面视角只能看到一只眼睛，但需确认角色是否有特殊设定（如单眼）。"
+  ],
+  "model": "qwen3.6:35b-a3b",
+  "elapsedMs": 8781,
+  "analysis": {
+    "policy": "visibility-v2",
+    "candidateCount": 2,
+    "overviewMs": 5203,
+    "verificationMs": 3578,
+    "checks": [
+      {
+        "verdict": "perspective",
+        "reference_visibility": "clear",
+        "target_visibility": "clear",
+        "correspondence": "same_component",
+        "basis": "outline",
+        "alternative": "perspective",
+        "count_unit": "per_component",
+        "candidate_index": 0,
+        "role": "left",
+        "part": "clothes",
+        "kind": "structure",
+        "title": "侧面裙摆形状不一致",
+        "reason": "正面视图中裙摆呈梯形（下摆宽于腰部），在左侧面视图中，由于透视投影和视角压缩，裙子的侧边轮廓被压扁，视觉上呈现为垂直的矩形。这是正常的几何透视现象，并非结构缺失或错误。无需修改。",
+        "reference_evidence": "Front图[275, 519, 724, 836]显示绿色裙子下摆明显宽于腰部，呈梯形。",
+        "target_evidence": "Left图[275, 519, 724, 836]中裙子侧面轮廓垂直，呈现矩形外观。",
+        "suggestion": "人工核对，暂不重绘",
+        "reference_count": null,
+        "target_count": null,
+        "bbox": [
+          275,
+          519,
+          724,
+          836
+        ],
+        "reference_bbox": null,
+        "confidence": 0.95,
+        "model_verdict": "perspective",
+        "gates": []
+      },
+      {
+        "verdict": "perspective",
+        "reference_visibility": "clear",
+        "target_visibility": "clear",
+        "correspondence": "same_component",
+        "basis": "count",
+        "alternative": "different_surface",
+        "count_unit": "per_component",
+        "candidate_index": 1,
+        "role": "left",
+        "part": "hair",
+        "kind": "count",
+        "title": "侧面眼睛数量减少",
+        "reason": "正面视图中可见两只眼睛。在左侧面视图中，角色头部侧转，面向观察者的那只眼睛（左眼）可见，而另一只眼睛（右眼）被面部遮挡不可见。因此侧面视图仅显示一只眼睛是符合透视逻辑的，并非部件缺失。",
+        "reference_evidence": "Front图[419, 352, 437, 386]及[562, 352, 580, 386]显示两只眼睛。",
+        "target_evidence": "Left图[500, 352, 518, 386]中仅可见一只面向观察者的眼睛。",
+        "suggestion": "人工核对，暂不重绘",
+        "reference_count": 2,
+        "target_count": 1,
+        "bbox": [
+          500,
+          352,
+          518,
+          386
+        ],
+        "reference_bbox": [
+          419,
+          352,
+          437,
+          386
+        ],
+        "confidence": 0.8,
+        "model_verdict": "perspective",
+        "gates": []
+      }
+    ]
+  }
+}

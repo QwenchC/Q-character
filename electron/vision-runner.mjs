@@ -2,7 +2,7 @@ import { randomUUID } from 'node:crypto';
 import fs from 'node:fs/promises';
 import { safeAsset } from './store.mjs';
 import { readyMultiView } from './multiview.mjs';
-import { buildVisionWorkflow, createVisionReview, readVisionOutput, DEFAULT_VISION_MODEL } from './vision.mjs';
+import { buildVisionWorkflow, createVisionReview, readVisionOutput, DEFAULT_VISION_MODEL, assertVisionPolicy } from './vision.mjs';
 import { validateWorkflow } from './workflows.mjs';
 
 // The same ComfyUI queue owns both vision and generation; cancellation never interrupts another user's prompt.
@@ -15,6 +15,7 @@ export async function startVisionReview(projectId, { store, client, model=DEFAUL
   emit(job);
   void(async()=>{try{
     const cap=await client.capabilities(),v=(cap.stats.system.comfyui_version||'').split('.').map(Number);
+    assertVisionPolicy(cap.info);
     state.targetedInterrupt=v[0]>0||v[1]>39||v[1]===39&&v[2]>=1;
     const views={};
     for(const [role,id]of Object.entries(multi.views)){
@@ -29,6 +30,7 @@ export async function startVisionReview(projectId, { store, client, model=DEFAUL
     if(state.cancelRequested){await client.cancel(job.promptId,state.targetedInterrupt);state.cancelled=true;}
     const [raw]=await client.waitFor(job.promptId,'review',()=>state.cancelled,message=>{job.message=message;emit(job);},readVisionOutput);
     if(state.cancelRequested)throw new Error('QCHARACTER_CANCELLED');
+    if(raw?.version!==2)throw new Error('视觉节点未返回独立复核结果，请更新节点并重启 ComfyUI。');
     const report=createVisionReview(raw,project,job);job.reviewResult=report;
     await store.saveFields(projectId,{visionReview:report});
     job.status='completed';job.message='视觉检查完成，请逐项核对标记与建议；确认后才会重绘。';

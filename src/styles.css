@@ -17,3 +17,5 @@
 .vision-findings article{padding:16px;margin:12px 0;border:1px solid var(--line,#deddd8);border-radius:12px}.vision-findings article.selected{border-color:#d23434}
 .vision-finding-title{font-weight:700;text-align:left}.vision-findings label{display:block;margin:12px 0}.vision-findings input,.vision-findings textarea{display:block;width:100%;margin-top:6px}
 .vision-uncertain{padding:12px;background:#fff4dd;border-radius:10px;margin:12px 0}.vision-panel details{margin:16px 0}.vision-panel>button{margin:8px 0}
+
+.vision-class-counts{display:flex;flex-wrap:wrap;gap:8px;margin:14px 0}.vision-class{display:inline-block;padding:5px 9px;border-radius:8px;font-size:12px;background:#f5e9da;color:#754722}.vision-class.structural{background:#fbe3e3;color:#a82c2c}.vision-class.perspective{background:#e5efdf;color:#36562d}.vision-class.occluded{background:#e5edf7;color:#34557b}.vision-assessments article{padding:14px;margin:10px 0;border:1px solid #deddd8;border-radius:10px}.vision-images .review-context rect{fill:#b88b2820;stroke:#aa801c}.vision-images .review-context text{fill:#916914}

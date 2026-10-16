@@ -1,0 +1,10 @@
+import type { VisionAnalysis, VisionCheck } from './vision.mjs';
+export const VISION_POLICY:'visibility-v2';
+export const CHECK_ENUMS:Record<string,string[]>;
+export const CLASS_LABELS:Record<VisionCheck['verdict'],string>;
+export const VISIBILITY_LABELS:Record<VisionCheck['reference_visibility'],string>;
+export function structuralEvidence(check:VisionCheck):boolean;
+export function normalizeAnalysis(value:unknown,roles:string[],normalizeBox:(box:unknown)=>any):VisionAnalysis;
+export function validateFindingLinks(findings:any[],analysis:VisionAnalysis):void;
+export function visionPolicy(info:any):string|null;
+export function assertVisionPolicy(info:any):void;

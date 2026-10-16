@@ -9,7 +9,7 @@ class QCharacterVisionReview:
     @classmethod
     def INPUT_TYPES(cls):
         return {"required": {"front": ("IMAGE",), "model": ("STRING", {"default": "qwen3.6:35b-a3b"}), "description": ("STRING", {"default": "", "multiline": True})},
-                "optional": {"left": ("IMAGE",), "back": ("IMAGE",), "right": ("IMAGE",)}}
+                "optional": {"left": ("IMAGE",), "back": ("IMAGE",), "right": ("IMAGE",), "review_policy": (["visibility-v2"],)}}
 
     @classmethod
     def IS_CHANGED(cls, **kwargs):
@@ -20,7 +20,9 @@ class QCharacterVisionReview:
     CATEGORY = "Q Character"
     OUTPUT_NODE = True
 
-    def review(self, front, model, description, left=None, back=None, right=None):
+    def review(self, front, model, description, left=None, back=None, right=None, review_policy="visibility-v2"):
+        if review_policy != "visibility-v2":
+            raise ValueError("不支持的视觉复核方式。")
         model_management.unload_all_models()
         model_management.soft_empty_cache()
         images = {role: Image.fromarray(np.clip(tensor[0].cpu().numpy() * 255, 0, 255).astype(np.uint8))

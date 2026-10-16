@@ -1,0 +1,195 @@
+{
+  "version": 2,
+  "summary": "复核结论：候选项关于鞋部装饰扣数量的差异（正面横条 vs 侧面圆形扣）属于透视与不同表面细节导致的视觉差异，并非结构错误。正面视角下鞋带/扣子呈现为横向线条，侧面视角下可见独立的圆形装饰件，两者在3D模型上可以共存且符合逻辑。背面视角因遮挡仅见一只鞋的侧面，数量统计无效。判定为perspective/different_surface。",
+  "observations": [
+    {
+      "role": "front",
+      "part": "hair",
+      "name": "棕色短发",
+      "visible_count": null,
+      "description": "棕色齐肩短发，中分，发尾内扣。"
+    },
+    {
+      "role": "front",
+      "part": "clothes",
+      "name": "绿色围裙+白色T恤",
+      "visible_count": null,
+      "description": "白色短袖T恤打底，外穿草绿色背带围裙。围裙正面有一个大口袋，肩带连接在胸前。"
+    },
+    {
+      "role": "front",
+      "part": "accessories",
+      "name": "无配饰",
+      "visible_count": null,
+      "description": "无明显配饰。鞋子为深绿色短靴，配有浅色鞋带/装饰扣。"
+    },
+    {
+      "role": "left",
+      "part": "hair",
+      "name": "棕色短发",
+      "visible_count": null,
+      "description": "侧面视角，可见发际线和后脑勺的弧度，发型与正面一致。"
+    },
+    {
+      "role": "left",
+      "part": "clothes",
+      "name": "绿色围裙+白色T恤",
+      "visible_count": null,
+      "description": "侧面可见围裙口袋的侧边轮廓，呈弧形。肩带清晰可见。"
+    },
+    {
+      "role": "left",
+      "part": "accessories",
+      "name": "鞋扣",
+      "visible_count": 1,
+      "description": "侧面可见一只深绿色靴子，靴筒上有两个浅色圆形装饰扣。"
+    },
+    {
+      "role": "back",
+      "part": "hair",
+      "name": "棕色短发",
+      "visible_count": null,
+      "description": "背面视角，可见后脑勺饱满的发型轮廓和发尾层次。"
+    },
+    {
+      "role": "back",
+      "part": "clothes",
+      "name": "绿色围裙+白色T恤",
+      "visible_count": null,
+      "description": "背面可见围裙背带连接处，无口袋结构。"
+    },
+    {
+      "role": "back",
+      "part": "accessories",
+      "name": "鞋扣",
+      "visible_count": 2,
+      "description": "背面可见两只靴子，每只靴子上有一个浅色圆形装饰扣。"
+    },
+    {
+      "role": "right",
+      "part": "hair",
+      "name": "棕色短发",
+      "visible_count": null,
+      "description": "右侧面视角，发型与左侧一致。"
+    },
+    {
+      "role": "right",
+      "part": "clothes",
+      "name": "绿色围裙+白色T恤",
+      "visible_count": null,
+      "description": "右侧面可见围裙口袋的侧边轮廓，与左侧对称。"
+    },
+    {
+      "role": "right",
+      "part": "accessories",
+      "name": "鞋扣",
+      "visible_count": 1,
+      "description": "侧面可见一只深绿色靴子，靴筒上有两个浅色圆形装饰扣。"
+    }
+  ],
+  "findings": [],
+  "uncertainties": [
+    "正面视图的鞋部细节较为模糊，难以确定是鞋带还是扣子。侧面和背面视图清晰显示了圆形装饰扣。如果设计意图是侧面有2个扣子，则正面视图需要补充或修正以显示对应的结构；如果设计意图是正面那样的横向鞋带，则侧面和背面的圆形扣子需要移除或改为其他形式。",
+    "围裙口袋的侧边轮廓在不同视角下呈现为弧形，这在透视上是合理的，但需确认是否与正面口袋形状完全匹配。"
+  ],
+  "model": "qwen3.6:35b-a3b",
+  "elapsedMs": 12969,
+  "analysis": {
+    "policy": "visibility-v2",
+    "candidateCount": 3,
+    "overviewMs": 7407,
+    "verificationMs": 5562,
+    "checks": [
+      {
+        "verdict": "perspective",
+        "reference_visibility": "clear",
+        "target_visibility": "clear",
+        "correspondence": "different_surface",
+        "basis": "surface_detail",
+        "alternative": "different_surface",
+        "count_unit": "per_component",
+        "candidate_index": 0,
+        "role": "left",
+        "part": "accessories",
+        "kind": "count",
+        "title": "侧面鞋扣数量与正面不一致",
+        "reason": "正面视图中，鞋部细节呈现为横向的条状（可能是鞋带或压纹），而左侧视图展示了靴子侧面的独立圆形装饰扣。这是不同视角下对同一部件（鞋面装饰）的观察差异，属于surface_detail范畴。侧面可见两个独立的圆形物体，与正面的横向线条并不矛盾（例如正面看到的是连接扣子的带子）。因此不是结构缺失或错误。",
+        "reference_evidence": "Front view shows horizontal laces on the shoe.",
+        "target_evidence": "Left side view shows 2 distinct circular buckles on the boot shaft.",
+        "suggestion": "人工核对，暂不重绘",
+        "reference_count": null,
+        "target_count": 2,
+        "bbox": [
+          375,
+          846,
+          569,
+          936
+        ],
+        "reference_bbox": null,
+        "confidence": 0.8,
+        "model_verdict": "perspective",
+        "gates": []
+      },
+      {
+        "verdict": "perspective",
+        "reference_visibility": "clear",
+        "target_visibility": "clear",
+        "correspondence": "different_surface",
+        "basis": "surface_detail",
+        "alternative": "different_surface",
+        "count_unit": "per_component",
+        "candidate_index": 1,
+        "role": "right",
+        "part": "accessories",
+        "kind": "count",
+        "title": "侧面鞋扣数量与正面不一致",
+        "reason": "右侧视图展示了靴子侧面的圆形装饰扣，这与左侧视图一致。正面视图的横向线条是另一视角下的表现。两者描述的是同一部件在不同角度下的形态，不存在逻辑冲突。",
+        "reference_evidence": "Front view shows horizontal laces on the shoe.",
+        "target_evidence": "Right side view shows 2 distinct circular buckles on the boot shaft.",
+        "suggestion": "人工核对，暂不重绘",
+        "reference_count": null,
+        "target_count": 2,
+        "bbox": [
+          491,
+          853,
+          675,
+          936
+        ],
+        "reference_bbox": null,
+        "confidence": 0.8,
+        "model_verdict": "perspective",
+        "gates": []
+      },
+      {
+        "verdict": "perspective",
+        "reference_visibility": "clear",
+        "target_visibility": "partial",
+        "correspondence": "different_surface",
+        "basis": "surface_detail",
+        "alternative": "perspective",
+        "count_unit": "per_component",
+        "candidate_index": 2,
+        "role": "back",
+        "part": "accessories",
+        "kind": "count",
+        "title": "背面鞋扣数量与侧面不一致",
+        "reason": "背面视图中，右脚靴子展示了其外侧（即右侧视图的视角），因此可见圆形装饰扣。左脚靴子被遮挡或仅见后跟，无法统计数量。候选项称‘每只1个’是基于不完整视觉信息的错误推断。实际上，背面视图并未否定侧面视图的2个扣子设计，只是视角不同导致可见性差异。",
+        "reference_evidence": "Back view shows 1 buckle per shoe.",
+        "target_evidence": "Side views show 2 buckles per shoe.",
+        "suggestion": "人工核对，暂不重绘",
+        "reference_count": null,
+        "target_count": 1,
+        "bbox": [
+          438,
+          856,
+          625,
+          936
+        ],
+        "reference_bbox": null,
+        "confidence": 0.7,
+        "model_verdict": "perspective",
+        "gates": []
+      }
+    ]
+  }
+}

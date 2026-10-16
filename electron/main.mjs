@@ -1,5 +1,5 @@
 import { startVisionReview } from './vision-runner.mjs';
-import { DEFAULT_VISION_MODEL, assertVisionReady, acceptedFinding } from './vision.mjs';
+import { DEFAULT_VISION_MODEL, assertVisionReady, acceptedFinding, visionPolicy } from './vision.mjs';
 import { PNG } from 'pngjs';
 import { assertConsistencyReady, validateRepairMask, compositeRepair, repairPrompt } from './consistency.mjs';
 import { VIEW_ROLES, VIEW_LABELS, readyMultiView, prepareMultiViewImages } from './multiview.mjs';
@@ -43,7 +43,7 @@ async function bootstrap() { return { settings, projects: await store.list(), da
 async function connect() {
   const result = await new ComfyClient(settings.server).capabilities();
   const required = ['ImageOnlyCheckpointLoader', 'Hunyuan3Dv2Conditioning', 'EmptyLatentHunyuan3Dv2', 'ModelSamplingAuraFlow', 'VAEDecodeHunyuan3D', 'VoxelToMesh', 'SaveGLB', 'CLIPVisionEncode', 'LoadImage', 'KSampler'];
-  return { pixal: pixalCapabilities(result.info), stats: result.stats, checkpoints: result.checkpoints.filter(name => /sdxl|illustrious|hassaku/i.test(name)), shapeCheckpoints: result.shapeCheckpoints, missingShapeNodes: required.filter(name => !result.info[name]), qwenModels: result.qwenModels, qwenEncoders: result.qwenEncoders, qwenVaes: result.qwenVaes, backgroundModels: result.backgroundModels, missingEditNodes: ['UNETLoader', 'CLIPLoader', 'VAELoader', 'TextEncodeQwenImage21'].filter(name => !result.info[name]), missingVisionNodes: ['QCharacterVisionReview','JoinImageWithAlpha','LoadImage'].filter(name=>!result.info[name]), missingMatteNodes: ['LoadBackgroundRemovalModel', 'RemoveBackground', 'MaskToImage'].filter(name => !result.info[name]) };
+  return { visionPolicy:visionPolicy(result.info), pixal: pixalCapabilities(result.info), stats: result.stats, checkpoints: result.checkpoints.filter(name => /sdxl|illustrious|hassaku/i.test(name)), shapeCheckpoints: result.shapeCheckpoints, missingShapeNodes: required.filter(name => !result.info[name]), qwenModels: result.qwenModels, qwenEncoders: result.qwenEncoders, qwenVaes: result.qwenVaes, backgroundModels: result.backgroundModels, missingEditNodes: ['UNETLoader', 'CLIPLoader', 'VAELoader', 'TextEncodeQwenImage21'].filter(name => !result.info[name]), missingVisionNodes: ['QCharacterVisionReview','JoinImageWithAlpha','LoadImage'].filter(name=>!result.info[name]), missingMatteNodes: ['LoadBackgroundRemovalModel', 'RemoveBackground', 'MaskToImage'].filter(name => !result.info[name]) };
 }
 function normalizedImage(bytes) {
   let decoded = nativeImage.createFromBuffer(bytes);

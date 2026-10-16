@@ -8,11 +8,28 @@ import {createVisionReview,normalizeVisionReview,normalizeBox,visionState,assert
 import {ProjectStore} from '../electron/store.mjs';
 import {validateManifest,mergeManifests} from '../electron/sync-protocol.mjs';
 import {startVisionReview} from '../electron/vision-runner.mjs';
+import {assertVisionPolicy,visionPolicy} from '../electron/vision-analysis.mjs';
 const roles=['front','left','back'];
 const assets=roles.map(id=>({id,kind:'cutout'}));
 const project={assets,multiView:{enabled:true,fov:20,views:Object.fromEntries(roles.map(r=>[r,r]))}};
 const raw=()=>({model:'qwen3.6:35b-a3b',elapsedMs:1234,summary:'衣服一致，侧面多了一个发饰，需核对。',observations:roles.flatMap(role=>['hair','clothes','accessories'].map(part=>({role,part,name:part,visible_count:null,description:'仅记录可见部分，遮挡不推断数量。'}))),findings:[{role:'left',part:'accessories',kind:'count',title:'发饰数量待核对',evidence:'正面一个，侧面两个。',suggestion:'移除多余发饰，保持侧面方向。',confidence:.8,reference_count:1,target_count:2,bbox:[200,100,400,300],reference_bbox:[400,100,600,300]}],uncertainties:['耳朵被发束遮挡，无法确认耳饰。']});
 const report=()=>createVisionReview(raw(),project,{id:randomUUID(),inputViewIds:project.multiView.views});
+const rawV2=()=>{const r=raw(),f=r.findings[0];r.version=2;r.analysis={policy:'visibility-v2',candidateCount:1,overviewMs:500,verificationMs:734,checks:[{...f,candidate_index:0,verdict:'structural',model_verdict:'structural',reference_visibility:'clear',target_visibility:'clear',correspondence:'same_component',basis:'count',alternative:'none',count_unit:'per_component',reason:'同一完整可见部件数量不同',reference_evidence:'正面可见一个',target_evidence:'侧面同一部件可见两个',gates:[]}]};f.assessmentIndex=0;return r;};
+const reportV2=()=>createVisionReview(rawV2(),project,{id:randomUUID(),inputViewIds:project.multiView.views});
+
+test('二次复核保留真正数量差异，透视、遮挡与证据不足不生成重绘建议',()=>{
+ const r=reportV2();assert.equal(r.version,2);assert.equal(r.findings.length,1);assert.equal(r.confirmed,false);assert.deepEqual(normalizeVisionReview(r,assets),r);
+ for(const verdict of ['perspective','occluded','uncertain']){const data=rawV2();data.findings=[];Object.assign(data.analysis.checks[0],{verdict,model_verdict:verdict});const p=createVisionReview(data,project,{id:randomUUID(),inputViewIds:project.multiView.views});assert.equal(p.findings.length,0);assert.equal(p.analysis.checks[0].verdict,verdict);assert.equal(p.confirmed,false);assert.throws(()=>acceptedFinding({...project,visionReview:p},'missing','left','left'));}
+ for(const mutate of [c=>c.target_visibility='partial',c=>c.reference_visibility='hidden',c=>c.correspondence='different_surface',c=>c.alternative='occlusion',c=>c.basis='outline',c=>c.count_unit='whole_character',c=>c.reference_count=c.target_count,c=>c.reference_bbox=null]){const bad=reportV2();mutate(bad.analysis.checks[0]);assert.throws(()=>normalizeVisionReview(bad,assets));}
+ const downgraded=rawV2();downgraded.findings=[];Object.assign(downgraded.analysis.checks[0],{verdict:'uncertain',target_visibility:'partial',gates:['双方部件未完整清晰可见']});assert.equal(createVisionReview(downgraded,project,{id:randomUUID(),inputViewIds:project.multiView.views}).findings.length,0);
+});
+
+test('复核分类、候选覆盖与重绘引用防止同步或恢复任务时丢失证据',()=>{
+ for(const mutate of [r=>delete r.analysis,r=>r.analysis.policy='future',r=>r.analysis.checks=[],r=>r.analysis.checks.push(structuredClone(r.analysis.checks[0])),r=>r.findings[0].assessmentIndex=1,r=>r.findings[0].bbox=[0,0,20,20],r=>r.findings=[],r=>r.analysis.checks[0].gates=['不能重绘'],r=>r.analysis.checks[0].verdict='perspective']){const bad=reportV2();mutate(bad);assert.throws(()=>normalizeVisionReview(bad,assets));}
+ const old=report();assert.equal(normalizeVisionReview(old,assets).version,1);old.analysis=reportV2().analysis;assert.throws(()=>normalizeVisionReview(old,assets));
+ assert.equal(visionPolicy({QCharacterVisionReview:{input:{optional:{review_policy:[['visibility-v2']]}}}}),'visibility-v2');assert.throws(()=>assertVisionPolicy({QCharacterVisionReview:{input:{}}}),/更新/);assert.equal(buildVisionWorkflow({views:project.multiView.views})['900'].inputs.review_policy,'visibility-v2');
+ const r=reportV2();assert.deepEqual(normalizeVisionReview(JSON.parse(JSON.stringify(r)),assets),r);
+});
 test('模型结果始终待确认，逐项接受绑定方向与版本；未处理、修改视图或蒙版阻止建模',()=>{
  const r=report(),p={...project,visionReview:r};assert.equal(r.confirmed,false);assert.equal(r.findings[0].decision,'pending');assert.equal(visionState(p),'pending');assert.throws(()=>assertVisionReady(p),/确认/);assert.throws(()=>acceptedFinding(p,r.findings[0].id,'left','left'),/先确认/);
  r.findings[0].decision='accepted';assert.equal(acceptedFinding(p,r.findings[0].id,'left','left').title,r.findings[0].title);assert.throws(()=>acceptedFinding(p,r.findings[0].id,'back','back'),/确认/);assert.throws(()=>normalizeVisionReview({...r,confirmed:true},assets),/处理/);
@@ -29,7 +46,7 @@ test('视觉工作流保留各图 alpha；定位按原图坐标映射，框外�
  const m=boxSelection(1000,500,[200,200,400,400]);assert.equal(m[150*1000+300],255);assert.equal(m[450*1000+300],0);assert.equal(m[150*1000+100],0);assert.equal(m[95*1000+195],85);assert.throws(()=>boxSelection(5000,5000,[0,0,100,100]));
 });
 test('视觉报告与历史决定持久化同步；独立字段合并，并发决定保留冲突',async()=>{
- const root=await fs.mkdtemp(path.join(os.tmpdir(),'qchar-vision-'));try{const store=new ProjectStore(root);let p=await store.create('Vision');for(const role of roles){p=await store.addAsset(p.id,Buffer.from([1]),'.png','cutout',role);await store.setView(p.id,role,p.assets.at(-1).id);}p=await store.read(p.id);const j={id:randomUUID(),projectId:p.id,kind:'review',inputViewIds:p.multiView.views,status:'completed',createdAt:new Date().toISOString(),seed:0};await store.saveJob(p.id,j);const r=createVisionReview(raw(),p,j);p=await store.saveFields(p.id,{visionReview:r});assert.deepEqual(p.jobs[0].reviewResult,r);assert.deepEqual((await new ProjectStore(root).read(p.id)).visionReview,r);
+ const root=await fs.mkdtemp(path.join(os.tmpdir(),'qchar-vision-'));try{const store=new ProjectStore(root);let p=await store.create('Vision');for(const role of roles){p=await store.addAsset(p.id,Buffer.from([1]),'.png','cutout',role);await store.setView(p.id,role,p.assets.at(-1).id);}p=await store.read(p.id);const j={id:randomUUID(),projectId:p.id,kind:'review',inputViewIds:p.multiView.views,status:'completed',createdAt:new Date().toISOString(),seed:0};await store.saveJob(p.id,j);const r=createVisionReview(rawV2(),p,j);p=await store.saveFields(p.id,{visionReview:r});assert.deepEqual(p.jobs[0].reviewResult,r);assert.deepEqual((await new ProjectStore(root).read(p.id)).visionReview,r);
  const m={protocol:1,project:p,files:p.assets.map(a=>({assetId:a.id,filename:a.filename,size:1,sha256:'a'.repeat(64)}))};validateManifest(m);const l=structuredClone(m),remote=structuredClone(m);l.project.visionReview.findings[0].decision='accepted';l.project.jobs[0].reviewResult=l.project.visionReview;remote.project.heightMm=90;assert.equal(mergeManifests(m,l,remote).conflicts.length,0);remote.project.visionReview.summary='不同核对';assert.ok(mergeManifests(m,l,remote).conflicts.includes('visionReview'));const bad=structuredClone(m);bad.project.jobs=[];assert.throws(()=>validateManifest(bad),/原任务/);
  }finally{await fs.rm(root,{recursive:true,force:true});}
 });
