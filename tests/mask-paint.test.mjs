@@ -3,6 +3,20 @@ import assert from 'node:assert/strict';
 import { MaskDocument, paintMaskSegment } from '../src/mask-paint.ts';
 
 const brush = (mode = 'restore', diameter = 8, hardness = 1) => ({ mode, diameter, hardness });
+test('建议选区以空白为基线，撤销画笔回到建议框仍可重绘；撤销框后可重做', () => {
+  const initial = new Uint8ClampedArray(100); initial.fill(255, 20, 60);
+  const doc = MaskDocument.selection(initial);
+  assert.equal(doc.dirty, true); assert.equal(doc.canUndo, true);
+  doc.pixels[30] = 0; doc.markChanged(); doc.commitStroke();
+  assert.equal(doc.undo(), true); assert.deepEqual(doc.pixels, initial); assert.equal(doc.dirty, true);
+  assert.equal(doc.undo(), true); assert.equal(doc.pixels.some(Boolean), false); assert.equal(doc.dirty, false);
+  assert.equal(doc.redo(), true); assert.deepEqual(doc.pixels, initial); assert.equal(doc.dirty, true);
+  assert.deepEqual(initial.slice(20, 60), new Uint8ClampedArray(40).fill(255));
+});
+test('手动涂选从空白开始，抠图编辑仍以原蒙版为基线', () => {
+  const empty=MaskDocument.selection(new Uint8ClampedArray(10));assert.equal(empty.dirty,false);assert.equal(empty.canUndo,false);
+  const matte=new MaskDocument(new Uint8ClampedArray([255,128,0]));assert.equal(matte.dirty,false);matte.pixels[1]=255;matte.markChanged();matte.commitStroke();matte.undo();assert.equal(matte.dirty,false);assert.equal(matte.pixels[1],128);
+});
 test('画笔连续恢复浅色衣服和擦除背景，快速拖动不会漏点，越界安全裁切', () => {
   const pixels = new Uint8ClampedArray(100 * 40);
   paintMaskSegment(pixels, 100, 40, { x: -10000, y: 20 }, { x: 10000, y: 20 }, brush());

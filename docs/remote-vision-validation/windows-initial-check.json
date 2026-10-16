@@ -1,0 +1,156 @@
+{
+  "version": 1,
+  "id": "2772c125-5174-4f4b-ba28-dc44dbd44de5",
+  "createdAt": "2026-10-16T14:12:14.551Z",
+  "model": "qwen3.6:35b-a3b",
+  "elapsedMs": 11734,
+  "views": {
+    "front": "8868804b-786e-4906-b4cb-3b6151a9f8fc",
+    "left": "4b8d05cc-bf0e-4396-bb10-fdb0d7b8a10f",
+    "back": "3bfad863-5a11-44f0-8a1f-dc35bd371156",
+    "right": "d473ebc3-1864-44d7-b2f0-7757989e370c"
+  },
+  "confirmed": false,
+  "summary": "对比了同一 Q 版角色的正面、左侧面、背面和右侧面视图。整体设计一致，但在侧面视图中发现了明显的结构不一致问题。",
+  "observations": [
+    {
+      "role": "front",
+      "part": "hair",
+      "name": "发型",
+      "visible_count": null,
+      "description": "棕色短发，齐刘海，两侧有鬓角发束垂在脸颊旁。"
+    },
+    {
+      "role": "front",
+      "part": "clothes",
+      "name": "服装",
+      "visible_count": null,
+      "description": "白色短袖内搭，外穿绿色背带裙。裙子正面有一个大口袋，呈弧形覆盖在腹部。"
+    },
+    {
+      "role": "front",
+      "part": "accessories",
+      "name": "配饰",
+      "visible_count": null,
+      "description": "无可见配饰。"
+    },
+    {
+      "role": "left",
+      "part": "hair",
+      "name": "发型",
+      "visible_count": null,
+      "description": "棕色短发，侧面可见发尾轮廓。"
+    },
+    {
+      "role": "left",
+      "part": "clothes",
+      "name": "服装",
+      "visible_count": null,
+      "description": "白色短袖内搭，绿色背带裙。左侧面可见裙子侧面的接缝线，口袋边缘呈斜向延伸。"
+    },
+    {
+      "role": "left",
+      "part": "accessories",
+      "name": "配饰",
+      "visible_count": null,
+      "description": "无可见配饰。"
+    },
+    {
+      "role": "back",
+      "part": "hair",
+      "name": "发型",
+      "visible_count": null,
+      "description": "棕色短发，背面发尾整齐。"
+    },
+    {
+      "role": "back",
+      "part": "clothes",
+      "name": "服装",
+      "visible_count": null,
+      "description": "白色短袖内搭，绿色背带裙。背部可见两条背带连接在腰部。"
+    },
+    {
+      "role": "back",
+      "part": "accessories",
+      "name": "配饰",
+      "visible_count": null,
+      "description": "无可见配饰。"
+    },
+    {
+      "role": "right",
+      "part": "hair",
+      "name": "发型",
+      "visible_count": null,
+      "description": "棕色短发，侧面可见发尾轮廓。"
+    },
+    {
+      "role": "right",
+      "part": "clothes",
+      "name": "服装",
+      "visible_count": null,
+      "description": "白色短袖内搭，绿色背带裙。右侧面可见裙子侧面的接缝线，口袋边缘呈斜向延伸。"
+    },
+    {
+      "role": "right",
+      "part": "accessories",
+      "name": "配饰",
+      "visible_count": null,
+      "description": "无可见配饰。"
+    }
+  ],
+  "findings": [
+    {
+      "role": "left",
+      "part": "clothes",
+      "kind": "structure",
+      "title": "裙子口袋结构不一致",
+      "evidence": "Front view shows a large, rounded pocket on the front of the dress. The left side view shows a different structure where the pocket edge is a sharp diagonal line extending towards the back, which contradicts the rounded shape seen from the front.",
+      "suggestion": "修改左侧视图（图2）中裙子的口袋结构，使其与正面视图（图1）中的大圆弧形口袋设计保持一致。",
+      "confidence": 0.95,
+      "reference_count": null,
+      "target_count": null,
+      "bbox": [
+        376,
+        408,
+        672,
+        746
+      ],
+      "reference_bbox": [
+        326,
+        410,
+        718,
+        789
+      ],
+      "id": "2772c125-5174-4f4b-ba28-dc44dbd44de5:0",
+      "decision": "pending",
+      "note": ""
+    },
+    {
+      "role": "right",
+      "part": "clothes",
+      "kind": "structure",
+      "title": "裙子口袋结构不一致",
+      "evidence": "Front view shows a large, rounded pocket on the front of the dress. The right side view shows a different structure where the pocket edge is a sharp diagonal line extending towards the back, which contradicts the rounded shape seen from the front.",
+      "suggestion": "修改右侧视图（图4）中裙子的口袋结构，使其与正面视图（图1）中的大圆弧形口袋设计保持一致。",
+      "confidence": 0.95,
+      "reference_count": null,
+      "target_count": null,
+      "bbox": [
+        376,
+        408,
+        672,
+        746
+      ],
+      "reference_bbox": [
+        326,
+        410,
+        718,
+        789
+      ],
+      "id": "2772c125-5174-4f4b-ba28-dc44dbd44de5:1",
+      "decision": "pending",
+      "note": ""
+    }
+  ],
+  "uncertainties": []
+}

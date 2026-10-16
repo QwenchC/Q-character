@@ -1,6 +1,6 @@
 # 本地视觉结构检查
 
-Windows 0.9.0 / Android 0.6.0 共用此功能。自动对比正面、侧面、背面的服装层次、发型结构、配饰形状与可见数量，输出疑似区域、证据及局部重绘建议。它是辅助检查，不能保证发现所有差异，也可能误判视角、遮挡和鞋子朝向。
+Windows 0.9.1 / Android 0.6.1 共用此功能。自动对比正面、侧面、背面的服装层次、发型结构、配饰形状与可见数量，输出疑似区域、证据及局部重绘建议。它是辅助检查，不能保证发现所有差异，也可能误判视角、遮挡和鞋子朝向。
 
 ## 本机准备
 
@@ -8,7 +8,7 @@ Windows 0.9.0 / Android 0.6.0 共用此功能。自动对比正面、侧面、�
 2. 将 Release 中 `QCharacterVision-node.zip` 解压，里面的整个 `QCharacterVision` 文件夹放到 `ComfyUI/custom_nodes/`。开发环境也可运行 `npm run vision:install -- F:\ComfyUI-aki\ComfyUI`。更新会备份同名旧文件，不改 ComfyUI 核心、不自动安装依赖或下载模型。
 3. 空闲时重启 ComfyUI，让新节点生效。在应用中检查连接，确认没有提示缺少 `QCharacterVisionReview`、`JoinImageWithAlpha` 或 `LoadImage`。
 
-本次已把节点安装到 `F:\ComfyUI-aki\ComfyUI\custom_nodes\QCharacterVision`。原有 8188 服务保持运行，需要在绘世中手动重启一次才能加载。联调在独立测试端口进行，手机日常仍使用原来的 ComfyUI 地址。
+本次已把节点安装到 `F:\ComfyUI-aki\ComfyUI\custom_nodes\QCharacterVision`。原有 8188 服务现已重启并加载该节点，Windows 和 Android 经原外网地址的完整流程已验证；见 [最新实测记录](remote-vision-validation/REPORT.md)。0.9.1 只修复客户端选区历史，节点内容未变，已加载节点的用户无需再次安装或重启。
 
 ## 使用步骤
 

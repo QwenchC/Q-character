@@ -1,0 +1,167 @@
+{
+  "version": 1,
+  "id": "7eed9413-e321-48c2-93a9-ccf552febf58",
+  "createdAt": "2026-10-16T14:17:44.588Z",
+  "model": "qwen3.6:35b-a3b",
+  "elapsedMs": 13063,
+  "views": {
+    "front": "fb0643b3-7ca1-482a-8b07-0ab5214cd9fa",
+    "left": "26160f79-75c4-4f8f-8c9f-b6c00e73d795",
+    "back": "8610bb59-54ae-4385-8e3f-3c0aa7d7176a",
+    "right": "9bb29714-fcdc-4267-9882-bfa09fd4749a"
+  },
+  "confirmed": false,
+  "summary": "对同一Q版角色的多方向视图进行了详细比对。主要发现是侧面视图中鞋子的装饰细节（鞋带/扣子）与正面视图存在显著差异，且左右侧视图的鞋子细节不一致。服装结构、发型和配饰数量在透视变化下保持一致，未发现其他问题。",
+  "observations": [
+    {
+      "role": "front",
+      "part": "hair",
+      "name": "短发",
+      "visible_count": null,
+      "description": "棕色齐肩短发，中分发型，发尾自然内扣。"
+    },
+    {
+      "role": "front",
+      "part": "clothes",
+      "name": "服装",
+      "visible_count": null,
+      "description": "白色短袖T恤内搭，外穿橄榄绿色背带裙。裙子正面有一个大口袋，呈弧形轮廓。"
+    },
+    {
+      "role": "front",
+      "part": "accessories",
+      "name": "配饰",
+      "visible_count": null,
+      "description": "穿着深绿色靴子，靴口有白色袜边。正面可见两只靴子，每只靴子上方有两个浅色圆形装饰（鞋带扣）。"
+    },
+    {
+      "role": "left",
+      "part": "hair",
+      "name": "短发",
+      "visible_count": null,
+      "description": "棕色齐肩短发侧面轮廓，可见耳朵和发束层次。"
+    },
+    {
+      "role": "left",
+      "part": "clothes",
+      "name": "服装",
+      "visible_count": null,
+      "description": "背带裙侧面视图，口袋边缘呈斜线状（符合透视）。背带连接处清晰。"
+    },
+    {
+      "role": "left",
+      "part": "accessories",
+      "name": "配饰",
+      "visible_count": null,
+      "description": "可见左脚靴子，靴口有白色袜边。靴子上方有三个浅色圆形装饰（鞋带扣），呈簇状排列。"
+    },
+    {
+      "role": "back",
+      "part": "hair",
+      "name": "短发",
+      "visible_count": null,
+      "description": "棕色短发背面视图，发尾整齐。"
+    },
+    {
+      "role": "back",
+      "part": "clothes",
+      "name": "服装",
+      "visible_count": null,
+      "description": "背带裙背面视图，背部平整，无口袋或装饰。背带连接点清晰可见。"
+    },
+    {
+      "role": "back",
+      "part": "accessories",
+      "name": "配饰",
+      "visible_count": null,
+      "description": "可见两只靴子的背面，均为深绿色，无额外装饰可见。"
+    },
+    {
+      "role": "right",
+      "part": "hair",
+      "name": "短发",
+      "visible_count": null,
+      "description": "棕色齐肩短发右侧面轮廓。"
+    },
+    {
+      "role": "right",
+      "part": "clothes",
+      "name": "服装",
+      "visible_count": null,
+      "description": "背带裙右侧面视图，口袋边缘呈斜线状（符合透视）。"
+    },
+    {
+      "role": "right",
+      "part": "accessories",
+      "name": "配饰",
+      "visible_count": null,
+      "description": "可见右脚靴子，靴口有白色袜边。靴子上方有两个浅色圆形装饰（鞋带扣），呈水平排列。"
+    }
+  ],
+  "findings": [
+    {
+      "role": "left",
+      "part": "accessories",
+      "kind": "count",
+      "title": "左侧视图靴子装饰数量不一致",
+      "evidence": "在 left 视图中，左脚靴子上可见三个浅色圆形装饰（鞋带扣）。而在 front 视图中，每只靴子上只有两个。",
+      "suggestion": "修改 left 图角色左脚靴子上的装饰数量，减少一个，使其与 front 视图一致（每只靴子两个装饰）。",
+      "confidence": 0.95,
+      "reference_count": 2,
+      "target_count": 3,
+      "bbox": [
+        416,
+        870,
+        470,
+        900
+      ],
+      "reference_bbox": null,
+      "id": "7eed9413-e321-48c2-93a9-ccf552febf58:0",
+      "decision": "pending",
+      "note": ""
+    },
+    {
+      "role": "left",
+      "part": "accessories",
+      "kind": "structure",
+      "title": "左侧视图靴子装饰排列方式不一致",
+      "evidence": "在 left 视图中，左脚靴子上的三个装饰呈簇状/三角形排列。而在 front 视图中，两个装饰呈水平直线排列。",
+      "suggestion": "修改 left 图角色左脚靴子上的装饰排列方式，使其与 front 视图一致（水平排列）。",
+      "confidence": 0.9,
+      "reference_count": null,
+      "target_count": null,
+      "bbox": [
+        416,
+        870,
+        470,
+        900
+      ],
+      "reference_bbox": null,
+      "id": "7eed9413-e321-48c2-93a9-ccf552febf58:1",
+      "decision": "pending",
+      "note": ""
+    },
+    {
+      "role": "right",
+      "part": "accessories",
+      "kind": "count",
+      "title": "右侧视图靴子装饰数量不一致",
+      "evidence": "在 right 视图中，右脚靴子上可见两个浅色圆形装饰。虽然与 front 视图数量一致，但与 left 视图（三个）不一致。考虑到左右对称性，这暗示了模型设计的不统一。",
+      "suggestion": "确认 right 图角色右脚靴子上的装饰数量是否与 left 图一致。若以 front 为准，则保持两个；若以 left 为准，则需增加一个。建议统一左右侧视图的装饰数量。",
+      "confidence": 0.85,
+      "reference_count": null,
+      "target_count": null,
+      "bbox": [
+        630,
+        870,
+        680,
+        900
+      ],
+      "reference_bbox": null,
+      "id": "7eed9413-e321-48c2-93a9-ccf552febf58:2",
+      "decision": "pending",
+      "note": ""
+    }
+  ],
+  "uncertainties": []
+}

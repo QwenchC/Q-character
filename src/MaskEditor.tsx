@@ -76,8 +76,7 @@ export function MaskEditor({ original, mask, cutout, onSave, onClose, mode='matt
       for (let i = 0; i < pixels.length; i++) { pixels[i] = mode==='repair'?0:rgba[i * 4 + 3]; sourceAlpha[i] = mode==='repair'?255:basePixels.data[i * 4 + 3]; basePixels.data[i * 4 + 3] = 255; }
       if(mode==='repair'&&initialBox)pixels.set(boxSelection(width,height,initialBox));
       color.getContext('2d')!.putImageData(basePixels, 0, 0);
-      surface.current = { doc: new MaskDocument(pixels), width, height, original: base, color, sourceAlpha, mask: canvas(width, height), preview: canvas(width, height), dirtyBounds: { left: 0, top: 0, right: width - 1, bottom: height - 1 } };
-      if(mode==='repair'&&initialBox)surface.current.doc.markChanged();
+      surface.current = { doc: mode==='repair' ? MaskDocument.selection(pixels) : new MaskDocument(pixels), width, height, original: base, color, sourceAlpha, mask: canvas(width, height), preview: canvas(width, height), dirtyBounds: { left: 0, top: 0, right: width - 1, bottom: height - 1 } };
       screen.current!.width = width; screen.current!.height = height; setReady(true); redraw(); fit();
     }).catch(e => { if (alive) setError(cleanError(e)); });
     return () => { alive = false; };

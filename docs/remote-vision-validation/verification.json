@@ -1,0 +1,46 @@
+{
+  "windows": {
+    "version": "0.9.1",
+    "jobId": "4fa31504-2741-4bc6-a464-5f775cb709a4",
+    "promptId": "9bccc090-dfe8-41e4-9657-8cb8d57794f2",
+    "server": "local-comfy",
+    "width": 672,
+    "height": 896,
+    "outside": 539627,
+    "outsideChanged": 0,
+    "inside": 62485,
+    "insideChanged": 46388,
+    "selectionAdjusted": 5814,
+    "reportState": "stale",
+    "slotAdvanced": true,
+    "sourceRetained": true,
+    "staleGate": {
+      "status": "failed",
+      "message": "视图已更新，请重新运行本地视觉检测并确认。",
+      "submitted": false
+    },
+    "recheckJobId": "1bccf006-77cc-40ec-bc5c-7feba7b46cd1"
+  },
+  "android": {
+    "version": "0.6.1 · Android",
+    "jobId": "1a764c74-c850-43e2-9ca7-9cf7dbd7e5ea",
+    "promptId": "daf3db9a-b8ff-4dce-a019-f6bb9c420fd5",
+    "server": "configured-pinned-https-origin",
+    "width": 672,
+    "height": 896,
+    "outside": 539627,
+    "outsideChanged": 0,
+    "inside": 62485,
+    "insideChanged": 46120,
+    "selectionAdjusted": 5814,
+    "reportState": "stale",
+    "slotAdvanced": true,
+    "sourceRetained": true,
+    "staleGate": {
+      "status": "failed",
+      "message": "视图已更新，请重新运行本地视觉检测并确认。",
+      "submitted": false
+    },
+    "recheckJobId": "7eed9413-e321-48c2-93a9-ccf552febf58"
+  }
+}

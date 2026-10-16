@@ -1,10 +1,10 @@
 # Android 版
 
-Android 0.6.0 与 Windows 0.9.0 共用角色工作流、蒙版编辑器、3D 预览、设计图上色和黏土调色逻辑。手机通过原生网络层连接远程 ComfyUI，适用于内网地址、FRP 穿透地址，以及带端口或路径前缀的反向代理。
+Android 0.6.1 与 Windows 0.9.1 共用角色工作流、蒙版编辑器、3D 预览、设计图上色和黏土调色逻辑。手机通过原生网络层连接远程 ComfyUI，适用于内网地址、FRP 穿透地址，以及带端口或路径前缀的反向代理。
 
 ## 安装与连接
 
-在手机打开 [Windows 0.9.0 / Android 0.6.0 Release](https://github.com/QwenchC/Q-character/releases/tag/v0.9.0)，点击 `Q-Character-Android-0.6.0.apk` 下载后安装；也可使用 [APK 直接下载链接](https://github.com/QwenchC/Q-character/releases/download/v0.9.0/Q-Character-Android-0.6.0.apk)。按系统提示允许当前浏览器安装此来源的应用。Release 中的 `SHA256SUMS.txt` 可用于校验下载文件。
+在手机打开 [Windows 0.9.1 / Android 0.6.1 Release](https://github.com/QwenchC/Q-character/releases/tag/v0.9.1)，点击 `Q-Character-Android-0.6.1.apk` 下载后安装；也可使用 [APK 直接下载链接](https://github.com/QwenchC/Q-character/releases/download/v0.9.1/Q-Character-Android-0.6.1.apk)。按系统提示允许当前浏览器安装此来源的应用。Release 中的 `SHA256SUMS.txt` 可用于校验下载文件。
 
 最低 Android 8.0，需要支持 WebGL 2 和 WebMessageListener 的 Android System WebView／Chrome；首次打开即有可离线预览的示例作品。应用不包含生成模型，也不在手机上运行 ComfyUI。
 

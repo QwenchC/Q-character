@@ -44,6 +44,13 @@ export function paintMaskSegment(pixels: Uint8ClampedArray, width: number, heigh
 }
 
 export class MaskDocument {
+  static selection(initial: Uint8ClampedArray) {
+    const doc = new MaskDocument(new Uint8ClampedArray(initial.length));
+    if (initial.some(value => value !== 0)) {
+      doc.pixels.set(initial); doc.markChanged(); doc.commitStroke();
+    }
+    return doc;
+  }
   readonly pixels: Uint8ClampedArray;
   private readonly baseline: Uint8ClampedArray;
   private frames: Uint8ClampedArray[];

@@ -1,0 +1,39 @@
+{
+  "version": "0.6.1 · Android",
+  "states": {
+    "initial": {
+      "startEnabled": true,
+      "undo": true,
+      "redo": false
+    },
+    "painted": {
+      "startEnabled": true,
+      "undo": true,
+      "redo": false
+    },
+    "undoPaint": {
+      "startEnabled": true,
+      "undo": true,
+      "redo": true
+    },
+    "undoInitial": {
+      "startEnabled": false,
+      "undo": false,
+      "redo": true
+    },
+    "redoInitial": {
+      "startEnabled": true,
+      "undo": true,
+      "redo": true
+    },
+    "redoPaint": {
+      "startEnabled": true,
+      "undo": true,
+      "redo": false
+    }
+  },
+  "jobsBefore": 1,
+  "jobsAfterAccept": 1,
+  "assetsBefore": 4,
+  "assetsAfterAccept": 4
+}
