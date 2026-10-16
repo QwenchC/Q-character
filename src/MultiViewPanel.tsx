@@ -1,3 +1,6 @@
+import { VisionReviewPanel } from './VisionReviewPanel';
+import { useEffect, useState } from 'react';
+import { assertVisionReady, type VisionReview, type VisionFinding } from '../electron/vision.mjs';
 import { ConsistencyPanel } from './ConsistencyPanel';
 import { assertConsistencyReady, type ReviewPart } from '../electron/consistency.mjs';
 import type { ConsistencyReport } from './types';
@@ -5,6 +8,8 @@ import { VIEW_ROLES, VIEW_LABELS, readyMultiView } from '../electron/multiview.m
 import { assetUrl, type Project, type Asset, type MultiView, type ViewRole } from './types';
 
 interface Props {
+  onVisionDirty:(value:boolean)=>void;
+  onVisionRun:()=>Promise<void>; onVisionSave:(report:VisionReview)=>Promise<void>; onVisionRepair:(f:VisionFinding)=>void;
   project: Project; current?: Asset; disabled: boolean; pixal: boolean; quality: string;
   onConfigure: (value: MultiView) => void;
   onAssign: (role: ViewRole, id: string) => void;
@@ -17,11 +22,13 @@ interface Props {
   onReview: (report:ConsistencyReport) => Promise<void>;
   onRepair: (role:ViewRole,part?:ReviewPart) => void;
 }
-export function MultiViewPanel({ project, current, disabled, pixal, quality, onConfigure, onAssign, onImport, onGenerate, onMatte, onInspect, onBuild, onReview, onRepair, onReviewEditing }: Props) {
+export function MultiViewPanel({ onVisionDirty,onVisionRun,onVisionSave,onVisionRepair,project, current, disabled, pixal, quality, onConfigure, onAssign, onImport, onGenerate, onMatte, onInspect, onBuild, onReview, onRepair, onReviewEditing }: Props) {
+  const [visionEditing,setVisionEditing]=useState(false),[colorEditing,setColorEditing]=useState(false);
+  useEffect(()=>{onReviewEditing(visionEditing||colorEditing);return()=>onReviewEditing(false);},[visionEditing,colorEditing,onReviewEditing]);
   const config = project.multiView || { enabled: false, views: {}, fov: 20 };
   const images = project.assets.filter(a => ['reference', 'design', 'cutout'].includes(a.kind));
   let reason = '';
-  try { readyMultiView(project); assertConsistencyReady(project); } catch (e) { reason = (e as Error).message; }
+  try { readyMultiView(project); assertConsistencyReady(project);assertVisionReady(project); } catch (e) { reason = (e as Error).message; }
   const directions = { front: '正对镜头', left: '鼻尖朝画面左侧', back: '头部与身体都背对镜头', right: '鼻尖朝画面右侧' };
   return <section className="multi-view panel">
     <div className="multi-view-heading"><div><span className="eyebrow">CHARACTER VIEWS</span><h3>多视图角色设计</h3><p>用同一角色的正面、侧面与背面一起建模，让服装和发型的背面有据可依。</p></div><label><input aria-label="启用多视图建模" type="checkbox" checked={config.enabled} disabled={disabled} onChange={e => onConfigure({ ...config, enabled: e.target.checked })}/>用于 Pixal3D 多视图建模</label></div>
@@ -37,7 +44,8 @@ export function MultiViewPanel({ project, current, disabled, pixal, quality, onC
       </article>;
     })}</div>
     <p className="view-note">同一姿势、全身入镜、平视镜头，避免透视或遮挡差异。生成侧背面会参考正面及其它已抠图视图，但仍需检查发型、衣服接缝与配饰；修正蒙版后，槽位会自动使用新版本。</p>
-    <ConsistencyPanel onEditing={onReviewEditing} project={project} disabled={disabled} onSave={onReview} onRepair={onRepair}/>
+    <VisionReviewPanel onDirty={onVisionDirty} key={project.id} project={project} disabled={disabled} onRun={onVisionRun} onSave={onVisionSave} onRepair={onVisionRepair} onEditing={setVisionEditing}/>
+    <ConsistencyPanel onEditing={setColorEditing} project={project} disabled={disabled} onSave={onReview} onRepair={onRepair}/>
     <div className="multi-view-footer"><details><summary>相机视角</summary><label>水平视角<input aria-label="多视图相机视角" type="number" min="1" max="170" step="1" value={config.fov} disabled={disabled} onChange={e => { const n = Number(e.target.value); if (n >= 1 && n <= 170) onConfigure({ ...config, fov: n }); }}/></label><small>默认 20° 适合角色设计图。各视图会统一人物高度、脚底位置和留边。</small></details><div><p role="status">{!pixal ? '请在生成服务设置中选择 Pixal3D。' : reason || '正面、侧面、背面与蒙版已齐备。'}{!config.enabled && ' 开启多视图后用于建模。'}</p><button className="primary" disabled={disabled || !pixal || !config.enabled || !!reason} onClick={onBuild}>多视图生成 3D · {quality === 'draft' ? '草模' : quality === 'high' ? '精细' : '标准'}</button></div></div>
     </>}
   </section>;

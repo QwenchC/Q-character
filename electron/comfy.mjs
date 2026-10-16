@@ -76,7 +76,7 @@ export class ComfyClient {
     socket.on('error', () => {}); // History polling still completes jobs when the socket is unavailable.
     return () => { socket.on('error', () => {}); socket.close(); };
   }
-  async waitFor(promptId, kind, shouldStop, onState) {
+  async waitFor(promptId, kind, shouldStop, onState, collect = collectOutputs) {
     const deadline = Date.now() + 45 * 60 * 1000;
     let failures = 0;
     while (Date.now() < deadline) {
@@ -89,8 +89,8 @@ export class ComfyClient {
         const failure = entry.status?.messages?.find(([type]) => ['execution_error', 'execution_interrupted'].includes(type));
         if (failure) throw new Error(failure[1]?.exception_message || 'ComfyUI 任务被中断。');
         if (entry.status?.status_str === 'error') throw new Error('ComfyUI 执行失败，请查看服务日志。');
-        const outputs = collectOutputs(entry, kind);
         if (entry.status?.completed) {
+          const outputs = collect(entry, kind);
           if (!outputs.length) throw new Error('任务已结束，但没有可用的输出文件。请检查保存节点。');
           return outputs;
         }

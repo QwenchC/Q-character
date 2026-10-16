@@ -1,3 +1,4 @@
+import { boxSelection, type VisionBox } from '../electron/vision.mjs';
 import { useEffect, useRef, useState, type ReactNode, type PointerEvent as ReactPointerEvent } from 'react';
 import { Eraser, Hand, Paintbrush, Redo2, Undo2, X } from 'lucide-react';
 import { MaskDocument, paintMaskSegment, type PaintBounds, type Point } from './mask-paint';
@@ -9,7 +10,7 @@ const canvas = (width: number, height: number) => { const result = document.crea
 const loadImage = (url: string) => new Promise<HTMLImageElement>((resolve, reject) => { const image = new Image(); image.crossOrigin = 'anonymous'; image.onload = () => resolve(image); image.onerror = () => reject(new Error('无法读取原图或蒙版，请关闭后重试。')); image.src = url; });
 const cleanError = (error: unknown) => (error as Error).message.replace(/^Error invoking remote method '[^']+': (Error: )?/, '');
 
-export function MaskEditor({ original, mask, cutout, onSave, onClose, mode='matte', children }: { mode?:'matte'|'repair'; children?:ReactNode; original: string; mask?: string; cutout: string; onSave: (bytes: Uint8Array) => Promise<void>; onClose: () => void }) {
+export function MaskEditor({ original, mask, cutout, onSave, onClose, mode='matte', initialBox, children }: { mode?:'matte'|'repair'; initialBox?:VisionBox; children?:ReactNode; original: string; mask?: string; cutout: string; onSave: (bytes: Uint8Array) => Promise<void>; onClose: () => void }) {
   const dialog = useRef<HTMLDialogElement>(null), stage = useRef<HTMLDivElement>(null), screen = useRef<HTMLCanvasElement>(null);
   const surface = useRef<Surface | null>(null);
   const [ready, setReady] = useState(false), [error, setError] = useState(''), [saving, setSaving] = useState(false), [discard, setDiscard] = useState(false);
@@ -73,8 +74,10 @@ export function MaskEditor({ original, mask, cutout, onSave, onClose, mode='matt
       const pixels = new Uint8ClampedArray(width * height), sourceAlpha = new Uint8ClampedArray(width * height);
       const color = canvas(width, height), basePixels = base.getContext('2d')!.getImageData(0, 0, width, height);
       for (let i = 0; i < pixels.length; i++) { pixels[i] = mode==='repair'?0:rgba[i * 4 + 3]; sourceAlpha[i] = mode==='repair'?255:basePixels.data[i * 4 + 3]; basePixels.data[i * 4 + 3] = 255; }
+      if(mode==='repair'&&initialBox)pixels.set(boxSelection(width,height,initialBox));
       color.getContext('2d')!.putImageData(basePixels, 0, 0);
       surface.current = { doc: new MaskDocument(pixels), width, height, original: base, color, sourceAlpha, mask: canvas(width, height), preview: canvas(width, height), dirtyBounds: { left: 0, top: 0, right: width - 1, bottom: height - 1 } };
+      if(mode==='repair'&&initialBox)surface.current.doc.markChanged();
       screen.current!.width = width; screen.current!.height = height; setReady(true); redraw(); fit();
     }).catch(e => { if (alive) setError(cleanError(e)); });
     return () => { alive = false; };

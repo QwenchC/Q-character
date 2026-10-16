@@ -1,3 +1,5 @@
+import type { VisionReview } from '../electron/vision.mjs';
+export type { VisionReview };
 import type { ConsistencyReport } from '../electron/consistency.mjs';
 export type { ConsistencyReport };
 import type { ViewRole, MultiView } from '../electron/multiview.mjs';
@@ -7,22 +9,23 @@ import type { Projection } from './texture-image';
 export interface ClayGuide { referenceId: string; swatches: Swatch[]; bases: ClayBase[]; grams?: number }
 export interface TextureConfig { swatches: Swatch[]; projection: Projection }
 export interface Asset { viewRole?: ViewRole; inputViewIds?: Partial<Record<ViewRole, string>>; viewFov?: number; id: string; filename: string; kind: 'reference' | 'design' | 'model' | 'prepared' | 'cutout' | 'mask'; label: string; createdAt: string; jobId?: string; sourceAssetId?: string; maskAssetId?: string; parentCutoutId?: string; repairMaskId?: string; repairInstruction?: string; revisionType?: 'manual' | 'repair'; parentModelId?: string; textureSourceId?: string; textureMethod?: string; textureConfig?: TextureConfig }
-export interface Job { repairMaskId?: string; repairInstruction?: string; viewRole?: ViewRole; viewExpectedId?: string; inputViewIds?: Partial<Record<ViewRole, string>>; viewFov?: number; id: string; projectId: string; kind: 'design' | 'shape' | 'matte'; status: string; message: string; progress?: number; promptId?: string; createdAt: string; seed: number; resultAssetId?: string; engine?: string; inputAssetId?: string; server?: string; targetedInterrupt?: boolean; workflow?: Record<string, unknown> }
-export interface Project { consistency?: ConsistencyReport; multiView?: MultiView; id: string; name: string; description: string; ratio: string; style: string; heightMm: number; createdAt: string; updatedAt: string; assets: Asset[]; jobs: Job[]; clayGuide?: ClayGuide; workspace?: { sourceId: string; modelId: string; page: 'design' | 'workbench' | 'library'; inputMode: 'text' | 'image' }; syncConflictOf?: string }
+export interface Job { reviewResult?:VisionReview; visionModel?:string; referenceFindingId?:string; repairMaskId?: string; repairInstruction?: string; viewRole?: ViewRole; viewExpectedId?: string; inputViewIds?: Partial<Record<ViewRole, string>>; viewFov?: number; id: string; projectId: string; kind: 'design' | 'shape' | 'matte' | 'review'; status: string; message: string; progress?: number; promptId?: string; createdAt: string; seed: number; resultAssetId?: string; engine?: string; inputAssetId?: string; server?: string; targetedInterrupt?: boolean; workflow?: Record<string, unknown> }
+export interface Project { visionReview?:VisionReview; consistency?: ConsistencyReport; multiView?: MultiView; id: string; name: string; description: string; ratio: string; style: string; heightMm: number; createdAt: string; updatedAt: string; assets: Asset[]; jobs: Job[]; clayGuide?: ClayGuide; workspace?: { sourceId: string; modelId: string; page: 'design' | 'workbench' | 'library'; inputMode: 'text' | 'image' }; syncConflictOf?: string }
 export interface SyncResult { changed: number; conflicts: number; uploadedFiles: number; downloadedFiles: number; errors: { id: string; message: string }[] }
 export interface SyncEvent { type: 'changed' | 'progress'; projectId?: string; message?: string }
 export interface SyncStatus { platform: 'android' | 'desktop'; enabled?: boolean; port?: number; publicUrl?: string; urls?: string[]; fingerprint?: string; devices?: { id: string; name: string; pairedAt: string }[]; pairing?: { code: string; expiresAt: string } | null; error?: string; server?: string; paired?: boolean; auto?: boolean }
-export interface Settings { shapeEngine?: 'pixal3d' | 'hunyuan3d'; pixalModel?: string; pixalMultiModel?: string; pixalEncoder?: string; pixalShapeVae?: string; pixalTextureVae?: string; server: string; comfyPath: string; designCheckpoint: string; shapeCheckpoint: string; imageEngine: 'qwen21' | 'sdxl'; qwenModel: string; qwenEncoder: string; qwenVae: string; backgroundModel: string; authType?: 'none' | 'bearer' | 'basic'; authToken?: string; authUsername?: string; authPassword?: string; hasCredentials?: boolean; certificateFingerprint?: string }
+export interface Settings { visionModel?:string; shapeEngine?: 'pixal3d' | 'hunyuan3d'; pixalModel?: string; pixalMultiModel?: string; pixalEncoder?: string; pixalShapeVae?: string; pixalTextureVae?: string; server: string; comfyPath: string; designCheckpoint: string; shapeCheckpoint: string; imageEngine: 'qwen21' | 'sdxl'; qwenModel: string; qwenEncoder: string; qwenVae: string; backgroundModel: string; authType?: 'none' | 'bearer' | 'basic'; authToken?: string; authUsername?: string; authPassword?: string; hasCredentials?: boolean; certificateFingerprint?: string }
 export interface ServerCertificate { receipt: string; server: string; subject: string; issuer: string; fingerprint: string; validFrom: string; validTo: string }
-export interface Capabilities { pixal?: import('../electron/pixal3d.mjs').PixalCapabilities; stats: { system: { comfyui_version?: string }; devices: { name: string; vram_total: number }[] }; checkpoints: string[]; shapeCheckpoints: string[]; missingShapeNodes: string[]; qwenModels: string[]; qwenEncoders: string[]; qwenVaes: string[]; backgroundModels: string[]; missingEditNodes: string[]; missingMatteNodes: string[] }
+export interface Capabilities { missingVisionNodes?:string[]; pixal?: import('../electron/pixal3d.mjs').PixalCapabilities; stats: { system: { comfyui_version?: string }; devices: { name: string; vram_total: number }[] }; checkpoints: string[]; shapeCheckpoints: string[]; missingShapeNodes: string[]; qwenModels: string[]; qwenEncoders: string[]; qwenVaes: string[]; backgroundModels: string[]; missingEditNodes: string[]; missingMatteNodes: string[] }
 export interface Bootstrap { settings: Settings; projects: Project[]; dataPath: string; active: Job | null; version: string; platform?: 'android' | 'desktop' }
 export interface StudioBridge {
   bootstrap(): Promise<Bootstrap>;
   settings(settings: Settings): Promise<Settings>;
   connect(): Promise<Capabilities>;
   createProject(name: string): Promise<Project>;
-  saveProject(id: string, fields: Partial<Pick<Project, 'name' | 'description' | 'ratio' | 'style' | 'heightMm' | 'clayGuide' | 'workspace' | 'multiView' | 'consistency'>>): Promise<Project>;
-  repairView(projectId: string, role: ViewRole, assetId: string, mask: Uint8Array, instruction: string): Promise<Job>;
+  saveProject(id: string, fields: Partial<Pick<Project, 'name' | 'description' | 'ratio' | 'style' | 'heightMm' | 'clayGuide' | 'workspace' | 'multiView' | 'consistency' | 'visionReview'>>): Promise<Project>;
+  repairView(projectId: string, role: ViewRole, assetId: string, mask: Uint8Array, instruction: string, findingId?:string): Promise<Job>;
+  reviewViews(projectId:string):Promise<Job>;
   setView(projectId: string, role: ViewRole, assetId: string, expected?: string): Promise<Project>;
   importAsset(id: string, kind: 'reference' | 'model'): Promise<Project | null>;
   saveMask(projectId: string, cutoutId: string, mask: Uint8Array): Promise<Project>;

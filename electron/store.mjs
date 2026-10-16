@@ -3,6 +3,7 @@ import path from 'node:path';
 import { randomUUID } from 'node:crypto';
 import { normalizeMultiView, setViewSlot } from './multiview.mjs';
 import { normalizeConsistency } from './consistency.mjs';
+import { normalizeVisionReview } from './vision.mjs';
 
 export function safeAsset(root, projectId, filename) {
   if (!/^[a-f0-9-]{36}$/.test(projectId) || !/^[a-zA-Z0-9_.-]+$/.test(filename) || filename === '.' || filename === '..') throw new Error('无效的作品文件路径。');
@@ -56,6 +57,11 @@ export class ProjectStore {
     for (const key of ['name', 'description', 'ratio', 'style', 'heightMm', 'clayGuide', 'workspace']) if (key in fields) project[key] = fields[key];
     if ('multiView' in fields) project.multiView = normalizeMultiView(fields.multiView, project.assets);
     if ('consistency' in fields) project.consistency = normalizeConsistency(fields.consistency, project.assets);
+    if ('visionReview' in fields) {
+      const report=normalizeVisionReview(fields.visionReview,project.assets),job=project.jobs.find(j=>j.id===report.id&&j.kind==='review');
+      if(!job)throw new Error('找不到视觉检查的原任务。');
+      project.visionReview=report;job.reviewResult=report;
+    }
     project.updatedAt = new Date().toISOString();
     await writeJson(this.projectFile(id), project);
     return project;

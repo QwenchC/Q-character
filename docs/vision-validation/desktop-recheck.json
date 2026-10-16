@@ -1,0 +1,156 @@
+{
+  "version": 1,
+  "id": "ed822de1-d72b-42f9-95e1-997148a9e3bf",
+  "createdAt": "2026-10-16T13:46:04.892Z",
+  "model": "qwen3.6:35b-a3b",
+  "elapsedMs": 24281,
+  "views": {
+    "front": "8c54b5d0-0189-4644-9969-f2d891a80d1e",
+    "left": "bea3648e-0ae3-4124-a034-709bd4fcc410",
+    "back": "c9c31999-7b14-4b60-9960-c7bf5e65b6cf",
+    "right": "b646aec1-daa8-42ae-81b6-a1eff8621fef"
+  },
+  "confirmed": false,
+  "summary": "对比了同一 Q 版角色的正面、左侧面、背面和右侧面设计图。整体造型一致，但在侧面视图中发现了明显的结构错误：背带在身体侧面的连接方式不一致（一侧为垂直肩带，另一侧变为斜向带状），且鞋子的系带细节在左右两侧存在差异。",
+  "observations": [
+    {
+      "role": "front",
+      "part": "hair",
+      "name": "短发",
+      "visible_count": null,
+      "description": "棕色齐肩短发，中分，发尾自然内扣，覆盖耳朵。"
+    },
+    {
+      "role": "front",
+      "part": "clothes",
+      "name": "背带裙",
+      "visible_count": null,
+      "description": "绿色背带连衣裙，正面可见两条垂直的肩带连接至胸前的围兜部分，内搭白色短袖。"
+    },
+    {
+      "role": "front",
+      "part": "accessories",
+      "name": "鞋子",
+      "visible_count": 2,
+      "description": "深绿色短靴，配有浅棕色鞋带和鞋底，左右脚各一只。"
+    },
+    {
+      "role": "left",
+      "part": "hair",
+      "name": "短发",
+      "visible_count": null,
+      "description": "侧面可见发际线、耳朵及后脑勺的弧度，发型与正面一致。"
+    },
+    {
+      "role": "left",
+      "part": "clothes",
+      "name": "背带裙",
+      "visible_count": null,
+      "description": "左侧面可见一条垂直的绿色肩带连接至背部，围兜侧面有弧形接缝。"
+    },
+    {
+      "role": "left",
+      "part": "accessories",
+      "name": "鞋子",
+      "visible_count": 1,
+      "description": "左脚可见一只深绿色短靴，鞋面有明显的浅棕色系带细节。"
+    },
+    {
+      "role": "back",
+      "part": "hair",
+      "name": "短发",
+      "visible_count": null,
+      "description": "背面可见后脑勺的头发覆盖，发尾齐平。"
+    },
+    {
+      "role": "back",
+      "part": "clothes",
+      "name": "背带裙",
+      "visible_count": null,
+      "description": "背面可见两条垂直的绿色肩带，中间有横向接缝连接围兜背部。"
+    },
+    {
+      "role": "back",
+      "part": "accessories",
+      "name": "鞋子",
+      "visible_count": 2,
+      "description": "背面可见两只深绿色短靴的后跟部分，无鞋带细节。"
+    },
+    {
+      "role": "right",
+      "part": "hair",
+      "name": "短发",
+      "visible_count": null,
+      "description": "右侧面可见发际线、耳朵及后脑勺的弧度，发型与正面一致。"
+    },
+    {
+      "role": "right",
+      "part": "clothes",
+      "name": "背带裙",
+      "visible_count": null,
+      "description": "右侧面可见一条斜向的绿色带状物连接至背部，与左侧面的垂直肩带结构不同。"
+    },
+    {
+      "role": "right",
+      "part": "accessories",
+      "name": "鞋子",
+      "visible_count": 1,
+      "description": "右脚可见一只深绿色短靴，鞋面没有明显的系带细节。"
+    }
+  ],
+  "findings": [
+    {
+      "role": "right",
+      "part": "clothes",
+      "kind": "structure",
+      "title": "右侧背带结构不一致",
+      "evidence": "Front (图1) 和 Left (图2) 显示肩带为垂直连接；Right (图4) 中肩带变为斜向带状，且未连接到围兜顶部。",
+      "suggestion": "修改 Right 图中背带的走向，使其与 Front 和 Left 图一致，保持垂直连接至胸前围兜的结构。",
+      "confidence": 0.95,
+      "reference_count": null,
+      "target_count": null,
+      "bbox": [
+        382,
+        467,
+        618,
+        788
+      ],
+      "reference_bbox": [
+        426,
+        409,
+        606,
+        532
+      ],
+      "id": "ed822de1-d72b-42f9-95e1-997148a9e3bf:0",
+      "decision": "pending",
+      "note": ""
+    },
+    {
+      "role": "right",
+      "part": "accessories",
+      "kind": "structure",
+      "title": "右侧鞋子细节缺失",
+      "evidence": "Left (图2) 的左脚鞋面有明显的浅棕色系带；Right (图4) 的右脚鞋面光滑无系带。",
+      "suggestion": "在 Right 图的鞋面上添加与 Left 图一致的浅棕色系带细节。",
+      "confidence": 0.9,
+      "reference_count": null,
+      "target_count": null,
+      "bbox": [
+        531,
+        842,
+        637,
+        935
+      ],
+      "reference_bbox": [
+        371,
+        842,
+        498,
+        935
+      ],
+      "id": "ed822de1-d72b-42f9-95e1-997148a9e3bf:1",
+      "decision": "pending",
+      "note": ""
+    }
+  ],
+  "uncertainties": []
+}

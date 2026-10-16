@@ -1,5 +1,6 @@
 import { normalizeMultiView, readyMultiView } from './multiview.mjs';
 import { normalizeConsistency } from './consistency.mjs';
+import { normalizeVisionReview } from './vision.mjs';
 import { normalizeClayGuide, normalizeTextureConfig } from './texture.mjs';
 
 export const SYNC_VERSION = 1;
@@ -8,7 +9,7 @@ export const PROJECT_LIMIT = 512 * 1024 * 1024;
 export const UUID = /^[a-f0-9]{8}(-[a-f0-9]{4}){3}-[a-f0-9]{12}$/;
 export const HASH = /^[a-f0-9]{64}$/;
 export const ACTIVE = ['submitting', 'running', 'downloading', 'cancelling'];
-const fields = ['name', 'description', 'ratio', 'style', 'heightMm', 'clayGuide', 'workspace', 'multiView', 'consistency'];
+const fields = ['name', 'description', 'ratio', 'style', 'heightMm', 'clayGuide', 'workspace', 'multiView', 'consistency', 'visionReview'];
 const references = ['sourceAssetId', 'maskAssetId', 'parentCutoutId', 'parentModelId', 'textureSourceId', 'repairMaskId'];
 const clone = value => JSON.parse(JSON.stringify(value));
 export function canonical(value) {
@@ -45,6 +46,7 @@ export function validateManifest(input) {
   }
   if (p.multiView) normalizeMultiView(p.multiView, p.assets);
   if (p.consistency) normalizeConsistency(p.consistency, p.assets);
+  if (p.visionReview) { normalizeVisionReview(p.visionReview,p.assets); if(!p.jobs.some(j=>j.id===p.visionReview.id&&j.kind==='review'))throw new Error('视觉报告缺少原任务。'); }
   for (const a of p.assets) if (a.inputViewIds) readyMultiView({ assets: p.assets, multiView: { enabled: true, views: a.inputViewIds, fov: a.viewFov ?? 20 } });
   if (p.clayGuide) { normalizeClayGuide(p.clayGuide); if (assets.get(p.clayGuide.referenceId)?.kind !== 'cutout') throw new Error('黏土调色缺少透明参考图。'); }
   if (p.workspace) {
@@ -53,7 +55,8 @@ export function validateManifest(input) {
   }
   const jobs = new Set();
   for (const j of p.jobs) {
-    if (!UUID.test(j.id) || jobs.has(j.id) || j.projectId !== p.id || !['design', 'matte', 'shape'].includes(j.kind)) throw new Error('生成记录无效。');
+    if (!UUID.test(j.id) || jobs.has(j.id) || j.projectId !== p.id || !['design', 'matte', 'shape', 'review'].includes(j.kind)) throw new Error('生成记录无效。');
+    if(j.reviewResult){normalizeVisionReview(j.reviewResult,p.assets);if(j.kind!=='review'||j.reviewResult.id!==j.id)throw new Error('历史视觉报告的任务引用无效。');}
     jobs.add(j.id);
     if (ACTIVE.includes(j.status)) { j.status = 'interrupted'; j.message = '此记录来自其他设备，请确认原任务状态后继续接收。'; }
   }

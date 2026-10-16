@@ -1,3 +1,4 @@
+import { DEFAULT_VISION_MODEL, normalizeVisionReview, assertVisionReady, acceptedFinding, buildVisionWorkflow, createVisionReview, readVisionOutput } from '../../electron/vision.mjs';
 import { normalizeConsistency, assertConsistencyReady, validateRepairMask, compositeRepair, repairPrompt } from '../../electron/consistency.mjs';
 import { VIEW_ROLES, VIEW_LABELS, normalizeMultiView, readyMultiView, prepareMultiViewImages } from '../../electron/multiview.mjs';
 import type { ViewRole } from '../types';
@@ -12,12 +13,13 @@ import type { SyncEvent } from '../types';
 interface AndroidNative { postMessage(message:string):void; onmessage:(event:{data:string})=>void }
 declare global { interface Window {QNative?:AndroidNative} }
 type Args = Record<string,unknown>;
-const defaults:Settings={server:'',comfyPath:'',designCheckpoint:'sdXL_v10VAEFix.safetensors',shapeCheckpoint:'hunyuan_3d_v2.1.safetensors',imageEngine:'qwen21',qwenModel:'qwen_image_2.1_int8_convrot.safetensors',qwenEncoder:'qwen3vl_8b_int8_convrot.safetensors',qwenVae:'qwen_image_2.1_vae_bf16.safetensors',backgroundModel:'birefnet.safetensors',...PIXAL_DEFAULTS};
+const defaults:Settings={visionModel:DEFAULT_VISION_MODEL,server:'',comfyPath:'',designCheckpoint:'sdXL_v10VAEFix.safetensors',shapeCheckpoint:'hunyuan_3d_v2.1.safetensors',imageEngine:'qwen21',qwenModel:'qwen_image_2.1_int8_convrot.safetensors',qwenEncoder:'qwen3vl_8b_int8_convrot.safetensors',qwenVae:'qwen_image_2.1_vae_bf16.safetensors',backgroundModel:'birefnet.safetensors',...PIXAL_DEFAULTS};
 
 export function initializeAndroidBridge(){
   const native=window.QNative;if(!native)return;
   document.documentElement.classList.add('android');
   let sequence=0,active:Job|null=null,session='',cancelled=false,starting=false,recovered=false;
+  const editingProjects=new Set<string>();
   let syncBusy=false,syncAborted=false;const syncListeners=new Set<(event:SyncEvent)=>void>();
   const waiting=new Map<string,{resolve:(value:unknown)=>void;reject:(error:Error)=>void;timer:ReturnType<typeof setTimeout>}>(),listeners=new Set<(job:Job)=>void>();
   native.onmessage=event=>{try{const message=JSON.parse(event.data),pending=waiting.get(message.id);if(!pending)return;waiting.delete(message.id);clearTimeout(pending.timer);if(message.error)pending.reject(new Error(message.error));else pending.resolve(message.result);}catch{/* Ignore malformed native replies. */}};
@@ -35,14 +37,14 @@ export function initializeAndroidBridge(){
   const capabilities=async(sid:string)=>{
     const [stats,info]=await Promise.all([json(sid,'/system_stats'),json(sid,'/object_info')]);if(!stats.system||!Array.isArray(stats.devices)||!info.KSampler?.input)throw new Error('该地址没有返回有效的 ComfyUI API，可能是穿透欢迎页或登录页。');
     const checks=infoOptions(info,'CheckpointLoaderSimple','ckpt_name'),shape=infoOptions(info,'ImageOnlyCheckpointLoader','ckpt_name');
-    const cap:Capabilities={pixal:pixalCapabilities(info),stats:stats as unknown as Capabilities['stats'],checkpoints:checks.filter(n=>/sdxl|illustrious|hassaku/i.test(n)),shapeCheckpoints:shape.filter(n=>/hunyuan.*3d|hunyuan_3d/i.test(n)),missingShapeNodes:['ImageOnlyCheckpointLoader','Hunyuan3Dv2Conditioning','EmptyLatentHunyuan3Dv2','ModelSamplingAuraFlow','VAEDecodeHunyuan3D','VoxelToMesh','SaveGLB','CLIPVisionEncode','LoadImage','KSampler'].filter(n=>!info[n]),qwenModels:infoOptions(info,'UNETLoader','unet_name').filter(n=>/^qwen_image_2\.1_(bf16|int8_convrot)\.safetensors$/i.test(n)),qwenEncoders:infoOptions(info,'CLIPLoader','clip_name').filter(n=>/^qwen3vl_8b_(bf16|fp8_scaled|int8_convrot)\.safetensors$/i.test(n)),qwenVaes:infoOptions(info,'VAELoader','vae_name').filter(n=>n==='qwen_image_2.1_vae_bf16.safetensors'),backgroundModels:infoOptions(info,'LoadBackgroundRemovalModel','bg_removal_name'),missingEditNodes:['UNETLoader','CLIPLoader','VAELoader','TextEncodeQwenImage21'].filter(n=>!info[n]),missingMatteNodes:['LoadBackgroundRemovalModel','RemoveBackground','MaskToImage'].filter(n=>!info[n])};return{cap,info};
+    const cap:Capabilities={pixal:pixalCapabilities(info),stats:stats as unknown as Capabilities['stats'],checkpoints:checks.filter(n=>/sdxl|illustrious|hassaku/i.test(n)),shapeCheckpoints:shape.filter(n=>/hunyuan.*3d|hunyuan_3d/i.test(n)),missingShapeNodes:['ImageOnlyCheckpointLoader','Hunyuan3Dv2Conditioning','EmptyLatentHunyuan3Dv2','ModelSamplingAuraFlow','VAEDecodeHunyuan3D','VoxelToMesh','SaveGLB','CLIPVisionEncode','LoadImage','KSampler'].filter(n=>!info[n]),qwenModels:infoOptions(info,'UNETLoader','unet_name').filter(n=>/^qwen_image_2\.1_(bf16|int8_convrot)\.safetensors$/i.test(n)),qwenEncoders:infoOptions(info,'CLIPLoader','clip_name').filter(n=>/^qwen3vl_8b_(bf16|fp8_scaled|int8_convrot)\.safetensors$/i.test(n)),qwenVaes:infoOptions(info,'VAELoader','vae_name').filter(n=>n==='qwen_image_2.1_vae_bf16.safetensors'),backgroundModels:infoOptions(info,'LoadBackgroundRemovalModel','bg_removal_name'),missingEditNodes:['UNETLoader','CLIPLoader','VAELoader','TextEncodeQwenImage21'].filter(n=>!info[n]),missingVisionNodes:['QCharacterVisionReview','JoinImageWithAlpha','LoadImage'].filter(n=>!info[n]),missingMatteNodes:['LoadBackgroundRemovalModel','RemoveBackground','MaskToImage'].filter(n=>!info[n])};return{cap,info};
   };
   const upload=async(sid:string,projectId:string,assetId:string)=>{const result=await call<{name:string;subfolder?:string}>('remoteUpload',{session:sid,projectId,assetId});if(!result.name)throw new Error('服务没有返回上传文件名。');return result.subfolder?`${result.subfolder}/${result.name}`:result.name;};
   const receive=async(job:Job,sid:string)=>{
     const deadline=Date.now()+45*60*1000;let failures=0;
     while(Date.now()<deadline){if(cancelled)throw new Error('QCHARACTER_CANCELLED');let history:Record<string,any>|undefined;
       try{history=await json(sid,`/history/${encodeURIComponent(job.promptId!)}`);failures=0;}catch(e){failures++;job.message='连接中断，正在按原任务编号重试…';await emit(job);if(failures>=5)throw e;}
-      const entry=history?.[job.promptId!];if(entry){const failed=entry.status?.messages?.find(([type]:[string])=>['execution_error','execution_interrupted'].includes(type));if(failed||entry.status?.status_str==='error')throw Object.assign(new Error(failed?.[1]?.exception_message||'ComfyUI 执行失败。'),{permanent:true});if(entry.status?.completed){const outputs=collectOutputs(entry,job.kind);if(!outputs.length)throw new Error('任务完成，但没有正式输出。');
+      const entry=history?.[job.promptId!];if(entry){const failed=entry.status?.messages?.find(([type]:[string])=>['execution_error','execution_interrupted'].includes(type));if(failed||entry.status?.status_str==='error')throw Object.assign(new Error(failed?.[1]?.exception_message||'ComfyUI 执行失败。'),{permanent:true});if(entry.status?.completed){if(job.kind==='review'){const p=await read(job.projectId);let report;try{report=createVisionReview(readVisionOutput(entry)[0],p,job);}catch(error){throw Object.assign(error as Error,{permanent:true});}if(cancelled)throw new Error('QCHARACTER_CANCELLED');job.reviewResult=report;await call('saveProject',{id:p.id,fields:{visionReview:report}});return;}const outputs=collectOutputs(entry,job.kind);if(!outputs.length)throw new Error('任务完成，但没有正式输出。');
           const p=await read(job.projectId),source=p.assets.find(a=>a.id===job.inputAssetId);job.status='downloading';job.message='正在将生成结果保存到手机…';await emit(job);
           for(const output of outputs){if(cancelled)throw new Error('QCHARACTER_CANCELLED');const updated=await call<Project>('remoteDownload',{session:sid,projectId:p.id,output,kind:job.kind==='shape'?'model':job.kind==='matte'?'mask':'design',label:job.kind==='shape'?(job.engine?.startsWith('pixal3d')?(job.inputViewIds?'Pixal3D · 多视图 AI 贴图模型':'Pixal3D · AI 贴图模型'):'远程混元 3D 泥模'):job.kind==='matte'?'前景蒙版':job.viewRole?`${VIEW_LABELS[job.viewRole]} · 角色设计图`:'Q 版设计图',metadata:{jobId:job.id,viewRole:job.viewRole,...(job.inputViewIds?{inputViewIds:job.inputViewIds,viewFov:job.viewFov}:{}),...(source?{sourceAssetId:source.id}:{}),...(job.engine?.startsWith('pixal3d')?{textureMethod:'pixal3d-pbr',textureSourceId:job.inputAssetId}:{})}});
             if(cancelled)throw new Error('QCHARACTER_CANCELLED');
@@ -58,7 +60,7 @@ export function initializeAndroidBridge(){
       }}await new Promise(r=>setTimeout(r,1800));
     }throw new Error('等待超过 45 分钟，可稍后继续接收结果。');
   };
-  const run=async(projectId:string,options:{kind:Job['kind'];assetId?:string;quality?:string;denoise?:number;viewRole?:ViewRole;multiView?:boolean;repairMaskId?:string;instruction?:string},resume?:Job)=>{
+  const run=async(projectId:string,options:{kind:Job['kind'];assetId?:string;quality?:string;denoise?:number;viewRole?:ViewRole;multiView?:boolean;repairMaskId?:string;instruction?:string;referenceFindingId?:string},resume?:Job)=>{
     idle();starting=true;try{const settings=(await projects()).settings;
     if(resume?.server&&resume.server!==settings.server)throw new Error('当前地址与原任务地址不同，请切回原地址后继续接收。');
     const job:Job=resume?{...resume,status:'running',message:'按原任务编号继续接收…'}:{id:crypto.randomUUID(),projectId,kind:options.kind,inputAssetId:options.assetId,server:settings.server,status:'submitting',message:'检查远程模型与工作流…',createdAt:new Date().toISOString(),seed:crypto.getRandomValues(new Uint32Array(1))[0]};
@@ -66,10 +68,10 @@ export function initializeAndroidBridge(){
     void(async()=>{let sid='';try{
       const p=await read(projectId);
       const multi=!resume&&options.kind==='shape'&&options.multiView?readyMultiView(p):null;
-      if(multi){assertConsistencyReady(p);if(settings.shapeEngine==='hunyuan3d')throw new Error('多视图建模请选择 Pixal3D。');options={...options,assetId:multi.views.front};job.inputAssetId=multi.views.front;job.inputViewIds={...multi.views};job.viewFov=multi.fov;}
+      if(multi){assertConsistencyReady(p);assertVisionReady(p);if(settings.shapeEngine==='hunyuan3d')throw new Error('多视图建模请选择 Pixal3D。');options={...options,assetId:multi.views.front};job.inputAssetId=multi.views.front;job.inputViewIds={...multi.views};job.viewFov=multi.fov;}
       if(!resume&&options.viewRole){if(!VIEW_ROLES.includes(options.viewRole)||options.kind==='shape')throw new Error('视图方向无效。');job.viewRole=options.viewRole;job.viewExpectedId=p.multiView?.views[options.viewRole]||'';if(options.kind==='design'&&options.viewRole!=='front'&&!options.repairMaskId){if(!p.multiView?.views.front||settings.imageEngine!=='qwen21')throw new Error('请先指定正面设计图，并使用 Qwen 参考编辑生成侧背面。');options={...options,assetId:p.multiView.views.front};job.inputAssetId=options.assetId;}}
       const source=p.assets.find(a=>a.id===options.assetId);
-      if(!resume&&options.repairMaskId){if(source?.kind!=='cutout'||p.multiView?.views[options.viewRole!]!==source.id||settings.imageEngine!=='qwen21')throw new Error('目标视图已变更，或未选择 Qwen 编辑。');repairPrompt(options.viewRole!,options.instruction!);job.repairMaskId=options.repairMaskId;job.repairInstruction=options.instruction;}
+      if(!resume&&options.repairMaskId){if(source?.kind!=='cutout'||p.multiView?.views[options.viewRole!]!==source.id||settings.imageEngine!=='qwen21')throw new Error('目标视图已变更，或未选择 Qwen 编辑。');repairPrompt(options.viewRole!,options.instruction!);if(options.referenceFindingId)acceptedFinding(p,options.referenceFindingId,options.viewRole!,source.id);job.referenceFindingId=options.referenceFindingId;job.repairMaskId=options.repairMaskId;job.repairInstruction=options.instruction;}
       if(resume){const existing=[...p.assets].reverse().find(a=>a.jobId===job.id&&a.kind===(job.kind==='shape'?'model':job.kind==='matte'||job.repairMaskId?'cutout':'design'));if(existing){job.resultAssetId=existing.id;job.status='completed';job.message='已找回保存在手机上的结果。';return;}}
       sid=await call<string>('beginRemote');session=sid;
       if(!resume){let image:string|undefined,views:Partial<Record<ViewRole,string>>|undefined;
@@ -92,32 +94,55 @@ export function initializeAndroidBridge(){
     }catch(e){job.status=cancelled?'cancelled':(e as {permanent?:boolean}).permanent?'failed':job.promptId?'interrupted':'failed';job.message=cancelled?'已停止接收当前任务。':(e as Error).message;}finally{if(sid)await call('endRemote',{session:sid}).catch(()=>{});if(session===sid)session='';try{await emit(job);}finally{if(active===job)active=null;}}})();
     return job;}finally{starting=false;}
   };
+  const runReview=async(projectId:string,resume?:Job)=>{
+    idle();starting=true;try{
+      const settings=(await projects()).settings;
+      if(resume?.server&&resume.server!==settings.server)throw new Error('请切回原任务地址后继续接收。');
+      const p=await read(projectId),multi=resume?null:readyMultiView(p);
+      const job:Job=resume?{...resume,status:'running',message:'继续接收视觉检查…'}:{id:crypto.randomUUID(),projectId,kind:'review',seed:0,status:'submitting',message:'准备本地视觉检查…',createdAt:new Date().toISOString(),server:settings.server,visionModel:settings.visionModel||DEFAULT_VISION_MODEL,inputViewIds:{...multi!.views},engine:'local-vision'};
+      active=job;cancelled=false;try{await emit(job);}catch(e){active=null;throw e;}
+      void(async()=>{let sid='';try{
+        sid=await call<string>('beginRemote');session=sid;
+        if(!resume){const {cap,info}=await capabilities(sid),v=(cap.stats.system.comfyui_version||'').split('.').map(Number);job.targetedInterrupt=v[0]>0||v[1]>39||v[1]===39&&v[2]>=1;
+          const views:Partial<Record<ViewRole,string>>={};for(const role of VIEW_ROLES)if(job.inputViewIds?.[role]){if(cancelled)throw new Error('QCHARACTER_CANCELLED');views[role]=await upload(sid,p.id,job.inputViewIds[role]!);}
+          const graph=buildVisionWorkflow({views,model:job.visionModel,description:p.description});validateWorkflow(graph,info);job.workflow=graph;if(cancelled)throw new Error('QCHARACTER_CANCELLED');
+          const result=await json(sid,'/prompt',{prompt:graph,client_id:crypto.randomUUID()});if(!result.prompt_id)throw new Error('视觉检查未返回任务编号。');job.promptId=result.prompt_id;job.status='running';job.message='电脑上的视觉模型正在对比结构与数量…';await emit(job);
+          if(cancelled){await json(sid,'/queue',{delete:[job.promptId]});if(job.targetedInterrupt)await json(sid,'/interrupt',{prompt_id:job.promptId});throw new Error('QCHARACTER_CANCELLED');}
+        }
+        await receive(job,sid);job.status='completed';job.message='视觉检查已保存，请逐项确认标记和重绘建议。';
+      }catch(e){job.status=cancelled?'cancelled':(e as {permanent?:boolean}).permanent?'failed':job.promptId?'interrupted':'failed';job.message=(e as Error).message;}
+      finally{if(sid)await call('endRemote',{session:sid}).catch(()=>{});if(session===sid)session='';try{await emit(job);}finally{if(active===job)active=null;}}
+      })();return job;
+    }finally{starting=false;}
+  };
   const api:StudioBridge={
+    reviewViews:projectId=>runReview(projectId),
+    async syncEditing(id,editing){if(editing)editingProjects.add(id);else editingProjects.delete(id);},
     syncStatus:()=>call('syncStatus'),
     async syncPair(server,code){idle();await call('syncNetPair',{server,code});},
     async syncForget(){idle();await call('syncForget');},
     syncInspectCertificate:server=>call('inspectCertificate',{server,scope:'sync'}),
     syncTrustCertificate:certificate=>call('trustCertificate',{receipt:certificate.receipt,scope:'sync'}),
-    async syncRun(ids){idle();syncBusy=true;syncAborted=false;try{return await synchronize(call,{ids,progress:message=>syncListeners.forEach(fn=>fn({type:'progress',message})),cancelled:()=>syncAborted});}finally{syncBusy=false;syncListeners.forEach(fn=>fn({type:'changed'}));}},
+    async syncRun(ids){idle();if(editingProjects.size)throw new Error('请先保存建议或完成当前编辑，再同步作品。');syncBusy=true;syncAborted=false;try{return await synchronize(call,{ids,progress:message=>syncListeners.forEach(fn=>fn({type:'progress',message})),cancelled:()=>syncAborted});}finally{syncBusy=false;syncListeners.forEach(fn=>fn({type:'changed'}));}},
     async syncCancel(){syncAborted=true;await call('syncCancel');},
     syncAuto:enabled=>call('syncAuto',{enabled}).then(()=>{}),
     onSync:callback=>{syncListeners.add(callback);return()=>{syncListeners.delete(callback);};},
     async bootstrap(){const inFlight=!!active||starting;const data=await projects();let pending:Job|null=null;if(!recovered&&!inFlight&&!active&&!starting){recovered=true;try{for(const p of data.projects)for(const j of p.jobs)if(isActive(j)){j.status='interrupted';j.message=j.promptId?'上次任务尚未接收完成，可继续接收原任务结果。':'上次提交尚未记录任务编号。请先在 ComfyUI 历史确认执行状态，避免重复生成。';await call('saveJob',{id:p.id,job:j});pending=j;}}catch(e){recovered=false;throw e;}}return{...data,active:active||pending};},
     async settings(settings){idle();return call<Settings>('settings',{value:settings});},
     async connect(){const sid=await call<string>('beginRemote');try{return(await capabilities(sid)).cap;}finally{await call('endRemote',{session:sid});}},
-    createProject:name=>call('createProject',{name}),async saveProject(id,fields){if(fields.consistency)fields={...fields,consistency:normalizeConsistency(fields.consistency,(await read(id)).assets)};if(fields.multiView)fields={...fields,multiView:normalizeMultiView(fields.multiView,(await read(id)).assets)};return call('saveProject',{id,fields});},
+    createProject:name=>call('createProject',{name}),async saveProject(id,fields){if(fields.visionReview)fields={...fields,visionReview:normalizeVisionReview(fields.visionReview,(await read(id)).assets)};if(fields.consistency)fields={...fields,consistency:normalizeConsistency(fields.consistency,(await read(id)).assets)};if(fields.multiView)fields={...fields,multiView:normalizeMultiView(fields.multiView,(await read(id)).assets)};return call('saveProject',{id,fields});},
     async setView(projectId,role,assetId,expected){idle();return call('setView',{projectId,role,assetId,expected});},
     importAsset:(projectId,kind)=>{idle();return call('importAsset',{projectId,kind});},
     async saveMask(projectId,cutoutId,bytes){idle();const p=await read(projectId),parent=p.assets.find(a=>a.id===cutoutId),source=p.assets.find(a=>a.id===parent?.sourceAssetId);if(!source)throw new Error('找不到抠图原始图片。');const image=await readReference(assetUrl(p,source));const blob=URL.createObjectURL(new Blob([new Uint8Array(bytes)]));try{const mask=await readReference(blob),corrected=applyMask(image,mask,true);return call('saveMask',{projectId,parentId:cutoutId,mask:await transfer(bytes),cutout:await transfer(await png(corrected))});}finally{URL.revokeObjectURL(blob);}},
     async saveTexture(projectId,parentId,referenceId,bytes,config){idle();return call('saveTexture',{projectId,parentId,referenceId,transfer:await transfer(bytes),config});},
-    async repairView(projectId,role,assetId,bytes,instruction){idle();repairPrompt(role,instruction);const p=await read(projectId),a=p.assets.find(a=>a.id===assetId&&a.kind==='cutout');if(!a||p.multiView?.views[role]!==assetId)throw new Error('目标视图已变更，请重新打开。');const url=URL.createObjectURL(new Blob([new Uint8Array(bytes)]));try{validateRepairMask(await readReference(assetUrl(p,a)),await readReference(url));}finally{URL.revokeObjectURL(url);}const mask=await saveAsset(projectId,bytes,'mask','局部重绘选区',{sourceAssetId:assetId,viewRole:role});return run(projectId,{kind:'design',assetId,viewRole:role,repairMaskId:last(mask).id,instruction});},
+    async repairView(projectId,role,assetId,bytes,instruction,findingId){idle();repairPrompt(role,instruction);const p=await read(projectId),a=p.assets.find(a=>a.id===assetId&&a.kind==='cutout');if(!a||p.multiView?.views[role]!==assetId)throw new Error('目标视图已变更，请重新打开。');if(findingId)acceptedFinding(p,findingId,role,assetId);const url=URL.createObjectURL(new Blob([new Uint8Array(bytes)]));try{validateRepairMask(await readReference(assetUrl(p,a)),await readReference(url));}finally{URL.revokeObjectURL(url);}const mask=await saveAsset(projectId,bytes,'mask','局部重绘选区',{sourceAssetId:assetId,viewRole:role});return run(projectId,{kind:'design',assetId,viewRole:role,repairMaskId:last(mask).id,instruction,referenceFindingId:findingId});},
     generate:run,
     async cancel(){if(!active)return;cancelled=true;if(session&&active.promptId){await json(session,'/queue',{delete:[active.promptId]});if(active.targetedInterrupt)await json(session,'/interrupt',{prompt_id:active.promptId});}},
     exportAsset:(projectId,assetId)=>call('exportAsset',{projectId,assetId}),
     async exportBytes({name,bytes}){return call('exportTransfer',{name,transfer:await transfer(bytes)});},
     async openFolder(){throw new Error('手机作品保存在应用私有目录，请使用“导出”保存到系统文件夹。');},
     openComfy:()=>call('openComfy').then(()=>{}),onJob:listener=>{listeners.add(listener);return()=>{listeners.delete(listener);};},
-    async resumeJob(projectId,jobId){const p=await read(projectId),job=p.jobs.find(j=>j.id===jobId&&j.promptId);if(!job)throw new Error('找不到可继续接收的任务。');return run(projectId,{kind:job.kind,assetId:job.inputAssetId},job);},
+    async resumeJob(projectId,jobId){const p=await read(projectId),job=p.jobs.find(j=>j.id===jobId&&j.promptId);if(!job)throw new Error('找不到可继续接收的任务。');return job.kind==='review'?runReview(projectId,job):run(projectId,{kind:job.kind,assetId:job.inputAssetId},job);},
     inspectCertificate:server=>call('inspectCertificate',{server}),
     trustCertificate:certificate=>call('trustCertificate',{receipt:certificate.receipt,summary:`${certificate.server}\n${certificate.subject}\n有效期：${certificate.validFrom} 至 ${certificate.validTo}\nSHA256：${certificate.fingerprint}`}),
     revokeCertificate:server=>call('revokeCertificate',{server}).then(()=>{}),

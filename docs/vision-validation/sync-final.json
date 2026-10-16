@@ -1,0 +1,30 @@
+{
+  "sync": {
+    "changed": 1,
+    "conflicts": 0,
+    "uploadedFiles": 0,
+    "downloadedFiles": 4,
+    "errors": []
+  },
+  "confirmed": true,
+  "view": "bea3648e-0ae3-4124-a034-709bd4fcc410",
+  "report": "ed822de1-d72b-42f9-95e1-997148a9e3bf",
+  "model": {
+    "id": "5701dccd-2cfa-4a68-a11b-07a6e0a83e39",
+    "filename": "a7cfd220-97ba-4aae-a985-8868253776fe.glb",
+    "kind": "model",
+    "label": "Pixal3D · 多视图 AI 贴图模型",
+    "createdAt": "2026-10-16T13:47:35.795Z",
+    "jobId": "df303e3c-6d85-4b1f-bfd1-0642d48f52c1",
+    "sourceAssetId": "8c54b5d0-0189-4644-9969-f2d891a80d1e",
+    "textureSourceId": "8c54b5d0-0189-4644-9969-f2d891a80d1e",
+    "textureMethod": "pixal3d-pbr",
+    "inputViewIds": {
+      "front": "8c54b5d0-0189-4644-9969-f2d891a80d1e",
+      "left": "bea3648e-0ae3-4124-a034-709bd4fcc410",
+      "back": "c9c31999-7b14-4b60-9960-c7bf5e65b6cf",
+      "right": "b646aec1-daa8-42ae-81b6-a1eff8621fef"
+    },
+    "viewFov": 20
+  }
+}

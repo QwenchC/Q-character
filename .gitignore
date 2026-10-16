@@ -18,3 +18,5 @@ android/local.properties
 android/app/src/main/assets/www/
 *.jks
 *.keystore
+
+__pycache__/

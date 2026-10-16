@@ -40,6 +40,7 @@ final class ProjectStore {
     synchronized JSONObject fields(String id, JSONObject fields) throws Exception {
         JSONObject p = read(id);
         for (String key : new String[]{"name","description","ratio","style","heightMm","clayGuide","workspace"}) if (fields.has(key)) p.put(key, fields.get(key));
+        if(fields.has("visionReview")){JSONObject report=VisionReview.validate(fields.getJSONObject("visionReview"),p.getJSONArray("assets"));JSONArray jobs=p.getJSONArray("jobs");VisionReview.linked(report,jobs);for(int i=0;i<jobs.length();i++)if(jobs.getJSONObject(i).getString("id").equals(report.getString("id")))jobs.getJSONObject(i).put("reviewResult",report);p.put("visionReview",report);}
         if(fields.has("consistency"))p.put("consistency",validateConsistency(fields.getJSONObject("consistency"),p.getJSONArray("assets")));
         if(fields.has("multiView"))p.put("multiView",validateMultiView(fields.getJSONObject("multiView"),p.getJSONArray("assets")));
         p.put("updatedAt", now()); save(p); return p;

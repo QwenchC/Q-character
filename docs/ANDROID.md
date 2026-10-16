@@ -1,10 +1,10 @@
 # Android 版
 
-Android 0.5.0 与 Windows 0.8.0 共用角色工作流、蒙版编辑器、3D 预览、设计图上色和黏土调色逻辑。手机通过原生网络层连接远程 ComfyUI，适用于内网地址、FRP 穿透地址，以及带端口或路径前缀的反向代理。
+Android 0.6.0 与 Windows 0.9.0 共用角色工作流、蒙版编辑器、3D 预览、设计图上色和黏土调色逻辑。手机通过原生网络层连接远程 ComfyUI，适用于内网地址、FRP 穿透地址，以及带端口或路径前缀的反向代理。
 
 ## 安装与连接
 
-在手机打开 [Windows 0.8.0 / Android 0.5.0 Release](https://github.com/QwenchC/Q-character/releases/tag/v0.8.0)，点击 `Q-Character-Android-0.5.0.apk` 下载后安装；也可使用 [APK 直接下载链接](https://github.com/QwenchC/Q-character/releases/download/v0.8.0/Q-Character-Android-0.5.0.apk)。按系统提示允许当前浏览器安装此来源的应用。Release 中的 `SHA256SUMS.txt` 可用于校验下载文件。
+在手机打开 [Windows 0.9.0 / Android 0.6.0 Release](https://github.com/QwenchC/Q-character/releases/tag/v0.9.0)，点击 `Q-Character-Android-0.6.0.apk` 下载后安装；也可使用 [APK 直接下载链接](https://github.com/QwenchC/Q-character/releases/download/v0.9.0/Q-Character-Android-0.6.0.apk)。按系统提示允许当前浏览器安装此来源的应用。Release 中的 `SHA256SUMS.txt` 可用于校验下载文件。
 
 最低 Android 8.0，需要支持 WebGL 2 和 WebMessageListener 的 Android System WebView／Chrome；首次打开即有可离线预览的示例作品。应用不包含生成模型，也不在手机上运行 ComfyUI。
 
@@ -71,3 +71,7 @@ powershell -File scripts/build-android.ps1 -Configuration Debug
 ## 0.2.0 同步验证
 
 新版增加 HTTPS 配对、跨端素材和调色方案同步，保留既有 ComfyUI 配置和作品。验证范围及结果见 [作品同步说明](SYNC.md) 和 [同步验证记录](sync-validation/report.json)。
+
+## 本地视觉检查
+
+手机与 Windows 共用结构差异标记、数量核对、建议编辑和确认后局部重绘。视觉模型在 ComfyUI 所在电脑上运行，手机不下载权重，也无需额外穿透 Ollama 端口；安装方式见 [本地视觉说明](LOCAL-VISION.md)。建议与确认状态随作品同步；真实手机性能和厂商系统仍需设备验收，模拟器结果不等于真机验证。

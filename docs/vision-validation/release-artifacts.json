@@ -1,0 +1,20 @@
+{
+  "tag": "v0.9.0",
+  "artifacts": [
+    {
+      "name": "Q-Character-Studio-0.9.0-Windows.exe",
+      "size": 105381646,
+      "sha256": "6ed555aa9a19f07923b7dfbc9846a5c3f079b911f9e00a210f6e2e4a36418f74"
+    },
+    {
+      "name": "Q-Character-Android-0.6.0.apk",
+      "size": 4702382,
+      "sha256": "bc5fe09ff37dafe77fdee88fb561f7d4f1f8f830ac3bb67a830751cc572ff4a1"
+    },
+    {
+      "name": "QCharacterVision-node.zip",
+      "size": 7668,
+      "sha256": "ab0383290254142b4202e4372728261b16cbd0ca31648228295db2f652d3612e"
+    }
+  ]
+}

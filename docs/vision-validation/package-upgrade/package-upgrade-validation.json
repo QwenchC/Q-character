@@ -1,0 +1,14 @@
+{
+  "startedAt": "2026-10-16T13:48:45.958Z",
+  "executable": "release/win-unpacked/Q Character Studio.exe",
+  "version": "0.9.0",
+  "projectCount": 3,
+  "dataPath": "E:\\Lumi\\Q-character\\.runtime\\vision-packaged-upgrade\\projects",
+  "imageEngine": "qwen21",
+  "hasCutout": true,
+  "triangles": 99150,
+  "completedAt": "2026-10-16T13:48:46.992Z",
+  "preservedFiles": 108,
+  "preservation": true,
+  "preservedMetadata": true
+}

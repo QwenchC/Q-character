@@ -1,0 +1,198 @@
+{
+  "version": 1,
+  "id": "05a158a9-733c-4031-9980-f7c2850b8432",
+  "createdAt": "2026-10-16T13:43:31.782Z",
+  "model": "qwen3.6:35b-a3b",
+  "elapsedMs": 21218,
+  "views": {
+    "front": "8c54b5d0-0189-4644-9969-f2d891a80d1e",
+    "left": "f477ad25-95d0-4dcf-8fd9-2ba19ee814b1",
+    "back": "c9c31999-7b14-4b60-9960-c7bf5e65b6cf",
+    "right": "b646aec1-daa8-42ae-81b6-a1eff8621fef"
+  },
+  "confirmed": false,
+  "summary": "对比了同一 Q 版角色的正面、左侧面、背面和右侧面视图。主要发现是侧面视图中鞋子的设计细节（鞋带/扣子）与正面视图存在不一致，且左右侧面的鞋子朝向相反，属于结构错误。",
+  "observations": [
+    {
+      "role": "front",
+      "part": "hair",
+      "name": "短发",
+      "visible_count": null,
+      "description": "棕色齐肩短发，中分，发尾内扣，覆盖耳朵。"
+    },
+    {
+      "role": "front",
+      "part": "clothes",
+      "name": "围裙连衣裙",
+      "visible_count": 1,
+      "description": "橄榄绿色背带裙，胸前有弧形大口袋，内搭白色短袖T恤。"
+    },
+    {
+      "role": "front",
+      "part": "accessories",
+      "name": "鞋子",
+      "visible_count": 2,
+      "description": "深绿色短靴，侧面有两条横向的浅色鞋带/装饰条。"
+    },
+    {
+      "role": "left",
+      "part": "hair",
+      "name": "短发",
+      "visible_count": null,
+      "description": "棕色齐肩短发，中分，发尾内扣，覆盖耳朵。"
+    },
+    {
+      "role": "left",
+      "part": "clothes",
+      "name": "围裙连衣裙",
+      "visible_count": 1,
+      "description": "橄榄绿色背带裙，侧面可见口袋的轮廓线，内搭白色短袖T恤。"
+    },
+    {
+      "role": "left",
+      "part": "accessories",
+      "name": "鞋子",
+      "visible_count": 1,
+      "description": "深绿色短靴，侧面可见三个圆形的鞋带/扣子装饰。"
+    },
+    {
+      "role": "back",
+      "part": "hair",
+      "name": "短发",
+      "visible_count": null,
+      "description": "棕色齐肩短发，背面看发尾整齐。"
+    },
+    {
+      "role": "back",
+      "part": "clothes",
+      "name": "围裙连衣裙",
+      "visible_count": 1,
+      "description": "橄榄绿色背带裙，背部有两条肩带，内搭白色短袖T恤。"
+    },
+    {
+      "role": "back",
+      "part": "accessories",
+      "name": "鞋子",
+      "visible_count": 2,
+      "description": "深绿色短靴，背面可见鞋跟部分。"
+    },
+    {
+      "role": "right",
+      "part": "hair",
+      "name": "短发",
+      "visible_count": null,
+      "description": "棕色齐肩短发，中分，发尾内扣，覆盖耳朵。"
+    },
+    {
+      "role": "right",
+      "part": "clothes",
+      "name": "围裙连衣裙",
+      "visible_count": 1,
+      "description": "橄榄绿色背带裙，侧面可见口袋的轮廓线，内搭白色短袖T恤。"
+    },
+    {
+      "role": "right",
+      "part": "accessories",
+      "name": "鞋子",
+      "visible_count": 1,
+      "description": "深绿色短靴，侧面可见两个圆形的鞋带/扣子装饰。"
+    }
+  ],
+  "findings": [
+    {
+      "role": "left",
+      "part": "accessories",
+      "kind": "structure",
+      "title": "鞋子装饰细节不一致",
+      "evidence": "左侧面视图中，可见的鞋子侧面有三个圆形的鞋带/扣子装饰。而正面视图中，两只鞋子的侧面均只有两条横向的浅色条纹装饰。",
+      "suggestion": "将左侧面视图中鞋子的圆形装饰修改为与正面视图一致的两条横向条纹。",
+      "confidence": 0.95,
+      "reference_count": null,
+      "target_count": null,
+      "bbox": [
+        382,
+        841,
+        567,
+        935
+      ],
+      "reference_bbox": [
+        371,
+        841,
+        500,
+        935
+      ],
+      "id": "05a158a9-733c-4031-9980-f7c2850b8432:0",
+      "decision": "pending",
+      "note": ""
+    },
+    {
+      "role": "right",
+      "part": "accessories",
+      "kind": "structure",
+      "title": "鞋子装饰细节不一致",
+      "evidence": "右侧面视图中，可见的鞋子侧面有两个圆形的鞋带/扣子装饰。而正面视图中，两只鞋子的侧面均只有两条横向的浅色条纹装饰。",
+      "suggestion": "将右侧面视图中鞋子的圆形装饰修改为与正面视图一致的两条横向条纹。",
+      "confidence": 0.95,
+      "reference_count": null,
+      "target_count": null,
+      "bbox": [
+        487,
+        841,
+        632,
+        935
+      ],
+      "reference_bbox": [
+        530,
+        841,
+        639,
+        935
+      ],
+      "id": "05a158a9-733c-4031-9980-f7c2850b8432:1",
+      "decision": "pending",
+      "note": ""
+    },
+    {
+      "role": "left",
+      "part": "accessories",
+      "kind": "structure",
+      "title": "鞋子朝向错误",
+      "evidence": "左侧面视图（图2）展示的是角色的左腿，但鞋子的朝向是向右的（与右侧面视图一致）。",
+      "suggestion": "将左侧面视图中鞋子的朝向修正为向左。",
+      "confidence": 0.95,
+      "reference_count": null,
+      "target_count": null,
+      "bbox": [
+        382,
+        841,
+        567,
+        935
+      ],
+      "reference_bbox": null,
+      "id": "05a158a9-733c-4031-9980-f7c2850b8432:2",
+      "decision": "pending",
+      "note": ""
+    },
+    {
+      "role": "right",
+      "part": "accessories",
+      "kind": "structure",
+      "title": "鞋子朝向错误",
+      "evidence": "右侧面视图（图4）展示的是角色的右腿，但鞋子的朝向是向左的（与左侧面视图一致）。",
+      "suggestion": "将右侧面视图中鞋子的朝向修正为向右。",
+      "confidence": 0.95,
+      "reference_count": null,
+      "target_count": null,
+      "bbox": [
+        487,
+        841,
+        632,
+        935
+      ],
+      "reference_bbox": null,
+      "id": "05a158a9-733c-4031-9980-f7c2850b8432:3",
+      "decision": "pending",
+      "note": ""
+    }
+  ],
+  "uncertainties": []
+}

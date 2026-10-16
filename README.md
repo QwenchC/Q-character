@@ -2,11 +2,11 @@
 
 面向超轻黏土手作的 Windows 桌面与 Android 应用：从文字或人物图片设计 Q 版角色，连接现有 ComfyUI 生成真实 3D 网格，再导出 Blender 可导入的 GLB、STL 和三视图参考。
 
-[下载 Windows 免安装版 v0.8.0](https://github.com/QwenchC/Q-character/releases/tag/v0.8.0) · [全部版本](https://github.com/QwenchC/Q-character/releases) · [贴图与调色说明](docs/TEXTURE-CLAY.md)
+[下载 Windows 免安装版 v0.9.0](https://github.com/QwenchC/Q-character/releases/tag/v0.9.0) · [全部版本](https://github.com/QwenchC/Q-character/releases) · [贴图与调色说明](docs/TEXTURE-CLAY.md)
 
-[下载 Android APK v0.5.0](https://github.com/QwenchC/Q-character/releases/download/v0.8.0/Q-Character-Android-0.5.0.apk) · [Android Release 与校验文件](https://github.com/QwenchC/Q-character/releases/tag/v0.8.0) · [Android 使用说明](docs/ANDROID.md)
+[下载 Android APK v0.6.0](https://github.com/QwenchC/Q-character/releases/download/v0.9.0/Q-Character-Android-0.6.0.apk) · [Android Release 与校验文件](https://github.com/QwenchC/Q-character/releases/tag/v0.9.0) · [Android 使用说明](docs/ANDROID.md)
 
-Android 0.5.0 已支持远程／内网穿透 ComfyUI、独立证书授权、Token／账号认证、触屏蒙版修正、3D 贴图与调色导出。Windows 0.8.0 可提供 HTTPS 作品同步服务，让手机和电脑继续编辑同一作品，详见 [作品同步与穿透设置](docs/SYNC.md)。最低 Android 8.0，需要支持 WebGL 2 的较新版 Android System WebView／Chrome。
+Android 0.6.0 已支持远程／内网穿透 ComfyUI、独立证书授权、Token／账号认证、触屏蒙版修正、3D 贴图与调色导出。Windows 0.9.0 可提供 HTTPS 作品同步服务，让手机和电脑继续编辑同一作品，详见 [作品同步与穿透设置](docs/SYNC.md)。最低 Android 8.0，需要支持 WebGL 2 的较新版 Android System WebView／Chrome。
 
 - 文字生成 Q 版设计图，或使用 Qwen 2.1 将人物照片转成 Q 版参考。
 - BiRefNet 自动抠图，支持恢复/擦除画笔、缩放平移和撤销重做。
@@ -21,7 +21,7 @@ Android 0.5.0 已支持远程／内网穿透 ComfyUI、独立证书授权、Toke
 ## 使用
 
 1. 在绘世启动器中启动 `F:\ComfyUI-aki\ComfyUI`。
-2. 从 [GitHub Release](https://github.com/QwenchC/Q-character/releases/tag/v0.8.0) 下载并运行 `Q-Character-Studio-0.8.0-Windows.exe`。这是免安装版，无需安装 Node.js。Release 提供 `SHA256SUMS.txt` 用于校验文件。
+2. 从 [GitHub Release](https://github.com/QwenchC/Q-character/releases/tag/v0.9.0) 下载并运行 `Q-Character-Studio-0.9.0-Windows.exe`。这是免安装版，无需安装 Node.js。Release 提供 `SHA256SUMS.txt` 用于校验文件。
 3. 点击左下角“生成服务设置”。默认地址为 `http://127.0.0.1:8188`；如绘世显示其他端口，请修改地址。目录字段仅记录环境位置，不代替服务地址，也不会启动或安装 ComfyUI。
 4. 点击“连接 ComfyUI”，再新建作品。填写角色描述，或切换“图片参考”导入人物图片。
 5. 生成并确认 Q 版设计图。图片参考默认使用 Qwen 2.1 专用人物编辑；文字设计仍使用 SDXL。已有满意的 Q 版图片也可直接导入。
@@ -84,3 +84,7 @@ npm run package
 真实 GPU 工作流验证脚本为 `scripts/qwen-live-smoke.mjs`，默认连接独立测试端口 8199。`QCHARACTER_TEST_SERVER` 可覆盖该地址。0.2.0 桌面端到端验证使用 `QCHARACTER_SMOKE=qwen` 启动开发版本，测试作品写入项目内的 `.runtime/qwen-desktop`，不会写入正式作品库。
 
 0.4.0 验证证据见 `docs/color-validation/` 和 `docs/TEXTURE-CLAY.md`；0.3.0 验证证据见 `docs/mask-validation/` 和 `docs/MASK-EDITOR.md`；0.2.0 验证证据见 `docs/qwen-validation/` 和 `docs/QWEN-MATTING.md`；`docs/VALIDATION.md` 保留 0.1.0 的历史验证。这些结果证明已运行的链路，不代表对所有照片、模型或 ComfyUI 自定义节点环境的质量保证。
+
+## 本地视觉结构与数量检查
+
+Windows 0.9.0 / Android 0.6.0 可通过本机 Ollama 检查多视图的服装、发型与配饰，标出疑似差异并生成局部重绘建议。先确认建议、调整选区，再执行修正；报告、决定和历史随作品同步。参见 [安装与使用](docs/LOCAL-VISION.md) 和 [验证记录](docs/vision-validation/REPORT.md)。视觉模型可能误判视角与遮挡，不能替代人工核对。
