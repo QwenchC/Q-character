@@ -1,0 +1,108 @@
+{
+  "version": 1,
+  "createdAt": "2026-10-16T13:11:17.422Z",
+  "views": {
+    "front": "8c54b5d0-0189-4644-9969-f2d891a80d1e",
+    "left": "f477ad25-95d0-4dcf-8fd9-2ba19ee814b1",
+    "back": "c9c31999-7b14-4b60-9960-c7bf5e65b6cf",
+    "right": "b646aec1-daa8-42ae-81b6-a1eff8621fef"
+  },
+  "rows": [
+    {
+      "role": "left",
+      "part": "hair",
+      "status": "consistent",
+      "note": "",
+      "distance": 0.031930435258860225,
+      "colors": [
+        "#402020",
+        "#604040",
+        "#806060"
+      ]
+    },
+    {
+      "role": "left",
+      "part": "clothes",
+      "status": "consistent",
+      "note": "",
+      "distance": 0.0060993675576158915,
+      "colors": [
+        "#a0a060",
+        "#c0c080",
+        "#404020"
+      ]
+    },
+    {
+      "role": "left",
+      "part": "accessories",
+      "status": "consistent",
+      "note": "",
+      "distance": null,
+      "colors": []
+    },
+    {
+      "role": "back",
+      "part": "hair",
+      "status": "consistent",
+      "note": "",
+      "distance": 0.22921286289487164,
+      "colors": [
+        "#402020",
+        "#604040",
+        "#806060"
+      ]
+    },
+    {
+      "role": "back",
+      "part": "clothes",
+      "status": "consistent",
+      "note": "",
+      "distance": 0.025295799582265042,
+      "colors": [
+        "#808040",
+        "#606020",
+        "#a0a060"
+      ]
+    },
+    {
+      "role": "back",
+      "part": "accessories",
+      "status": "occluded",
+      "note": "该方向看不到胸前细节；已核对鞋子、发型和围裙结构。",
+      "distance": null,
+      "colors": []
+    },
+    {
+      "role": "right",
+      "part": "hair",
+      "status": "consistent",
+      "note": "",
+      "distance": 0.04622123726608182,
+      "colors": [
+        "#604040",
+        "#402020",
+        "#806060"
+      ]
+    },
+    {
+      "role": "right",
+      "part": "clothes",
+      "status": "consistent",
+      "note": "",
+      "distance": 0.05888846311563365,
+      "colors": [
+        "#808040",
+        "#a0a060",
+        "#606020"
+      ]
+    },
+    {
+      "role": "right",
+      "part": "accessories",
+      "status": "consistent",
+      "note": "",
+      "distance": null,
+      "colors": []
+    }
+  ]
+}

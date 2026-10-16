@@ -4,7 +4,7 @@ contextBridge.exposeInMainWorld('studio', {
   bootstrap: invoke('bootstrap'), settings: invoke('settings'), connect: invoke('connect'),
   createProject: invoke('create-project'), saveProject: invoke('save-project'),
   importAsset: invoke('import-asset'), generate: invoke('generate'), cancel: invoke('cancel'),
-  saveMask: invoke('save-mask'), setView: invoke('set-view'),
+  saveMask: invoke('save-mask'), setView: invoke('set-view'), repairView: invoke('repair-view'),
   saveTexture: invoke('save-texture'),
   exportAsset: invoke('export-asset'), exportBytes: invoke('export-bytes'),
   openFolder: invoke('open-folder'), openComfy: invoke('open-comfy'),

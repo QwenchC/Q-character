@@ -2,16 +2,17 @@
 
 面向超轻黏土手作的 Windows 桌面与 Android 应用：从文字或人物图片设计 Q 版角色，连接现有 ComfyUI 生成真实 3D 网格，再导出 Blender 可导入的 GLB、STL 和三视图参考。
 
-[下载 Windows 免安装版 v0.7.0](https://github.com/QwenchC/Q-character/releases/tag/v0.7.0) · [全部版本](https://github.com/QwenchC/Q-character/releases) · [贴图与调色说明](docs/TEXTURE-CLAY.md)
+[下载 Windows 免安装版 v0.8.0](https://github.com/QwenchC/Q-character/releases/tag/v0.8.0) · [全部版本](https://github.com/QwenchC/Q-character/releases) · [贴图与调色说明](docs/TEXTURE-CLAY.md)
 
-[下载 Android APK v0.4.0](https://github.com/QwenchC/Q-character/releases/download/v0.7.0/Q-Character-Android-0.4.0.apk) · [Android Release 与校验文件](https://github.com/QwenchC/Q-character/releases/tag/v0.7.0) · [Android 使用说明](docs/ANDROID.md)
+[下载 Android APK v0.5.0](https://github.com/QwenchC/Q-character/releases/download/v0.8.0/Q-Character-Android-0.5.0.apk) · [Android Release 与校验文件](https://github.com/QwenchC/Q-character/releases/tag/v0.8.0) · [Android 使用说明](docs/ANDROID.md)
 
-Android 0.4.0 已支持远程／内网穿透 ComfyUI、独立证书授权、Token／账号认证、触屏蒙版修正、3D 贴图与调色导出。Windows 0.7.0 可提供 HTTPS 作品同步服务，让手机和电脑继续编辑同一作品，详见 [作品同步与穿透设置](docs/SYNC.md)。最低 Android 8.0，需要支持 WebGL 2 的较新版 Android System WebView／Chrome。
+Android 0.5.0 已支持远程／内网穿透 ComfyUI、独立证书授权、Token／账号认证、触屏蒙版修正、3D 贴图与调色导出。Windows 0.8.0 可提供 HTTPS 作品同步服务，让手机和电脑继续编辑同一作品，详见 [作品同步与穿透设置](docs/SYNC.md)。最低 Android 8.0，需要支持 WebGL 2 的较新版 Android System WebView／Chrome。
 
 - 文字生成 Q 版设计图，或使用 Qwen 2.1 将人物照片转成 Q 版参考。
 - BiRefNet 自动抠图，支持恢复/擦除画笔、缩放平移和撤销重做。
 - 正面、侧面、背面可分别上传或用 Qwen 参考正面生成，每个方向均支持抠图和手动修正；[Pixal3D 多视图流程](docs/MULTIVIEW.md)同时用于 Windows 与 Android。
 - Pixal3D（2026）生成几何与 AI PBR 贴图，支持保留材质的换色；混元 3D 与原有投影上色可继续使用。GLB/STL/三视图导出。
+- [多视图一致性检查与局部重绘](docs/CONSISTENCY-REPAIR.md)：自动色差辅助、逐项人工确认，Qwen 只重绘涂选区域，选区外保留原图。检查记录与修正版本双向同步。
 - 提取角色主色，生成可编辑、可导出的黏土试配指引。
 - 电脑与手机双向同步设计图、蒙版、带贴图模型和调色方案，同时修改时保留冲突副本。
 
@@ -20,7 +21,7 @@ Android 0.4.0 已支持远程／内网穿透 ComfyUI、独立证书授权、Toke
 ## 使用
 
 1. 在绘世启动器中启动 `F:\ComfyUI-aki\ComfyUI`。
-2. 从 [GitHub Release](https://github.com/QwenchC/Q-character/releases/tag/v0.7.0) 下载并运行 `Q-Character-Studio-0.7.0-Windows.exe`。这是免安装版，无需安装 Node.js。Release 提供 `SHA256SUMS.txt` 用于校验文件。
+2. 从 [GitHub Release](https://github.com/QwenchC/Q-character/releases/tag/v0.8.0) 下载并运行 `Q-Character-Studio-0.8.0-Windows.exe`。这是免安装版，无需安装 Node.js。Release 提供 `SHA256SUMS.txt` 用于校验文件。
 3. 点击左下角“生成服务设置”。默认地址为 `http://127.0.0.1:8188`；如绘世显示其他端口，请修改地址。目录字段仅记录环境位置，不代替服务地址，也不会启动或安装 ComfyUI。
 4. 点击“连接 ComfyUI”，再新建作品。填写角色描述，或切换“图片参考”导入人物图片。
 5. 生成并确认 Q 版设计图。图片参考默认使用 Qwen 2.1 专用人物编辑；文字设计仍使用 SDXL。已有满意的 Q 版图片也可直接导入。

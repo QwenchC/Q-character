@@ -1,0 +1,22 @@
+{
+  "blocked": {
+    "changed": 0,
+    "conflicts": 0,
+    "uploadedFiles": 0,
+    "downloadedFiles": 0,
+    "errors": [
+      {
+        "id": "92ca9a76-f9a6-4042-a888-6a1709f1ef3e",
+        "message": "同步服务 返回 HTTP 409，请检查地址、配对状态，或重试同步。"
+      }
+    ]
+  },
+  "after": {
+    "changed": 1,
+    "conflicts": 0,
+    "uploadedFiles": 0,
+    "downloadedFiles": 0,
+    "errors": []
+  },
+  "androidVersion": "0.5.0 · Android"
+}

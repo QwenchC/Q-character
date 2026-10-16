@@ -1,4 +1,5 @@
 import { PNG } from 'pngjs';
+import { assertConsistencyReady, validateRepairMask, compositeRepair, repairPrompt } from './consistency.mjs';
 import { VIEW_ROLES, VIEW_LABELS, readyMultiView, prepareMultiViewImages } from './multiview.mjs';
 import { PIXAL_DEFAULTS, buildPixal3DWorkflow, pixalCapabilities } from './pixal3d.mjs';
 import { app, BrowserWindow, ipcMain, dialog, protocol, net, shell, nativeImage, safeStorage } from 'electron';
@@ -8,7 +9,7 @@ import { fileURLToPath, pathToFileURL } from 'node:url';
 import { randomUUID } from 'node:crypto';
 import { ProjectStore, safeAsset, writeJson } from './store.mjs';
 import { ComfyClient, normalizeServer } from './comfy.mjs';
-import { buildDesignWorkflow, buildQwenEditWorkflow, buildMatteWorkflow, buildShapeWorkflow, validateWorkflow } from './workflows.mjs';
+import { buildDesignWorkflow, buildQwenEditWorkflow, buildRepairWorkflow, buildMatteWorkflow, buildShapeWorkflow, validateWorkflow } from './workflows.mjs';
 import { prepareShapeImage, alphaSummary, applyForegroundMask, extractAlphaMask, validateEditedMask } from './background.mjs';
 import { validateTexturedGlb, normalizeClayGuide, normalizeTextureConfig } from './texture.mjs';
 import { SyncServer } from './sync-server.mjs';
@@ -53,7 +54,7 @@ async function saveCutout(projectId, sourceId, imageBytes, maskBytes, job, prese
   const cutout = preserveAlpha ? imageBytes : applyForegroundMask(imageBytes, maskBytes);
   const withMask = await store.addAsset(projectId, maskBytes, '.png', 'mask', '前景蒙版 · 白色保留', job.id, { sourceAssetId: sourceId });
   const maskAsset = withMask.assets.at(-1);
-  const saved = await store.addAsset(projectId, cutout, '.png', 'cutout', '人物透明抠图 · 请检查衣服与配饰', job.id, { sourceAssetId: sourceId, maskAssetId: maskAsset.id, viewRole: job.viewRole });
+  const saved = await store.addAsset(projectId, cutout, '.png', 'cutout', '人物透明抠图 · 请检查衣服与配饰', job.id, { sourceAssetId: sourceId, maskAssetId: maskAsset.id, viewRole: job.viewRole, ...(job.repairMaskId?{parentCutoutId:job.inputAssetId,repairMaskId:job.repairMaskId,repairInstruction:job.repairInstruction,revisionType:'repair'}:{}) });
   job.resultAssetId = saved.assets.at(-1).id;
   if (job.viewRole) await store.setView(projectId, job.viewRole, job.resultAssetId, job.viewExpectedId);
 }
@@ -73,6 +74,7 @@ async function runGeneration(projectId, options) {
       let image, source, sourceBytes, views;
       const multi = options.kind === 'shape' && options.multiView ? readyMultiView(project) : null;
       if (multi) {
+        assertConsistencyReady(project);
         if (settings.shapeEngine === 'hunyuan3d') throw new Error('多视图建模请选择 Pixal3D 生成方式。');
         options = { ...options, assetId: multi.views.front }; job.inputAssetId = multi.views.front;
         job.inputViewIds = { ...multi.views }; job.viewFov = multi.fov;
@@ -80,7 +82,7 @@ async function runGeneration(projectId, options) {
       if (options.viewRole) {
         if (!VIEW_ROLES.includes(options.viewRole) || options.kind === 'shape') throw new Error('视图生成方向无效。');
         job.viewRole = options.viewRole; job.viewExpectedId = project.multiView?.views[options.viewRole] || '';
-        if (options.kind === 'design' && options.viewRole !== 'front') {
+        if (options.kind === 'design' && options.viewRole !== 'front' && !options.repairMaskId) {
           const front = project.multiView?.views.front;
           if (!front || settings.imageEngine !== 'qwen21') throw new Error('请先指定正面设计图，并使用 Qwen 参考编辑生成侧背面。');
           options = { ...options, assetId: front }; job.inputAssetId = front;
@@ -89,7 +91,16 @@ async function runGeneration(projectId, options) {
       if (options.assetId) {
         source = project.assets.find(item => item.id === options.assetId && !['model', 'mask'].includes(item.kind));
         if (!source) throw new Error('找不到选中的角色图片。');
-        sourceBytes = normalizedImage(await fs.readFile(safeAsset(store.root, projectId, source.filename)));
+        sourceBytes = await fs.readFile(safeAsset(store.root, projectId, source.filename));
+        if(!options.repairMaskId)sourceBytes=normalizedImage(sourceBytes);
+        if(options.repairMaskId){
+          if(source.kind!=='cutout'||project.multiView?.views[options.viewRole]!==source.id||settings.imageEngine!=='qwen21')throw new Error('重绘目标已变更，或未选择 Qwen 编辑，请重新打开目标视图。');
+          job.repairMaskId=options.repairMaskId;job.repairInstruction=options.instruction;repairPrompt(options.viewRole,options.instruction);
+          const m=project.assets.find(a=>a.id===options.repairMaskId&&a.kind==='mask');if(!m)throw new Error('找不到重绘选区。');
+          const decoded=PNG.sync.read(sourceBytes),selection=PNG.sync.read(await fs.readFile(safeAsset(store.root,projectId,m.filename)));validateRepairMask(decoded,selection);
+          const flat=PNG.sync.read(sourceBytes);for(let i=0;i<flat.data.length;i+=4){const a=flat.data[i+3]/255;for(let c=0;c<3;c++)flat.data[i+c]=Math.round(flat.data[i+c]*a+255*(1-a));flat.data[i+3]=255;}
+          image=await client.upload(PNG.sync.write(flat),'repair-source.png');
+        }
         if (state.cancelRequested) throw new Error('QCHARACTER_CANCELLED');
         if (options.kind === 'matte' && alphaSummary(sourceBytes).hasTransparency) {
           job.engine = 'existing-alpha';
@@ -112,7 +123,7 @@ async function runGeneration(projectId, options) {
           const bytes = settings.shapeEngine === 'hunyuan3d' ? prepareShapeImage(sourceBytes) : sourceBytes;
           await store.addAsset(projectId, bytes, '.png', 'prepared', settings.shapeEngine === 'hunyuan3d' ? '3D 输入 · 前景蒙版合成白底' : 'Pixal3D 输入 · 保留修正后的透明蒙版', job.id, { sourceAssetId: source.id });
           image = await client.upload(bytes, 'shape-input.png');
-        } else {
+        } else if(!options.repairMaskId) {
           image = await client.upload(sourceBytes, 'source.png');
         }
       }
@@ -122,15 +133,19 @@ async function runGeneration(projectId, options) {
       const parts = (cap.stats.system.comfyui_version || '').split('.').map(Number);
       state.targetedInterrupt = parts[0] > 0 || parts[1] > 39 || (parts[1] === 39 && parts[2] >= 1);
       const references = [];
-      if (options.kind === 'design' && options.viewRole && options.viewRole !== 'front') for (const role of VIEW_ROLES) {
+      if (options.kind === 'design' && options.viewRole && (options.viewRole !== 'front'||options.repairMaskId)) for (const role of VIEW_ROLES) {
         const id = project.multiView?.views[role], asset = project.assets.find(a => a.id === id && a.kind === 'cutout');
-        if (role !== 'front' && role !== options.viewRole && asset) references.push(await client.upload(normalizedImage(await fs.readFile(safeAsset(store.root, projectId, asset.filename))), 'confirmed-view.png'));
+        if ((options.repairMaskId||role !== 'front') && role !== options.viewRole && asset) references.push(await client.upload(normalizedImage(await fs.readFile(safeAsset(store.root, projectId, asset.filename))), 'confirmed-view.png'));
       }
       const params = { views, fov: multi?.fov, viewRole: options.viewRole === 'front' ? undefined : options.viewRole, references, checkpoint: options.kind === 'shape' ? settings.shapeCheckpoint : settings.designCheckpoint, description: project.description, ratio: project.ratio, style: project.style, seed: job.seed, image, quality: ['draft', 'standard', 'high'].includes(options.quality) ? options.quality : 'standard', denoise: Math.min(0.95, Math.max(0.2, Number(options.denoise) || 0.65)) };
       const useQwen = options.kind === 'design' && image && settings.imageEngine === 'qwen21';
-      const graph = options.kind === 'shape' ? (settings.shapeEngine === 'hunyuan3d' ? buildShapeWorkflow(params) : buildPixal3DWorkflow({ ...params, ...settings })) : options.kind === 'matte' ? buildMatteWorkflow({ image, model: settings.backgroundModel }) : useQwen ? buildQwenEditWorkflow({ ...params, model: settings.qwenModel, encoder: settings.qwenEncoder, vae: settings.qwenVae }) : buildDesignWorkflow(params);
+      const repairSelection=options.repairMaskId?project.assets.find(a=>a.id===options.repairMaskId):null;
+      const repairSize=options.repairMaskId?PNG.sync.read(sourceBytes):null;
+      const repairGraph=repairSelection?buildRepairWorkflow({...params,viewRole:options.viewRole,references,model:settings.qwenModel,encoder:settings.qwenEncoder,vae:settings.qwenVae,mask:await client.upload(await fs.readFile(safeAsset(store.root,projectId,repairSelection.filename)),'repair-mask.png'),width:repairSize.width,height:repairSize.height,instruction:options.instruction,backgroundModel:settings.backgroundModel}):null;
+      const graph = repairGraph || (options.kind === 'shape' ? (settings.shapeEngine === 'hunyuan3d' ? buildShapeWorkflow(params) : buildPixal3DWorkflow({ ...params, ...settings })) : options.kind === 'matte' ? buildMatteWorkflow({ image, model: settings.backgroundModel }) : useQwen ? buildQwenEditWorkflow({ ...params, model: settings.qwenModel, encoder: settings.qwenEncoder, vae: settings.qwenVae }) : buildDesignWorkflow(params));
       validateWorkflow(graph, cap.info);
       job.workflow = graph; job.engine = options.kind === 'shape' ? (settings.shapeEngine === 'hunyuan3d' ? 'hunyuan3d' : multi ? 'pixal3d-multiview' : 'pixal3d') : options.kind === 'matte' ? 'birefnet' : useQwen ? 'qwen21' : 'sdxl';
+      if(repairGraph)job.engine='qwen21-repair';
       state.closeSocket = client.watch(event => {
         if (event.data?.prompt_id !== job.promptId || state.cancelRequested) return;
         if (event.type === 'progress') { job.progress = Math.round(event.data.value / event.data.max * 100); job.message = `采样中 · ${event.data.value} / ${event.data.max}`; emit(job); }
@@ -146,10 +161,17 @@ async function runGeneration(projectId, options) {
       if (state.cancelRequested) throw new Error('QCHARACTER_CANCELLED');
       job.status = 'downloading'; job.message = '正在保存生成结果…'; emit(job);
       for (const output of outputs) {
-        const bytes = await client.download(output);
+        let bytes = await client.download(output);
         if (state.cancelRequested) throw new Error('QCHARACTER_CANCELLED');
         if (options.kind === 'matte') {
           await saveCutout(projectId, source.id, sourceBytes, bytes, job);
+          continue;
+        }
+        if(options.repairMaskId){
+          const selection=PNG.sync.read(await fs.readFile(safeAsset(store.root,projectId,repairSelection.filename)));
+          bytes=PNG.sync.write(compositeRepair(PNG.sync.read(sourceBytes),PNG.sync.read(bytes),selection));
+          const raw=await store.addAsset(projectId,bytes,'.png','design','局部重绘原图',job.id,{sourceAssetId:source.id,repairMaskId:options.repairMaskId,repairInstruction:options.instruction,viewRole:job.viewRole});
+          await saveCutout(projectId,raw.assets.at(-1).id,bytes,extractAlphaMask(bytes),job,true);
           continue;
         }
         const extension = path.extname(output.filename).toLowerCase();
@@ -244,6 +266,7 @@ app.whenReady().then(async () => {
     if ('style' in fields) value.style = fields.style === 'anime' ? 'anime' : 'clay';
     if ('heightMm' in fields) value.heightMm = Math.min(500,Math.max(10,Number(fields.heightMm)||80));
     if ('multiView' in fields) value.multiView = fields.multiView;
+    if ('consistency' in fields) value.consistency = fields.consistency;
     if (fields.workspace) {
       const w=fields.workspace, p=await store.read(id);
       if (!['design','workbench','library'].includes(w.page)||!['text','image'].includes(w.inputMode)||[w.sourceId,w.modelId].some(a=>a&&!p.assets.some(asset=>asset.id===a))) throw new Error('作品编辑位置无效。');
@@ -267,6 +290,15 @@ app.whenReady().then(async () => {
     if (!isModel && !['.png', '.jpg', '.jpeg', '.webp'].includes(extension)) throw new Error('请选择 PNG、JPG 或 WebP。');
     await store.addAsset(id, bytes, extension, isModel ? 'model' : 'reference', path.basename(file));
     return store.read(id);
+  });
+  handler('repair-view', async(projectId,role,assetId,bytes,instruction)=>{
+    assertIdle();repairPrompt(role,instruction);
+    if(!(bytes instanceof Uint8Array)||bytes.length>64*1024*1024)throw new Error('重绘选区无效。');
+    const p=await store.read(projectId),a=p.assets.find(a=>a.id===assetId&&a.kind==='cutout');
+    if(!a||p.multiView?.views[role]!==assetId)throw new Error('目标视图已变更，请重新打开。');
+    const source=PNG.sync.read(await fs.readFile(safeAsset(store.root,projectId,a.filename)));validateRepairMask(source,PNG.sync.read(Buffer.from(bytes)));
+    const saved=await store.addAsset(projectId,Buffer.from(bytes),'.png','mask','局部重绘选区',undefined,{sourceAssetId:assetId,viewRole:role});
+    return runGeneration(projectId,{kind:'design',assetId,viewRole:role,repairMaskId:saved.assets.at(-1).id,instruction});
   });
   handler('generate', runGeneration);
   handler('set-view', async (id, role, assetId, expected) => { assertIdle(); return store.setView(id, role, assetId, expected); });

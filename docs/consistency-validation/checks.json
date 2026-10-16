@@ -1,0 +1,43 @@
+{
+  "tests": 62,
+  "failed": 0,
+  "typecheck": "passed",
+  "build": "passed",
+  "androidReleaseLint": {
+    "errors": 0,
+    "issues": [
+      {
+        "id": "OldTargetApi",
+        "severity": "Warning"
+      },
+      {
+        "id": "RequiresFeature",
+        "severity": "Warning"
+      },
+      {
+        "id": "RequiresFeature",
+        "severity": "Warning"
+      },
+      {
+        "id": "GradleDependency",
+        "severity": "Warning"
+      },
+      {
+        "id": "GradleDependency",
+        "severity": "Warning"
+      },
+      {
+        "id": "SetJavaScriptEnabled",
+        "severity": "Warning"
+      },
+      {
+        "id": "CustomX509TrustManager",
+        "severity": "Warning"
+      },
+      {
+        "id": "CustomX509TrustManager",
+        "severity": "Warning"
+      }
+    ]
+  }
+}

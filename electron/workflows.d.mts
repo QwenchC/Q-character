@@ -4,3 +4,5 @@ export function buildMatteWorkflow(params: Record<string, unknown>): Record<stri
 export function buildShapeWorkflow(params: Record<string, unknown>): Record<string, unknown>;
 export function validateWorkflow(graph: Record<string, unknown>, info: Record<string, unknown>): void;
 export function collectOutputs(entry: Record<string, unknown>, kind: string): {filename:string;subfolder?:string;type:string}[];
+
+export function buildRepairWorkflow(params: Record<string, unknown>): Record<string, unknown>;

@@ -1,0 +1,18 @@
+{
+  "startedAt": "2026-10-16T13:18:21.524Z",
+  "executable": "release/win-unpacked/Q Character Studio.exe",
+  "version": "0.8.0",
+  "projectCount": 1,
+  "dataPath": "E:\\Lumi\\Q-character\\.runtime\\consistency-package-fresh-final\\projects",
+  "imageEngine": "qwen21",
+  "hasCutout": true,
+  "manualRevision": true,
+  "triangles": 198532,
+  "texture": {
+    "meshes": 1,
+    "textures": 1
+  },
+  "clayGuide": true,
+  "trialGrams": 5,
+  "completedAt": "2026-10-16T13:18:24.018Z"
+}

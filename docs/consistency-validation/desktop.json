@@ -1,0 +1,416 @@
+{
+  "job": {
+    "id": "058d50c0-7d54-4888-896b-12ca01bfeb55",
+    "projectId": "292b85c9-15b7-4382-a008-54ae52e79684",
+    "kind": "design",
+    "inputAssetId": "7828747f-07b4-461b-a621-75ed99a87e48",
+    "status": "completed",
+    "createdAt": "2026-10-16T13:08:07.412Z",
+    "message": "生成完成，已保存到作品。",
+    "seed": 2860101733,
+    "server": "http://127.0.0.1:8188",
+    "viewRole": "back",
+    "viewExpectedId": "7828747f-07b4-461b-a621-75ed99a87e48",
+    "repairMaskId": "ae230d00-5b74-4e43-9cc9-163cd4e8db53",
+    "repairInstruction": "参考正面的橄榄绿色围裙，修正选区衣服色调保持一致，只保留原有背带与衣服，不添加装饰。",
+    "workflow": {
+      "1": {
+        "class_type": "UNETLoader",
+        "inputs": {
+          "unet_name": "qwen_image_2.1_int8_convrot.safetensors",
+          "weight_dtype": "default"
+        }
+      },
+      "2": {
+        "class_type": "CLIPLoader",
+        "inputs": {
+          "clip_name": "qwen3vl_8b_int8_convrot.safetensors",
+          "type": "qwen_image",
+          "device": "default"
+        }
+      },
+      "3": {
+        "class_type": "VAELoader",
+        "inputs": {
+          "vae_name": "qwen_image_2.1_vae_bf16.safetensors"
+        }
+      },
+      "4": {
+        "class_type": "LoadImage",
+        "inputs": {
+          "image": "qcharacter-21661d43-ab2e-4ab8-a415-506d9aceac41.png"
+        }
+      },
+      "5": {
+        "class_type": "TextEncodeQwenImage21",
+        "inputs": {
+          "clip": [
+            "2",
+            0
+          ],
+          "vae": [
+            "3",
+            0
+          ],
+          "prompt": "第一张是待修正的背面目标图，其余图为同一角色其它方向的参考。保持第一张图的相机方向、姿势、比例、身份、取景、背景和未要求修改的部分。只修正指定区域，使服装、发型或配饰与参考设计合理衔接，不要把侧面改成正面、背面不要出现正面五官，不要改变角色或添加无关装饰。修正要求：参考正面的橄榄绿色围裙，修正选区衣服色调保持一致，只保留原有背带与衣服，不添加装饰。",
+          "negative_prompt": "",
+          "resolution": 0,
+          "images.image_1": [
+            "4",
+            0
+          ],
+          "images.image_2": [
+            "20",
+            0
+          ],
+          "images.image_3": [
+            "21",
+            0
+          ],
+          "images.image_4": [
+            "22",
+            0
+          ]
+        }
+      },
+      "6": {
+        "class_type": "KSampler",
+        "inputs": {
+          "model": [
+            "1",
+            0
+          ],
+          "positive": [
+            "5",
+            0
+          ],
+          "negative": [
+            "5",
+            1
+          ],
+          "latent_image": [
+            "52",
+            0
+          ],
+          "seed": 2860101733,
+          "steps": 25,
+          "cfg": 1,
+          "sampler_name": "euler",
+          "scheduler": "simple",
+          "denoise": 0.7
+        }
+      },
+      "7": {
+        "class_type": "VAEDecode",
+        "inputs": {
+          "samples": [
+            "6",
+            0
+          ],
+          "vae": [
+            "3",
+            0
+          ]
+        }
+      },
+      "8": {
+        "class_type": "SaveImage",
+        "inputs": {
+          "images": [
+            "58",
+            0
+          ],
+          "filename_prefix": "QCharacter/local-repair"
+        }
+      },
+      "20": {
+        "class_type": "LoadImage",
+        "inputs": {
+          "image": "qcharacter-5458cf0a-853b-4490-81b3-ecedff8ad6cd.png"
+        }
+      },
+      "21": {
+        "class_type": "LoadImage",
+        "inputs": {
+          "image": "qcharacter-ae09af25-9c78-479c-b6a1-b079380dc573.png"
+        }
+      },
+      "22": {
+        "class_type": "LoadImage",
+        "inputs": {
+          "image": "qcharacter-c696a01d-4a7e-494d-9f36-58955861389e.png"
+        }
+      },
+      "50": {
+        "class_type": "LoadImage",
+        "inputs": {
+          "image": "qcharacter-8b358e8c-9c26-49de-8fe7-d36cfb7aa1af.png"
+        }
+      },
+      "51": {
+        "class_type": "ImageToMask",
+        "inputs": {
+          "image": [
+            "50",
+            0
+          ],
+          "channel": "red"
+        }
+      },
+      "52": {
+        "class_type": "SetLatentNoiseMask",
+        "inputs": {
+          "samples": [
+            "60",
+            0
+          ],
+          "mask": [
+            "51",
+            0
+          ]
+        }
+      },
+      "53": {
+        "class_type": "ImageScale",
+        "inputs": {
+          "image": [
+            "7",
+            0
+          ],
+          "upscale_method": "lanczos",
+          "width": 672,
+          "height": 896,
+          "crop": "disabled"
+        }
+      },
+      "54": {
+        "class_type": "ImageCompositeMasked",
+        "inputs": {
+          "destination": [
+            "4",
+            0
+          ],
+          "source": [
+            "53",
+            0
+          ],
+          "x": 0,
+          "y": 0,
+          "resize_source": false,
+          "mask": [
+            "51",
+            0
+          ]
+        }
+      },
+      "55": {
+        "class_type": "LoadBackgroundRemovalModel",
+        "inputs": {
+          "bg_removal_name": "birefnet.safetensors"
+        }
+      },
+      "56": {
+        "class_type": "RemoveBackground",
+        "inputs": {
+          "bg_removal_model": [
+            "55",
+            0
+          ],
+          "image": [
+            "54",
+            0
+          ]
+        }
+      },
+      "57": {
+        "class_type": "InvertMask",
+        "inputs": {
+          "mask": [
+            "56",
+            0
+          ]
+        }
+      },
+      "58": {
+        "class_type": "JoinImageWithAlpha",
+        "inputs": {
+          "image": [
+            "54",
+            0
+          ],
+          "alpha": [
+            "57",
+            0
+          ]
+        }
+      },
+      "59": {
+        "class_type": "ImageScale",
+        "inputs": {
+          "image": [
+            "4",
+            0
+          ],
+          "upscale_method": "lanczos",
+          "width": 672,
+          "height": 896,
+          "crop": "disabled"
+        }
+      },
+      "60": {
+        "class_type": "VAEEncode",
+        "inputs": {
+          "pixels": [
+            "59",
+            0
+          ],
+          "vae": [
+            "3",
+            0
+          ]
+        }
+      }
+    },
+    "engine": "qwen21-repair",
+    "promptId": "063c33c8-e507-4010-b8df-09bd41f50c14",
+    "node": "8",
+    "resultAssetId": "c9c31999-7b14-4b60-9960-c7bf5e65b6cf",
+    "finishedAt": "2026-10-16T13:08:28.163Z"
+  },
+  "result": {
+    "id": "c9c31999-7b14-4b60-9960-c7bf5e65b6cf",
+    "filename": "d9def0d8-ec9f-4986-8d71-9649fd6ecb35.png",
+    "kind": "cutout",
+    "label": "人物透明抠图 · 请检查衣服与配饰",
+    "createdAt": "2026-10-16T13:08:28.154Z",
+    "jobId": "058d50c0-7d54-4888-896b-12ca01bfeb55",
+    "sourceAssetId": "2b51ed3d-56b9-48a3-a3f6-c35583f82391",
+    "maskAssetId": "50227506-930e-4162-ab15-096a7f37d572",
+    "parentCutoutId": "7828747f-07b4-461b-a621-75ed99a87e48",
+    "repairMaskId": "ae230d00-5b74-4e43-9cc9-163cd4e8db53",
+    "repairInstruction": "参考正面的橄榄绿色围裙，修正选区衣服色调保持一致，只保留原有背带与衣服，不添加装饰。",
+    "revisionType": "repair",
+    "viewRole": "back"
+  },
+  "outsidePixels": 597681,
+  "selectedPixels": 4431,
+  "changedSelectedPixels": 4072,
+  "views": {
+    "enabled": true,
+    "views": {
+      "front": "8c54b5d0-0189-4644-9969-f2d891a80d1e",
+      "left": "f7af0b54-b5fe-4912-bf19-395a08a9972a",
+      "back": "c9c31999-7b14-4b60-9960-c7bf5e65b6cf",
+      "right": "b646aec1-daa8-42ae-81b6-a1eff8621fef"
+    },
+    "fov": 20
+  },
+  "consistency": {
+    "version": 1,
+    "createdAt": "2026-10-16T13:06:06.399Z",
+    "views": {
+      "front": "8c54b5d0-0189-4644-9969-f2d891a80d1e",
+      "left": "f7af0b54-b5fe-4912-bf19-395a08a9972a",
+      "back": "7828747f-07b4-461b-a621-75ed99a87e48",
+      "right": "b646aec1-daa8-42ae-81b6-a1eff8621fef"
+    },
+    "rows": [
+      {
+        "role": "left",
+        "part": "hair",
+        "status": "pending",
+        "note": "",
+        "distance": 0.031930435258860225,
+        "colors": [
+          "#402020",
+          "#604040",
+          "#806060"
+        ]
+      },
+      {
+        "role": "left",
+        "part": "clothes",
+        "status": "pending",
+        "note": "",
+        "distance": 0.006107192875618114,
+        "colors": [
+          "#a0a060",
+          "#c0c080",
+          "#404020"
+        ]
+      },
+      {
+        "role": "left",
+        "part": "accessories",
+        "status": "pending",
+        "note": "",
+        "distance": null,
+        "colors": []
+      },
+      {
+        "role": "back",
+        "part": "hair",
+        "status": "pending",
+        "note": "",
+        "distance": 0.22921286289487164,
+        "colors": [
+          "#402020",
+          "#604040",
+          "#806060"
+        ]
+      },
+      {
+        "role": "back",
+        "part": "clothes",
+        "status": "pending",
+        "note": "",
+        "distance": 0.025295799582265042,
+        "colors": [
+          "#808040",
+          "#606020",
+          "#a0a060"
+        ]
+      },
+      {
+        "role": "back",
+        "part": "accessories",
+        "status": "pending",
+        "note": "",
+        "distance": null,
+        "colors": []
+      },
+      {
+        "role": "right",
+        "part": "hair",
+        "status": "pending",
+        "note": "",
+        "distance": 0.04622123726608182,
+        "colors": [
+          "#604040",
+          "#402020",
+          "#806060"
+        ]
+      },
+      {
+        "role": "right",
+        "part": "clothes",
+        "status": "pending",
+        "note": "",
+        "distance": 0.05888846311563365,
+        "colors": [
+          "#808040",
+          "#a0a060",
+          "#606020"
+        ]
+      },
+      {
+        "role": "right",
+        "part": "accessories",
+        "status": "pending",
+        "note": "",
+        "distance": null,
+        "colors": []
+      }
+    ]
+  }
+}

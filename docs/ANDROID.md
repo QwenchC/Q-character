@@ -1,10 +1,10 @@
 # Android 版
 
-Android 0.4.0 与 Windows 0.7.0 共用角色工作流、蒙版编辑器、3D 预览、设计图上色和黏土调色逻辑。手机通过原生网络层连接远程 ComfyUI，适用于内网地址、FRP 穿透地址，以及带端口或路径前缀的反向代理。
+Android 0.5.0 与 Windows 0.8.0 共用角色工作流、蒙版编辑器、3D 预览、设计图上色和黏土调色逻辑。手机通过原生网络层连接远程 ComfyUI，适用于内网地址、FRP 穿透地址，以及带端口或路径前缀的反向代理。
 
 ## 安装与连接
 
-在手机打开 [Windows 0.7.0 / Android 0.4.0 Release](https://github.com/QwenchC/Q-character/releases/tag/v0.7.0)，点击 `Q-Character-Android-0.4.0.apk` 下载后安装；也可使用 [APK 直接下载链接](https://github.com/QwenchC/Q-character/releases/download/v0.7.0/Q-Character-Android-0.4.0.apk)。按系统提示允许当前浏览器安装此来源的应用。Release 中的 `SHA256SUMS.txt` 可用于校验下载文件。
+在手机打开 [Windows 0.8.0 / Android 0.5.0 Release](https://github.com/QwenchC/Q-character/releases/tag/v0.8.0)，点击 `Q-Character-Android-0.5.0.apk` 下载后安装；也可使用 [APK 直接下载链接](https://github.com/QwenchC/Q-character/releases/download/v0.8.0/Q-Character-Android-0.5.0.apk)。按系统提示允许当前浏览器安装此来源的应用。Release 中的 `SHA256SUMS.txt` 可用于校验下载文件。
 
 最低 Android 8.0，需要支持 WebGL 2 和 WebMessageListener 的 Android System WebView／Chrome；首次打开即有可离线预览的示例作品。应用不包含生成模型，也不在手机上运行 ComfyUI。
 
@@ -28,6 +28,8 @@ Android 0.4.0 与 Windows 0.7.0 共用角色工作流、蒙版编辑器、3D 预
 默认 Pixal3D 在远程 ComfyUI 生成几何与 AI PBR 贴图，手机可预览、保留材质换色和导出 GLB；权重只需安装在服务端，见 [Pixal3D](PIXAL3D.md)。混元模型仍使用正面投影与侧背色块延展。黏土配方是试配起点，需要小样和干燥后校色。
 
 多视图支持分别上传、参考正面生成侧背面、逐张修正蒙版，以及三／四视图几何与 AI PBR 贴图。视图槽位和模型输入版本会与 Windows 同步；操作与权重安装见 [多视图说明](MULTIVIEW.md)。
+
+一致性检查支持颜色差异辅助、服装／发型／配饰逐项人工核对，以及触屏涂选局部重绘；重绘后自动抠图并使旧检查过期。两端同步检查记录、遮挡说明、重绘选区和新版本，见 [一致性与重绘](CONSISTENCY-REPAIR.md)。
 
 ## 任务、保存与限制
 

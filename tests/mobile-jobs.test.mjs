@@ -53,3 +53,9 @@ test('当前会话完成后，旧任务快照不能触发重启恢复并覆盖�
   p.staleNextBootstrap();await p.api.bootstrap();
   assert.equal(p.project.jobs[0].status,'completed');assert.equal(p.calls.filter(c=>c.method==='saveJob'&&c.args.job.status==='interrupted').length,0);
 });
+
+test('局部重绘恢复只承认最终抠图，下载的中间设计图不能冒充完成结果',async()=>{
+ const job={id:'repair',projectId:'p',kind:'design',status:'running',server:'https://example.test:8443/comfy',promptId:'original-prompt',repairMaskId:'selection',createdAt:'2026-01-01',seed:1};
+ const partial=phone({oldJob:job});partial.project.assets.push({id:'raw',kind:'design',jobId:'repair'});await partial.api.bootstrap();await partial.api.resumeJob('p','repair');await wait(()=>partial.calls.some(c=>c.args.route?.startsWith('/history/')));assert.notEqual(partial.events.at(-1)?.status,'completed');await partial.api.cancel();await wait(()=>partial.events.at(-1)?.status==='cancelled');
+ const done=phone({oldJob:job});done.project.assets.push({id:'raw',kind:'design',jobId:'repair'},{id:'final',kind:'cutout',jobId:'repair'});await done.api.bootstrap();await done.api.resumeJob('p','repair');await wait(()=>done.events.at(-1)?.status==='completed');assert.equal(done.events.at(-1).resultAssetId,'final');assert.equal(done.calls.filter(c=>c.args.route==='/prompt').length,0);
+});

@@ -40,6 +40,7 @@ final class ProjectStore {
     synchronized JSONObject fields(String id, JSONObject fields) throws Exception {
         JSONObject p = read(id);
         for (String key : new String[]{"name","description","ratio","style","heightMm","clayGuide","workspace"}) if (fields.has(key)) p.put(key, fields.get(key));
+        if(fields.has("consistency"))p.put("consistency",validateConsistency(fields.getJSONObject("consistency"),p.getJSONArray("assets")));
         if(fields.has("multiView"))p.put("multiView",validateMultiView(fields.getJSONObject("multiView"),p.getJSONArray("assets")));
         p.put("updatedAt", now()); save(p); return p;
     }
@@ -49,6 +50,14 @@ final class ProjectStore {
         JSONObject views=value.getJSONObject("views"),clean=new JSONObject();Set<String> used=new HashSet<>();
         for(Iterator<String> it=views.keys();it.hasNext();){String role=it.next();if(!Arrays.asList("front","left","back","right").contains(role))throw new IOException("视图方向无效。");String aid=views.getString(role);if(aid.isEmpty())continue;JSONObject a=null;for(int i=0;i<assets.length();i++)if(assets.getJSONObject(i).getString("id").equals(aid))a=assets.getJSONObject(i);if(a==null||!Arrays.asList("reference","design","cutout").contains(a.getString("kind")))throw new IOException("视图缺少对应设计图或抠图。");if(!used.add(aid))throw new IOException("不同方向不能使用同一张图片。");clean.put(role,aid);}
         return new JSONObject().put("enabled",value.getBoolean("enabled")).put("fov",fov).put("views",clean);
+    }
+    static JSONObject validateConsistency(JSONObject value,JSONArray assets) throws Exception {
+        if(value.getInt("version")!=1||value.getString("createdAt").length()>80)throw new IOException("一致性检查记录无效。");
+        JSONObject views=validateMultiView(new JSONObject().put("enabled",true).put("views",value.getJSONObject("views")).put("fov",20),assets).getJSONObject("views");
+        if(!views.has("front")||!views.has("back")||(!views.has("left")&&!views.has("right")))throw new IOException("检查缺少方向。");
+        JSONArray rows=value.getJSONArray("rows");if(rows.length()!=(views.length()-1)*3)throw new IOException("一致性检查项目不完整。");Set<String> seen=new HashSet<>();
+        for(int i=0;i<rows.length();i++){JSONObject row=rows.getJSONObject(i);String role=row.getString("role"),part=row.getString("part");if(role.equals("front")||!views.has(role)||!Arrays.asList("hair","clothes","accessories").contains(part)||!seen.add(role+":"+part)||!Arrays.asList("pending","consistent","occluded","repair").contains(row.getString("status"))||row.getString("note").length()>1000)throw new IOException("一致性检查条目无效。");if(!row.isNull("distance")){double d=row.getDouble("distance");if(!Double.isFinite(d)||d<0||d>1)throw new IOException("检查色差无效。");}JSONArray colors=row.getJSONArray("colors");if(colors.length()>3)throw new IOException("检查颜色无效。");for(int j=0;j<colors.length();j++)if(!colors.getString(j).matches("#[a-fA-F0-9]{6}"))throw new IOException("检查颜色无效。");}
+        return new JSONObject(value.toString());
     }
     synchronized JSONObject setView(String projectId,String role,String assetId,String expected) throws Exception {
         if(!Arrays.asList("front","left","back","right").contains(role))throw new IOException("视图方向无效。");
@@ -72,7 +81,7 @@ final class ProjectStore {
         if(input.length()>LIMIT) throw new IOException("手机端单个素材不能超过 64 MB，请降低生成精度。");
         if(extension.equals(".glb")) validateGlb(input, metadata.optString("textureMethod").startsWith("pixal3d-pbr"));
         JSONObject p=read(projectId), a=new JSONObject().put("id",id()).put("filename",id()+extension).put("kind",kind).put("label",label).put("createdAt",now());
-        for(String key:new String[]{"sourceAssetId","maskAssetId","parentCutoutId","revisionType","parentModelId","textureSourceId","textureMethod","textureConfig","jobId","viewRole","inputViewIds","viewFov"}) if(metadata.has(key)) a.put(key,metadata.get(key));
+        for(String key:new String[]{"sourceAssetId","maskAssetId","parentCutoutId","revisionType","parentModelId","textureSourceId","textureMethod","textureConfig","jobId","viewRole","inputViewIds","viewFov","repairMaskId","repairInstruction"}) if(metadata.has(key)) a.put(key,metadata.get(key));
         File target=file(projectId,a.getString("filename"));
         try { copy(new FileInputStream(input),new FileOutputStream(target)); p.getJSONArray("assets").put(a); p.put("updatedAt",now()); save(p); }
         catch(Exception e){target.delete();throw e;} return p;

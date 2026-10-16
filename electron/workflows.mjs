@@ -1,3 +1,4 @@
+import { repairPrompt } from './consistency.mjs';
 export const NEGATIVE = 'photorealistic, realistic human proportions, multiple people, multiple views, collage, cropped, out of frame, text, watermark, complex background, thin fingers, extra limbs, deformed hands';
 
 export function designPrompt(description, ratio = '2.5', style = 'clay') {
@@ -38,6 +39,27 @@ export function buildQwenEditWorkflow({ model, encoder, vae, image, description,
   if (viewRole) for (const [i, file] of references.slice(0, 3).entries()) {
     const id = String(20 + i); graph[id] = node('LoadImage', { image: file }); graph['5'].inputs[`images.image_${i + 2}`] = [id, 0];
   }
+  return graph;
+}
+
+export function buildRepairWorkflow({ mask, width, height, instruction, backgroundModel, ...params }) {
+  if(!mask||!backgroundModel||!Number.isInteger(width)||!Number.isInteger(height)||width<16||height<16||width*height>16000000)throw new Error('局部重绘需要有效选区、目标图片与抠图模型。');
+  const graph=buildQwenEditWorkflow({...params,resolution:0});
+  graph['5'].inputs.prompt=repairPrompt(params.viewRole,instruction);
+  graph['50']=node('LoadImage',{image:mask});
+  graph['51']=node('ImageToMask',{image:['50',0],channel:'red'});
+  graph['59']=node('ImageScale',{image:['4',0],upscale_method:'lanczos',width:Math.max(32,Math.round(width/32)*32),height:Math.max(32,Math.round(height/32)*32),crop:'disabled'});
+  graph['60']=node('VAEEncode',{pixels:['59',0],vae:['3',0]});
+  graph['52']=node('SetLatentNoiseMask',{samples:['60',0],mask:['51',0]});
+  graph['6'].inputs.latent_image=['52',0];
+  graph['6'].inputs.denoise=.7;
+  graph['53']=node('ImageScale',{image:['7',0],upscale_method:'lanczos',width,height,crop:'disabled'});
+  graph['54']=node('ImageCompositeMasked',{destination:['4',0],source:['53',0],x:0,y:0,resize_source:false,mask:['51',0]});
+  graph['55']=node('LoadBackgroundRemovalModel',{bg_removal_name:backgroundModel});
+  graph['56']=node('RemoveBackground',{bg_removal_model:['55',0],image:['54',0]});
+  graph['57']=node('InvertMask',{mask:['56',0]});
+  graph['58']=node('JoinImageWithAlpha',{image:['54',0],alpha:['57',0]});
+  graph['8'].inputs={images:['58',0],filename_prefix:'QCharacter/local-repair'};
   return graph;
 }
 

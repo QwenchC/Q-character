@@ -1,0 +1,11 @@
+{
+  "id": "d91a654b-cfa7-47a7-9e59-8c951f7f2aae",
+  "projectId": "292b85c9-15b7-4382-a008-54ae52e79684",
+  "kind": "shape",
+  "status": "failed",
+  "createdAt": "2026-10-16T13:06:28.689Z",
+  "message": "请处理一致性检查中的待核对／需修正项目，再生成 3D。",
+  "seed": 3283913385,
+  "server": "http://127.0.0.1:8188",
+  "finishedAt": "2026-10-16T13:06:28.692Z"
+}

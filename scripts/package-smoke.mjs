@@ -43,6 +43,7 @@ try {
     return result.result.value;
   };
   for (let i = 0; i < 100; i++) { if (await evaluate('Boolean(window.studio && document.querySelector("textarea"))')) break; await pause(100); }
+  await send('Page.bringToFront');
   const bootstrap = await evaluate('window.studio.bootstrap()');
   if (bootstrap.version !== version) throw new Error('Unexpected application version');
   if (!bootstrap.projects.length || bootstrap.projects[0].assets.length < 2) throw new Error('Bundled example was not initialized.');
