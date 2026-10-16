@@ -1,0 +1,53 @@
+{
+  "checks": [
+    "Desktop design, source image, mask, cutout, geometry, palette and editing location received on Android",
+    "Android touch mask revision and blue textured GLB synchronized to desktop; UUID references and embedded texture verified",
+    "Desktop recoloring continued from Android model and returned to Android with three preserved model versions",
+    "Concurrent palette edits retained on both devices via one deterministic conflict copy; retry transferred zero files; original bytes unchanged"
+  ],
+  "errors": [],
+  "startedAt": "2026-10-16T07:37:25.817Z",
+  "projectId": "bd94ed97-fda1-4aa3-82d3-0ca877649b37",
+  "transfers": {
+    "first": {
+      "changed": 1,
+      "conflicts": 0,
+      "uploadedFiles": 0,
+      "downloadedFiles": 0,
+      "errors": []
+    },
+    "sent": {
+      "changed": 1,
+      "conflicts": 0,
+      "uploadedFiles": 0,
+      "downloadedFiles": 0,
+      "errors": []
+    },
+    "returned": {
+      "changed": 1,
+      "conflicts": 0,
+      "uploadedFiles": 0,
+      "downloadedFiles": 0,
+      "errors": []
+    },
+    "conflict": {
+      "changed": 1,
+      "conflicts": 1,
+      "uploadedFiles": 0,
+      "downloadedFiles": 0,
+      "errors": []
+    },
+    "stable": {
+      "changed": 0,
+      "conflicts": 0,
+      "uploadedFiles": 0,
+      "downloadedFiles": 0,
+      "errors": []
+    }
+  },
+  "completedAt": "2026-10-16T07:38:07.852Z",
+  "trialGrams": {
+    "phoneToDesktop": 7.5,
+    "desktopToPhone": 10
+  }
+}

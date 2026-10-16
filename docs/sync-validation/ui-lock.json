@@ -1,0 +1,8 @@
+{
+  "checks": [
+    "Unsaved palette UI blocks incoming sync and retains the edited color",
+    "Saving the palette releases the lock and allows synchronization"
+  ],
+  "errors": [],
+  "completedAt": "2026-10-16T07:33:23.930Z"
+}

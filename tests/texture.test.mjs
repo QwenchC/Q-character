@@ -20,6 +20,8 @@ test('带贴图 GLB 要求 UV、颜色材质和内嵌图片，拒绝缺失贴图
 test('配色和投影配置限制格式、数量与合理范围，不接受任意原始对象', () => {
   const guide = { referenceId: 'abc', swatches: [{ name: '衣服', original: '#338844', target: '#2244BB', share: 0.5 }], bases: Array.from({ length: 6 }, () => ({ name: '白', hex: '#ffffff' })) };
   assert.equal(normalizeClayGuide(guide).swatches[0].target, '#2244bb');
+  assert.equal(normalizeClayGuide({...guide, grams:7.5}).grams,7.5);
+  assert.throws(()=>normalizeClayGuide({...guide, grams:100}),/试配量/);
   assert.throws(() => normalizeClayGuide({ ...guide, bases: [] }), /无效/);
   assert.throws(() => normalizeTextureConfig({ ...guide, projection: { turn: 20, scale: 1, offsetX: 0, offsetY: 0 } }), /对齐/);
   assert.equal(normalizeTextureConfig({ ...guide, projection: { turn: 90, scale: 1, offsetX: 0, offsetY: 0 } }).projection.turn, 90);

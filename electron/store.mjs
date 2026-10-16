@@ -43,7 +43,7 @@ export class ProjectStore {
   async saveFields(id, fields) {
     return this.mutate(async () => {
     const project = await this.read(id);
-    for (const key of ['name', 'description', 'ratio', 'style', 'heightMm', 'clayGuide']) if (key in fields) project[key] = fields[key];
+    for (const key of ['name', 'description', 'ratio', 'style', 'heightMm', 'clayGuide', 'workspace']) if (key in fields) project[key] = fields[key];
     project.updatedAt = new Date().toISOString();
     await writeJson(this.projectFile(id), project);
     return project;

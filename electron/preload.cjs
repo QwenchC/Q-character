@@ -8,5 +8,7 @@ contextBridge.exposeInMainWorld('studio', {
   saveTexture: invoke('save-texture'),
   exportAsset: invoke('export-asset'), exportBytes: invoke('export-bytes'),
   openFolder: invoke('open-folder'), openComfy: invoke('open-comfy'),
+  syncStatus: invoke('sync-status'), syncConfigure: invoke('sync-configure'), syncPairCode: invoke('sync-pair-code'), syncRevoke: invoke('sync-revoke'), syncEditing: invoke('sync-editing'),
+  onSync(callback) { const handler = (_, event) => callback(event); ipcRenderer.on('sync-event', handler); return () => ipcRenderer.removeListener('sync-event', handler); },
   onJob(callback) { const handler = (_, job) => callback(job); ipcRenderer.on('job', handler); return () => ipcRenderer.removeListener('job', handler); },
 });

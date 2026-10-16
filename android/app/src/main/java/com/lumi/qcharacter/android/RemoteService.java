@@ -17,14 +17,17 @@ import javax.net.ssl.*;
 
 final class RemoteService {
     private final File settingsFile,pinsFile;
+    private final boolean syncService;
     private JSONObject settings,pins;
     private final Map<String,Session> sessions=new ConcurrentHashMap<>();
     private final Map<String,Inspection> inspections=new ConcurrentHashMap<>();
     private final X509TrustManager systemTrust;
     static class Session { String base,auth,origin; byte[] pin; volatile boolean revoked; Set<HttpURLConnection> connections=ConcurrentHashMap.newKeySet(); }
     static class Inspection { String origin,base; X509Certificate cert; long inspectedAt; }
-    RemoteService(Context context) throws Exception {
-        settingsFile=new File(context.getFilesDir(),"settings.json");pinsFile=new File(context.getFilesDir(),"tls-pins.json");
+    RemoteService(Context context) throws Exception {this(context,false);}
+    RemoteService(Context context,boolean sync) throws Exception {
+        syncService=sync;
+        settingsFile=new File(context.getFilesDir(),sync?"sync-settings.json":"settings.json");pinsFile=new File(context.getFilesDir(),sync?"sync-tls-pins.json":"tls-pins.json");
         try{settings=ProjectStore.readJson(settingsFile);}catch(Exception e){settings=defaults();}try{pins=ProjectStore.readJson(pinsFile);}catch(Exception e){pins=new JSONObject();}
         TrustManagerFactory factory=TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());factory.init((KeyStore)null);systemTrust=(X509TrustManager)factory.getTrustManagers()[0];
     }
@@ -56,6 +59,7 @@ final class RemoteService {
     void end(String id){Session s=sessions.remove(id);if(s!=null){s.revoked=true;for(HttpURLConnection c:s.connections)c.disconnect();}}
     private void invalidate(){for(String id:new ArrayList<>(sessions.keySet()))end(id);}
     synchronized void shutdown(){invalidate();}
+    synchronized void clear()throws Exception{settings=defaults();ProjectStore.writeJson(settingsFile,settings);invalidate();}
     synchronized <T> T commit(String sid,Callable<T> operation) throws Exception {get(sid);return operation.call();}
     synchronized String describe(String receipt) throws Exception {Inspection i=inspections.get(receipt);if(i==null||System.currentTimeMillis()-i.inspectedAt>300000)throw new IOException("证书检查已过期，请重新检查。");return i.base+"\n"+i.cert.getSubjectX500Principal().getName()+"\n有效期："+i.cert.getNotBefore()+" 至 "+i.cert.getNotAfter()+"\nSHA256："+fingerprint(i.cert);}
     synchronized void revoke(String base) throws Exception {pins.remove(origin(normalize(base)));ProjectStore.writeJson(pinsFile,pins);invalidate();}
@@ -64,7 +68,7 @@ final class RemoteService {
         String base=normalize(value);URI uri=new URI(base);if(!uri.getScheme().equals("https"))throw new IOException("HTTP 地址不使用 TLS 证书。");
         final X509Certificate[] observed=new X509Certificate[1];TrustManager capture=new X509TrustManager(){public void checkClientTrusted(X509Certificate[] c,String a) throws CertificateException {throw new CertificateException();}public X509Certificate[] getAcceptedIssuers(){return new X509Certificate[0];}public void checkServerTrusted(X509Certificate[] c,String a) throws CertificateException {if(c.length==0)throw new CertificateException();observed[0]=c[0];}};
         SSLContext ctx=SSLContext.getInstance("TLS");ctx.init(null,new TrustManager[]{capture},null);boolean match;
-        try(SSLSocket socket=(SSLSocket)ctx.getSocketFactory().createSocket()){socket.connect(new InetSocketAddress(uri.getHost(),uri.getPort()>0?uri.getPort():443),15000);socket.setSoTimeout(15000);SSLParameters params=socket.getSSLParameters();params.setServerNames(Collections.singletonList(new SNIHostName(uri.getHost())));socket.setSSLParameters(params);socket.startHandshake();match=HttpsURLConnection.getDefaultHostnameVerifier().verify(uri.getHost(),socket.getSession());}
+        try(SSLSocket socket=(SSLSocket)ctx.getSocketFactory().createSocket()){socket.connect(new InetSocketAddress(uri.getHost(),uri.getPort()>0?uri.getPort():443),15000);socket.setSoTimeout(15000);SSLParameters params=socket.getSSLParameters();if(!uri.getHost().matches("[0-9.]+")&&!uri.getHost().contains(":"))params.setServerNames(Collections.singletonList(new SNIHostName(uri.getHost())));socket.setSSLParameters(params);socket.startHandshake();match=HttpsURLConnection.getDefaultHostnameVerifier().verify(uri.getHost(),socket.getSession());}
         X509Certificate cert=observed[0];if(cert==null)throw new IOException("未收到服务器证书。");cert.checkValidity();if(!match)throw new IOException("证书域名与地址不匹配，不能授权。");
         Inspection i=new Inspection();i.base=base;i.origin=origin(base);i.cert=cert;i.inspectedAt=System.currentTimeMillis();String receipt=ProjectStore.id();inspections.put(receipt,i);
         return new JSONObject().put("receipt",receipt).put("server",base).put("subject",cert.getSubjectX500Principal().getName()).put("issuer",cert.getIssuerX500Principal().getName()).put("fingerprint",fingerprint(cert)).put("validFrom",cert.getNotBefore().toString()).put("validTo",cert.getNotAfter().toString());
@@ -74,10 +78,11 @@ final class RemoteService {
         SSLContext ctx=SSLContext.getInstance("TLS");ctx.init(null,new TrustManager[]{trust},null);return ctx.getSocketFactory();
     }
     private synchronized HttpURLConnection open(String sid,String route,String method) throws Exception {
-        if(!route.matches("/(system_stats|object_info|prompt|queue|interrupt|history/[a-zA-Z0-9_-]+|upload/image|view(?:\\?.*)?)"))throw new IOException("不支持的 ComfyUI 接口。");
+        boolean permitted=syncService?route.matches("/qsync/v1/(info|pair|projects|projects/[a-f0-9-]{36}/(manifest|missing|commit|files/[a-f0-9]{64}))"):route.matches("/(system_stats|object_info|prompt|queue|interrupt|history/[a-zA-Z0-9_-]+|upload/image|view(?:\\?.*)?)");
+        if(!permitted)throw new IOException("不支持的服务接口。");
         Session s=get(sid);HttpURLConnection c=(HttpURLConnection)new URL(s.base+route).openConnection();c.setInstanceFollowRedirects(false);c.setConnectTimeout(20000);c.setReadTimeout(120000);c.setRequestMethod(method);c.setRequestProperty("Accept","application/json");if(!s.auth.isEmpty())c.setRequestProperty("Authorization",s.auth);if(c instanceof HttpsURLConnection)((HttpsURLConnection)c).setSSLSocketFactory(ssl(s));s.connections.add(c);return c;
     }
-    private InputStream response(HttpURLConnection c) throws Exception {int code=c.getResponseCode();if(code>=300&&code<400)throw new IOException("服务返回重定向，请填写直接访问 API 的地址；认证不会转发到其他地址。");if(code<200||code>=300)throw new IOException("ComfyUI 返回 HTTP "+code+"，请检查穿透地址、认证和服务状态。");return c.getInputStream();}
+    private InputStream response(HttpURLConnection c) throws Exception {int code=c.getResponseCode();if(code>=300&&code<400)throw new IOException("服务返回重定向，请填写直接访问 API 的地址；认证不会转发到其他地址。");if(code<200||code>=300)throw new IOException((syncService?"同步服务":"ComfyUI")+" 返回 HTTP "+code+"，请检查地址、配对状态，或重试同步。");return c.getInputStream();}
     private void close(String sid,HttpURLConnection c){Session s=sessions.get(sid);if(s!=null)s.connections.remove(c);c.disconnect();}
     JSONObject json(String sid,String route,JSONObject body) throws Exception {
         HttpURLConnection c=open(sid,route,body==null?"GET":"POST");try{if(body!=null){c.setDoOutput(true);c.setRequestProperty("Content-Type","application/json");byte[] b=body.toString().getBytes(StandardCharsets.UTF_8);c.setFixedLengthStreamingMode(b.length);try(OutputStream out=c.getOutputStream()){out.write(b);}}
@@ -94,5 +99,13 @@ final class RemoteService {
         if(!output.optString("type").equals("output"))throw new IOException("只能下载任务正式输出。");
         String route="/view?filename="+URLEncoder.encode(output.getString("filename"),"UTF-8")+"&subfolder="+URLEncoder.encode(output.optString("subfolder"),"UTF-8")+"&type=output";HttpURLConnection c=open(sid,route,"GET");
         try{if(c.getContentLengthLong()>ProjectStore.LIMIT)throw new IOException("生成文件超过手机端 64 MB，请降低精度。");ProjectStore.copy(response(c),new FileOutputStream(target));get(sid);}finally{close(sid,c);}
+    }
+    void syncUpload(String sid,String route,File file) throws Exception {
+        if(!syncService||file.length()<1||file.length()>ProjectStore.LIMIT)throw new IOException("同步素材大小无效。");
+        HttpURLConnection c=open(sid,route,"PUT");try{c.setDoOutput(true);c.setRequestProperty("Content-Type","application/octet-stream");c.setFixedLengthStreamingMode(file.length());try(OutputStream out=c.getOutputStream();InputStream in=new FileInputStream(file)){byte[] b=new byte[65536];int n;while((n=in.read(b))!=-1){get(sid);out.write(b,0,n);}}ProjectStore.copy(response(c),new ByteArrayOutputStream());get(sid);}finally{close(sid,c);}
+    }
+    void syncDownload(String sid,String route,File target) throws Exception {
+        if(!syncService)throw new IOException("同步连接无效。");HttpURLConnection c=open(sid,route,"GET");
+        try{if(c.getContentLengthLong()>ProjectStore.LIMIT)throw new IOException("同步素材超过 64 MiB。");ProjectStore.copy(response(c),new FileOutputStream(target));get(sid);}finally{close(sid,c);}
     }
 }

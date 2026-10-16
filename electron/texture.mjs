@@ -20,7 +20,8 @@ export function validateTexturedGlb(bytes) {
 const hex = value => { if (typeof value !== 'string' || !/^#[0-9a-f]{6}$/i.test(value)) throw new Error('颜色值无效。'); return value.toLowerCase(); };
 export function normalizeClayGuide(value) {
   if (!value || !Array.isArray(value.swatches) || value.swatches.length < 1 || value.swatches.length > 12 || !Array.isArray(value.bases) || value.bases.length !== 6) throw new Error('调色指引数据无效。');
-  return { referenceId: String(value.referenceId), swatches: value.swatches.map((s, i) => ({ id: `color-${i}`, name: String(s.name || '角色颜色').slice(0, 30), original: hex(s.original), target: hex(s.target), share: Math.min(1, Math.max(0, Number(s.share) || 0)) })), bases: value.bases.map(b => ({ name: String(b.name || '基础黏土').slice(0, 20), hex: hex(b.hex) })) };
+  if (value.grams !== undefined && (!Number.isFinite(value.grams) || value.grams < 0.5 || value.grams > 50)) throw new Error('试配量必须为 0.5–50 克。');
+  return { referenceId: String(value.referenceId), swatches: value.swatches.map((s, i) => ({ id: `color-${i}`, name: String(s.name || '角色颜色').slice(0, 30), original: hex(s.original), target: hex(s.target), share: Math.min(1, Math.max(0, Number(s.share) || 0)) })), bases: value.bases.map(b => ({ name: String(b.name || '基础黏土').slice(0, 20), hex: hex(b.hex) })), ...(value.grams !== undefined ? { grams: value.grams } : {}) };
 }
 export function normalizeTextureConfig(value) {
   const swatches = normalizeClayGuide({ ...value, bases: Array.from({ length: 6 }, () => ({ name: '', hex: '#ffffff' })) }).swatches;

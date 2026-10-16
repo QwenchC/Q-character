@@ -1,0 +1,22 @@
+{
+  "blenderVersion": "5.1.1",
+  "meshes": 1,
+  "heightMeters": 0.07999999821186066,
+  "textures": [
+    {
+      "name": "Image_0",
+      "size": [
+        2048,
+        1024
+      ],
+      "packed": true,
+      "sampledColors": 103
+    }
+  ],
+  "importedGLB": "export-80mm.glb",
+  "savedBlend": "colored-character.blend",
+  "rendered": [
+    "blender-front.png",
+    "blender-back.png"
+  ]
+}

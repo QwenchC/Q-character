@@ -39,7 +39,7 @@ final class ProjectStore {
     private void save(JSONObject p) throws Exception { writeJson(new File(new File(root, uuid(p.getString("id"))), "project.json"), p); }
     synchronized JSONObject fields(String id, JSONObject fields) throws Exception {
         JSONObject p = read(id);
-        for (String key : new String[]{"name","description","ratio","style","heightMm","clayGuide"}) if (fields.has(key)) p.put(key, fields.get(key));
+        for (String key : new String[]{"name","description","ratio","style","heightMm","clayGuide","workspace"}) if (fields.has(key)) p.put(key, fields.get(key));
         p.put("updatedAt", now()); save(p); return p;
     }
     synchronized JSONObject job(String id, JSONObject job) throws Exception {

@@ -4,19 +4,23 @@ import path from 'node:path';
 import WebSocket from 'ws';
 import { createHash } from 'node:crypto';
 import { validateTexturedGlb } from '../electron/texture.mjs';
+import { canonical } from '../electron/sync-protocol.mjs';
 
 const root = process.cwd();
 const version = JSON.parse(await fs.readFile(path.join(root, 'package.json'), 'utf8')).version;
 const executable = process.argv.includes('--portable') ? `release/Q-Character-Studio-${version}-Windows.exe` : 'release/win-unpacked/Q Character Studio.exe';
 const fresh = process.argv.includes('--fresh');
 const validationRoot = path.join(root, 'docs', process.env.QCHARACTER_PACKAGE_REPORT || 'color-validation'); await fs.mkdir(validationRoot, { recursive: true });
-const userData = path.join(root, '.runtime', fresh ? `packaged-${version}` : 'packaged-smoke');
+const userData = path.resolve(root, '.runtime', process.env.QCHARACTER_PACKAGE_PROFILE || (fresh ? `packaged-${version}` : 'packaged-smoke'));
+if (!userData.startsWith(path.join(root,'.runtime')+path.sep)) throw new Error('Package smoke profile must be inside .runtime');
 const hashes = async () => {
   const result = {};
   async function walk(folder) { for (const entry of await fs.readdir(folder, { withFileTypes: true }).catch(() => [])) { const file = path.join(folder, entry.name); if (entry.isDirectory()) await walk(file); else result[path.relative(userData, file)] = createHash('sha256').update(await fs.readFile(file)).digest('hex'); } }
   await walk(path.join(userData, 'projects')); return result;
 };
 const before = await hashes();
+const previousMetadata = {};
+for (const file of Object.keys(before).filter(file => path.basename(file) === 'project.json')) previousMetadata[file] = JSON.parse(await fs.readFile(path.join(userData,file),'utf8'));
 const child = spawn(path.join(root, executable), ['--remote-debugging-port=9237', `--user-data-dir=${userData}`], { windowsHide: true, stdio: 'ignore' });
 const pause = ms => new Promise(resolve => setTimeout(resolve, ms));
 const report = { startedAt: new Date().toISOString(), executable };
@@ -35,7 +39,7 @@ try {
   const send = (method, params = {}) => new Promise((resolve, reject) => { const id = ++sequence; waiting.set(id, { resolve, reject }); socket.send(JSON.stringify({ id, method, params })); });
   const evaluate = async expression => {
     const result = await send('Runtime.evaluate', { expression, returnByValue: true, awaitPromise: true });
-    if (result.exceptionDetails) throw new Error(result.exceptionDetails.text);
+    if (result.exceptionDetails) throw new Error(result.exceptionDetails.exception?.description || result.exceptionDetails.text);
     return result.result.value;
   };
   for (let i = 0; i < 100; i++) { if (await evaluate('Boolean(window.studio && document.querySelector("textarea"))')) break; await pause(100); }
@@ -76,11 +80,24 @@ try {
     report.texture = validateTexturedGlb(await fs.readFile(path.join(bootstrap.dataPath, bootstrap.projects[0].id, 'assets', colored.filename)));
     report.clayGuide = Boolean((await evaluate('window.studio.bootstrap()')).projects[0].clayGuide?.swatches.length);
     if (!report.clayGuide) throw new Error('Packaged recipe was not persisted');
+    report.trialGrams = (await evaluate('window.studio.bootstrap()')).projects[0].clayGuide?.grams;
+    if (report.trialGrams !== 5) throw new Error('Packaged trial grams were not persisted');
   }
   const screenshot = await send('Page.captureScreenshot', { format: 'png' });
   await fs.writeFile(path.join(validationRoot, `packaged-${fresh ? 'fresh' : 'upgrade'}.png`), Buffer.from(screenshot.data, 'base64'));
   report.completedAt = new Date().toISOString();
-  if (!fresh) { const after = await hashes(); report.preservedFiles = Object.keys(before).length; report.preservation = Object.entries(before).every(([file, value]) => after[file] === value); if (!report.preservation) throw new Error('Existing project bytes changed during upgrade'); }
+  if (!fresh) {
+    const after = await hashes(), assets = Object.entries(before).filter(([file])=>path.basename(file)!=='project.json');
+    report.preservedFiles = assets.length; report.preservation = assets.every(([file,value])=>after[file]===value);
+    // New editing-location metadata is additive; original fields and asset bytes must survive.
+    report.preservedMetadata = true;
+    for(const [file,value] of Object.entries(previousMetadata)) {
+      const next=JSON.parse(await fs.readFile(path.join(userData,file),'utf8')), old={...value};
+      for(const key of ['workspace','updatedAt']) { delete old[key]; delete next[key]; }
+      if(canonical(old)!==canonical(next))report.preservedMetadata=false;
+    }
+    if(!report.preservation||!report.preservedMetadata)throw new Error('Existing assets or saved project fields changed during upgrade');
+  }
 } catch (error) { report.error = error.message; process.exitCode = 1; }
 finally { if (socket?.readyState === WebSocket.OPEN) { socket.send(JSON.stringify({ id: 9999, method: 'Browser.close' })); await pause(300); } socket?.close(); child.kill(); await fs.writeFile(path.join(validationRoot, `package-${fresh ? 'fresh' : 'upgrade'}-validation.json`), JSON.stringify(report, null, 2)); }
 console.log(JSON.stringify(report, null, 2));

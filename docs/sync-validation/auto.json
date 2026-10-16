@@ -1,0 +1,8 @@
+{
+  "checks": [
+    "Foreground automatic sync receives a desktop edit without tapping Sync"
+  ],
+  "errors": [],
+  "elapsedSeconds": 14,
+  "completedAt": "2026-10-16T07:33:59.413Z"
+}

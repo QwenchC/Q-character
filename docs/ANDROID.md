@@ -1,10 +1,10 @@
 # Android 版
 
-Android 0.1.0 与 Windows 0.4.0 共用角色工作流、蒙版编辑器、3D 预览、设计图上色和黏土调色逻辑。手机通过原生网络层连接远程 ComfyUI，适用于内网地址、FRP 穿透地址，以及带端口或路径前缀的反向代理。
+Android 0.2.0 与 Windows 0.5.0 共用角色工作流、蒙版编辑器、3D 预览、设计图上色和黏土调色逻辑。手机通过原生网络层连接远程 ComfyUI，适用于内网地址、FRP 穿透地址，以及带端口或路径前缀的反向代理。
 
 ## 安装与连接
 
-在手机打开 [Android v0.1.0 Release](https://github.com/QwenchC/Q-character/releases/tag/android-v0.1.0)，点击 `Q-Character-Android-0.1.0.apk` 下载后安装；也可使用 [APK 直接下载链接](https://github.com/QwenchC/Q-character/releases/download/android-v0.1.0/Q-Character-Android-0.1.0.apk)。按系统提示允许当前浏览器安装此来源的应用。Release 中的 `SHA256SUMS.txt` 可用于校验下载文件。
+在手机打开 [Windows 0.5.0 / Android 0.2.0 Release](https://github.com/QwenchC/Q-character/releases/tag/v0.5.0)，点击 `Q-Character-Android-0.2.0.apk` 下载后安装；也可使用 [APK 直接下载链接](https://github.com/QwenchC/Q-character/releases/download/v0.5.0/Q-Character-Android-0.2.0.apk)。按系统提示允许当前浏览器安装此来源的应用。Release 中的 `SHA256SUMS.txt` 可用于校验下载文件。
 
 最低 Android 8.0，需要支持 WebGL 2 和 WebMessageListener 的 Android System WebView／Chrome；首次打开即有可离线预览的示例作品。应用不包含生成模型，也不在手机上运行 ComfyUI。
 
@@ -35,7 +35,7 @@ Android 0.1.0 与 Windows 0.4.0 共用角色工作流、蒙版编辑器、3D 预
 
 取消只删除本应用当前任务的排队项。ComfyUI 0.39.1 及以上还使用 `prompt_id` 定向中断；旧版停止接收，不发全局中断，避免影响其他任务。
 
-单个素材／导出上限 64 MiB，图片处理上限 1600 万像素；大型网格的导出、上色可能消耗较多手机内存，可先降低 3D 精度。作品保存在应用私有目录，更新同签名 APK 会保留；卸载会移除私有作品和设置。请先导出重要模型与图片。Windows 与 Android 各自保存作品，本版未提供跨设备作品库同步。
+单个素材／导出上限 64 MiB，图片处理上限 1600 万像素；大型网格的导出、上色可能消耗较多手机内存，可先降低 3D 精度。作品保存在应用私有目录，更新同签名 APK 会保留；卸载会移除私有作品和设置。请先导出重要模型与图片。Windows 与 Android 各自保留本地作品；0.2.0 已加入电脑提供服务的双向同步，配对、冲突处理和单独穿透设置见 [作品同步](SYNC.md)。
 
 ## 构建
 
@@ -54,7 +54,7 @@ powershell -File scripts/build-android.ps1 -Configuration Debug
 
 测试脚本 `scripts/android-transport-smoke.mjs` 用于一次性调试模拟器，需将该应用 WebView 调试端口转发到本地 9228，或设置 `ANDROID_CDP_PORT`。它临时修改测试设备的无凭据连接配置，完成后恢复，用本机模拟服务器检查路径前缀、认证、重定向和下载撤销；不应在存有个人作品的手机上作为常规操作运行。
 
-## 本次验证
+## 0.1.0 历史验证
 
 2026-10-16 在 Android 16（API 36）Pixel 7 模拟器与真实远程 ComfyUI 0.39.1／RTX 5090 上完成 Qwen → BiRefNet → 触屏手动蒙版 → 混元 3D → 设计图上色链路。生成过程中关闭重开应用，按同一任务编号找回结果。完成系统文件选择器 GLB／STL／三视图／调色指引保存和图片导入检查。桌面与手机共享代码共 38 项自动测试通过；Android Lint 无错误（包含系统 API、版本和自定义 TLS 代码的提示性警告）。
 
@@ -63,3 +63,7 @@ powershell -File scripts/build-android.ps1 -Configuration Debug
 正式签名 APK 已完成首次安装与同签名覆盖安装，作品名称和示例素材保留。APK 未设置 debuggable，代码也显式关闭 Release WebView 调试。测试用 userdebug 系统镜像自身仍会开放 DevTools，这是模拟器系统行为，参见 [Chromium 官方说明](https://chromium.googlesource.com/chromium/src.git/+/HEAD/android_webview/docs/net-debugging.md)。
 
 详细证据见 [验证记录](android-validation/report.json)、[手机预览](android-validation/mobile-preview.png) 和 [Blender 正面渲染](android-validation/blender-front.png)。记录已去除实际穿透地址和凭据。
+
+## 0.2.0 同步验证
+
+新版增加 HTTPS 配对、跨端素材和调色方案同步，保留既有 ComfyUI 配置和作品。验证范围及结果见 [作品同步说明](SYNC.md) 和 [同步验证记录](sync-validation/report.json)。

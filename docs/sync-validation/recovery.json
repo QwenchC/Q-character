@@ -1,0 +1,13 @@
+{
+  "startedAt": "2026-10-16T07:32:48.625Z",
+  "checks": [
+    "Native certificate inspection, exact fingerprint consent and pairing through HTTPS proxy with /mobile prefix",
+    "Desktop edit lock rejects synchronization with HTTP 409 and preserves both copies",
+    "Cancelled partial download cannot create a project or acknowledge a baseline",
+    "Retry after cancellation receives the full file and commits only after matching SHA256",
+    "Lost commit acknowledgement retries without duplicate conflict copies or losing either description",
+    "Revoked device rejected with HTTP 401; downloaded local project retained"
+  ],
+  "errors": [],
+  "completedAt": "2026-10-16T07:33:15.354Z"
+}

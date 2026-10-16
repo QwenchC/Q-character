@@ -2,6 +2,8 @@ import { buildDesignWorkflow,buildQwenEditWorkflow,buildMatteWorkflow,buildShape
 import { readReference } from '../texturing';
 import { applyMask,alphaMask,shapeImage,summary,type Pixels } from './pixels';
 import { assetUrl,isActive,type Asset,type Bootstrap,type Capabilities,type Job,type Project,type Settings,type StudioBridge } from '../types';
+import { synchronize } from '../sync-engine';
+import type { SyncEvent } from '../types';
 
 interface AndroidNative { postMessage(message:string):void; onmessage:(event:{data:string})=>void }
 declare global { interface Window {QNative?:AndroidNative} }
@@ -12,6 +14,7 @@ export function initializeAndroidBridge(){
   const native=window.QNative;if(!native)return;
   document.documentElement.classList.add('android');
   let sequence=0,active:Job|null=null,session='',cancelled=false,starting=false;
+  let syncBusy=false,syncAborted=false;const syncListeners=new Set<(event:SyncEvent)=>void>();
   const waiting=new Map<string,{resolve:(value:unknown)=>void;reject:(error:Error)=>void;timer:ReturnType<typeof setTimeout>}>(),listeners=new Set<(job:Job)=>void>();
   native.onmessage=event=>{try{const message=JSON.parse(event.data),pending=waiting.get(message.id);if(!pending)return;waiting.delete(message.id);clearTimeout(pending.timer);if(message.error)pending.reject(new Error(message.error));else pending.resolve(message.result);}catch{/* Ignore malformed native replies. */}};
   const call=<T=unknown>(method:string,args:Args={}):Promise<T>=>new Promise((resolve,reject)=>{const id=String(++sequence),timer=setTimeout(()=>{waiting.delete(id);reject(new Error('手机操作等待超时，请重试。生成任务可按任务编号找回。'));},method.includes('export')||method==='importAsset'||method==='trustCertificate'?30*60*1000:180000);waiting.set(id,{resolve:resolve as (value:unknown)=>void,reject,timer});native.postMessage(JSON.stringify({id,method,args}));});
@@ -21,7 +24,7 @@ export function initializeAndroidBridge(){
   const projects=async()=>{const data=await call<Bootstrap>('bootstrap');data.settings={...defaults,...data.settings};return data;};
   const read=async(id:string)=>{const p=(await projects()).projects.find(p=>p.id===id);if(!p)throw new Error('找不到作品。');return p;};
   const last=(p:Project)=>p.assets.at(-1)!;
-  const idle=()=>{if(starting||active&&isActive(active))throw new Error('请等待当前生成任务结束，或先取消任务。');};
+  const idle=()=>{if(syncBusy)throw new Error('作品正在同步，请稍后编辑或生成。');if(starting||active&&isActive(active))throw new Error('请等待当前生成任务结束，或先取消任务。');};
   const emit=async(job:Job)=>{await call('saveJob',{id:job.projectId,job});listeners.forEach(fn=>fn({...job}));};
   const json=<T=Record<string,any>>(sid:string,route:string,body?:unknown)=>call<T>('remoteJson',{session:sid,route,...(body?{body}:{})});
   const infoOptions=(info:any,node:string,name:string):string[]=>{const spec=info[node]?.input?.required?.[name]??info[node]?.input?.optional?.[name];return Array.isArray(spec?.[0])?spec[0]:spec?.[1]?.options??[];};
@@ -70,6 +73,15 @@ export function initializeAndroidBridge(){
     return job;}finally{starting=false;}
   };
   const api:StudioBridge={
+    syncStatus:()=>call('syncStatus'),
+    async syncPair(server,code){idle();await call('syncNetPair',{server,code});},
+    async syncForget(){idle();await call('syncForget');},
+    syncInspectCertificate:server=>call('inspectCertificate',{server,scope:'sync'}),
+    syncTrustCertificate:certificate=>call('trustCertificate',{receipt:certificate.receipt,scope:'sync'}),
+    async syncRun(ids){idle();syncBusy=true;syncAborted=false;try{return await synchronize(call,{ids,progress:message=>syncListeners.forEach(fn=>fn({type:'progress',message})),cancelled:()=>syncAborted});}finally{syncBusy=false;syncListeners.forEach(fn=>fn({type:'changed'}));}},
+    async syncCancel(){syncAborted=true;await call('syncCancel');},
+    syncAuto:enabled=>call('syncAuto',{enabled}).then(()=>{}),
+    onSync:callback=>{syncListeners.add(callback);return()=>{syncListeners.delete(callback);};},
     async bootstrap(){const data=await projects();let pending:Job|null=null;if(!active){for(const p of data.projects)for(const j of p.jobs)if(isActive(j)){j.status='interrupted';j.message=j.promptId?'上次任务尚未接收完成，可继续接收原任务结果。':'上次提交尚未记录任务编号。请先在 ComfyUI 历史确认执行状态，避免重复生成。';await call('saveJob',{id:p.id,job:j});pending=j;}}return{...data,active:active||pending};},
     async settings(settings){idle();return call<Settings>('settings',{value:settings});},
     async connect(){const sid=await call<string>('beginRemote');try{return(await capabilities(sid)).cap;}finally{await call('endRemote',{session:sid});}},

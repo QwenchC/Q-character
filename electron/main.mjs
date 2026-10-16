@@ -1,4 +1,4 @@
-import { app, BrowserWindow, ipcMain, dialog, protocol, net, shell, nativeImage } from 'electron';
+import { app, BrowserWindow, ipcMain, dialog, protocol, net, shell, nativeImage, safeStorage } from 'electron';
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
@@ -8,10 +8,12 @@ import { ComfyClient, normalizeServer } from './comfy.mjs';
 import { buildDesignWorkflow, buildQwenEditWorkflow, buildMatteWorkflow, buildShapeWorkflow, validateWorkflow } from './workflows.mjs';
 import { prepareShapeImage, alphaSummary, applyForegroundMask, extractAlphaMask, validateEditedMask } from './background.mjs';
 import { validateTexturedGlb, normalizeClayGuide, normalizeTextureConfig } from './texture.mjs';
+import { SyncServer } from './sync-server.mjs';
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 protocol.registerSchemesAsPrivileged([{ scheme: 'qasset', privileges: { standard: true, secure: true, supportFetchAPI: true, corsEnabled: true } }]);
 let window, store, settingsFile, settings, active;
+let syncServer;const syncEditing=new Set();
 const pendingExports = new Set();
 async function writeExport(file, bytes) {
   const temp = path.join(path.dirname(file), `.${path.basename(file)}.${randomUUID()}.tmp`);
@@ -141,6 +143,9 @@ app.whenReady().then(async () => {
   try { settings = { ...defaults, ...JSON.parse(await fs.readFile(settingsFile, 'utf8')) }; } catch { settings = { ...defaults }; }
   store = new ProjectStore(path.join(app.getPath('userData'), 'projects'));
   await store.recoverJobs();
+  const seal = value => { if (!safeStorage.isEncryptionAvailable()) throw new Error('系统无法加密保存同步证书，请检查 Windows 用户环境。'); return safeStorage.encryptString(value).toString('base64'); };
+  syncServer = new SyncServer({ store, directory: path.join(app.getPath('userData'), 'sync-service'), seal, unseal: value => safeStorage.decryptString(Buffer.from(value,'base64')), busy: id => active?.job.projectId === id || syncEditing.has(id), changed: id => { if (window && !window.isDestroyed()) window.webContents.send('sync-event',{type:'changed',projectId:id}); } });
+  await syncServer.init();
   if (!smokeMode && (await store.list()).length === 0) {
     const example = await store.create('示例 · 绿色围裙女孩');
     await store.saveFields(example.id, { description: 'a young girl with short brown hair, wearing a green apron dress, round face, gentle smile', ratio: '2.5', style: 'clay', heightMm: 80 });
@@ -178,9 +183,14 @@ app.whenReady().then(async () => {
   window.on('close', event => {
     if (closing) return;
     event.preventDefault(); closing = true;
-    void Promise.allSettled([store.pending, ...pendingExports]).finally(() => window.destroy());
+    void Promise.allSettled([syncServer.stop(), store.pending, ...pendingExports]).finally(() => window.destroy());
   });
   handler('bootstrap', bootstrap);
+  handler('sync-status',()=>syncServer.status());
+  handler('sync-configure',value=>syncServer.configure(value));
+  handler('sync-pair-code',()=>syncServer.pairCode());
+  handler('sync-revoke',id=>syncServer.revoke(String(id)));
+  handler('sync-editing',(id,editing)=>{if(editing)syncEditing.add(id);else syncEditing.delete(id);});
   handler('settings', async value => {
     assertIdle();
     const next = { server: normalizeServer(value.server), imageEngine: value.imageEngine === 'sdxl' ? 'sdxl' : 'qwen21' };
@@ -191,7 +201,17 @@ app.whenReady().then(async () => {
   handler('connect', connect);
   handler('create-project', name => store.create(String(name || '我的小角色')));
   handler('save-project', async (id, fields) => {
-    const value = { name: String(fields.name || '我的小角色').slice(0, 80), description: String(fields.description || '').slice(0, 6000), ratio: ['2', '2.5', '3'].includes(fields.ratio) ? fields.ratio : '2.5', style: fields.style === 'anime' ? 'anime' : 'clay', heightMm: Math.min(500, Math.max(10, Number(fields.heightMm) || 80)) };
+    const value = {};
+    if ('name' in fields) value.name = String(fields.name || '我的小角色').slice(0,80);
+    if ('description' in fields) value.description = String(fields.description || '').slice(0,6000);
+    if ('ratio' in fields) value.ratio = ['2','2.5','3'].includes(fields.ratio) ? fields.ratio : '2.5';
+    if ('style' in fields) value.style = fields.style === 'anime' ? 'anime' : 'clay';
+    if ('heightMm' in fields) value.heightMm = Math.min(500,Math.max(10,Number(fields.heightMm)||80));
+    if (fields.workspace) {
+      const w=fields.workspace, p=await store.read(id);
+      if (!['design','workbench','library'].includes(w.page)||!['text','image'].includes(w.inputMode)||[w.sourceId,w.modelId].some(a=>a&&!p.assets.some(asset=>asset.id===a))) throw new Error('作品编辑位置无效。');
+      value.workspace={sourceId:String(w.sourceId||''),modelId:String(w.modelId||''),page:w.page,inputMode:w.inputMode};
+    }
     if (fields.clayGuide) {
       value.clayGuide = normalizeClayGuide(fields.clayGuide);
       if (!(await store.read(id)).assets.some(a => a.id === value.clayGuide.referenceId && a.kind === 'cutout')) throw new Error('请使用透明抠图作为调色参考。');

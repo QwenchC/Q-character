@@ -1,0 +1,14 @@
+{
+  "startedAt": "2026-10-16T07:39:18.933Z",
+  "executable": "release/Q-Character-Studio-0.5.0-Windows.exe",
+  "version": "0.5.0",
+  "projectCount": 1,
+  "dataPath": "Isolated test profile",
+  "imageEngine": "qwen21",
+  "hasCutout": false,
+  "triangles": 205046,
+  "completedAt": "2026-10-16T07:39:25.901Z",
+  "preservedFiles": 2,
+  "preservation": true,
+  "preservedMetadata": true
+}

@@ -1,0 +1,50 @@
+{
+  "date": "2026-10-16",
+  "desktopVersion": "0.5.0",
+  "androidVersion": "0.2.0",
+  "environment": {
+    "desktop": "Windows packaged Electron application in isolated profile",
+    "android": "Android 16 API 36 emulator; release-signed APK upgraded without uninstall",
+    "connection": "Direct HTTPS to host and independent HTTPS proxy with path prefix"
+  },
+  "automatedTests": {
+    "passed": 43,
+    "failed": 0
+  },
+  "build": {
+    "typecheck": true,
+    "windowsPortable": true,
+    "androidRelease": true,
+    "androidLint": "No errors",
+    "packagedSourceMatches": true,
+    "apkUiMatchesBuild": true,
+    "androidSignerSHA256": "a138e795eb2b921ebdf3a42481c88c71514015e8b131324d9f32432a6d1cd8b6"
+  },
+  "evidence": {
+    "roundtrip": "roundtrip.json",
+    "recovery": "recovery.json",
+    "unsavedPaletteProtection": "ui-lock.json",
+    "foregroundAutoSync": "auto.json",
+    "windowsFresh": "package-fresh.json",
+    "windowsUpgrade": "package-upgrade.json",
+    "blender": "blender.json"
+  },
+  "artifacts": [
+    {
+      "file": "Q-Character-Studio-0.5.0-Windows.exe",
+      "size": 105359413,
+      "sha256": "8926560f127bb9351b874b3aa4b77526ab66599832cd883131d7769eddfd638b"
+    },
+    {
+      "file": "Q-Character-Android-0.2.0.apk",
+      "size": 4675514,
+      "sha256": "3476186bba10af9942698fff4470c1576a289a803a101768a42942cb74854fcc"
+    }
+  ],
+  "limitations": [
+    "No physical Android device acceptance",
+    "No real external sync tunnel configured or tested",
+    "Automatic sync runs only while the phone app is in foreground and idle",
+    "No byte-range resume inside one file; verified complete files are reused"
+  ]
+}
