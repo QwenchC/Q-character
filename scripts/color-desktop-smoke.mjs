@@ -5,7 +5,7 @@ import { createHash } from 'node:crypto';
 import { validateTexturedGlb } from '../electron/texture.mjs';
 
 export async function runDesktopSmoke({ window, store, projectId, root }) {
-  const output = path.join(root, 'docs', 'color-validation'); await fs.mkdir(output, { recursive: true });
+  const output = process.env.QCHARACTER_VALIDATION_OUTPUT ? path.resolve(process.env.QCHARACTER_VALIDATION_OUTPUT) : path.join(root, 'docs', 'color-validation'); await fs.mkdir(output, { recursive: true });
   const report = { startedAt: new Date().toISOString(), checks: [], errors: [] }, pause = ms => new Promise(r => setTimeout(r, ms));
   window.webContents.on('console-message', event => { if (event.level === 'error') report.errors.push(event.message); });
   const js = code => window.webContents.executeJavaScript(code);

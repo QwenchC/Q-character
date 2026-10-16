@@ -1,8 +1,12 @@
 # Q Character Studio
 
-面向超轻黏土手作的 Windows 桌面应用：从文字或人物图片设计 Q 版角色，连接现有 ComfyUI 生成真实 3D 网格，再导出 Blender 可导入的 GLB、STL 和三视图参考。
+面向超轻黏土手作的 Windows 桌面与 Android 应用：从文字或人物图片设计 Q 版角色，连接现有 ComfyUI 生成真实 3D 网格，再导出 Blender 可导入的 GLB、STL 和三视图参考。
 
 [下载 Windows 免安装版 v0.4.0](https://github.com/QwenchC/Q-character/releases/tag/v0.4.0) · [全部版本](https://github.com/QwenchC/Q-character/releases) · [贴图与调色说明](docs/TEXTURE-CLAY.md)
+
+[下载 Android APK v0.1.0](https://github.com/QwenchC/Q-character/releases/download/android-v0.1.0/Q-Character-Android-0.1.0.apk) · [Android Release 与校验文件](https://github.com/QwenchC/Q-character/releases/tag/android-v0.1.0) · [Android 使用说明](docs/ANDROID.md)
+
+Android 0.1.0 已支持远程／内网穿透 ComfyUI、独立证书授权、Token／账号认证、触屏蒙版修正、3D 贴图与调色导出。Android 与 Windows 分别保存作品。最低 Android 8.0，需要支持 WebGL 2 的较新版 Android System WebView／Chrome。
 
 - 文字生成 Q 版设计图，或使用 Qwen 2.1 将人物照片转成 Q 版参考。
 - BiRefNet 自动抠图，支持恢复/擦除画笔、缩放平移和撤销重做。

@@ -12,7 +12,9 @@
     "typecheck": "tsc --noEmit",
     "build": "tsc --noEmit && vite build",
     "test": "node --test tests/*.test.mjs",
-    "package": "npm run build && electron-builder --win portable --x64"
+    "package": "npm run build && electron-builder --win portable --x64",
+    "android:prepare": "npm run build && node scripts/prepare-android.mjs",
+    "android:build": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/build-android.ps1"
   },
   "dependencies": {
     "lucide-react": "^0.468.0",
@@ -29,6 +31,7 @@
     "@vitejs/plugin-react": "^4.3.4",
     "electron": "^44.7.2",
     "electron-builder": "^26.0.12",
+    "esbuild": "^0.25.12",
     "typescript": "^5.7.3",
     "vite": "^6.1.0"
   },

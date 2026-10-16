@@ -1,11 +1,18 @@
 import bpy
 import json
+import argparse
+import sys
 from pathlib import Path
 from mathutils import Vector
 
 root = Path(__file__).resolve().parents[1]
-output = root / 'docs' / 'color-validation'
-model = output / 'export-80mm.glb'
+parser = argparse.ArgumentParser()
+parser.add_argument('--model', type=Path)
+parser.add_argument('--output', type=Path)
+args = parser.parse_args(sys.argv[sys.argv.index('--') + 1:] if '--' in sys.argv else [])
+output = args.output or root / 'docs' / 'color-validation'
+output.mkdir(parents=True, exist_ok=True)
+model = args.model or output / 'export-80mm.glb'
 bpy.ops.wm.read_factory_settings(use_empty=True)
 bpy.ops.import_scene.gltf(filepath=str(model))
 meshes = [o for o in bpy.context.scene.objects if o.type == 'MESH']

@@ -12,3 +12,9 @@ docs/**/*-pid.txt
 *.tmp
 !docs/smoke-assets/design.png
 !docs/smoke-assets/model.glb
+android/.gradle/
+android/**/build/
+android/local.properties
+android/app/src/main/assets/www/
+*.jks
+*.keystore

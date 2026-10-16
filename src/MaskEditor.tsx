@@ -19,6 +19,8 @@ export function MaskEditor({ original, mask, cutout, onSave, onClose }: { origin
   const [, changed] = useState(0);
   const [cursor, setCursor] = useState<Point | null>(null);
   const gesture = useRef<{ id: number; pan: boolean; last: Point } | null>(null), space = useRef(false);
+  const touches = useRef(new Map<number, Point>());
+  const pinch = useRef<{ distance: number; center: Point } | null>(null);
   const redraw = () => {
     const s = surface.current, target = screen.current;
     if (!s || !target) return;
@@ -104,6 +106,10 @@ export function MaskEditor({ original, mask, cutout, onSave, onClose }: { origin
   const pointerDown = (event: ReactPointerEvent) => {
     if (!ready || saving || ![0, 1].includes(event.button)) return;
     event.preventDefault(); const point = position(event.clientX, event.clientY);
+    if (event.pointerType === 'touch') {
+      touches.current.set(event.pointerId, point); stage.current!.setPointerCapture(event.pointerId);
+      if (touches.current.size > 1) { finish(); const [a, b] = [...touches.current.values()]; pinch.current = { distance: Math.hypot(a.x - b.x, a.y - b.y), center: { x: (a.x + b.x) / 2, y: (a.y + b.y) / 2 } }; return; }
+    }
     const pan = tool === 'pan' || space.current || event.button === 1;
     if (!pan && view === 'original') return;
     stage.current!.setPointerCapture(event.pointerId); gesture.current = { id: event.pointerId, pan, last: point };
@@ -111,11 +117,18 @@ export function MaskEditor({ original, mask, cutout, onSave, onClose }: { origin
   };
   const pointerMove = (event: ReactPointerEvent) => {
     const point = position(event.clientX, event.clientY); setCursor(point);
+    if (touches.current.has(event.pointerId)) touches.current.set(event.pointerId, point);
+    if (pinch.current && touches.current.size > 1) {
+      const [a, b] = [...touches.current.values()], distance = Math.hypot(a.x - b.x, a.y - b.y), center = { x: (a.x + b.x) / 2, y: (a.y + b.y) / 2 }, previous = pinch.current;
+      setTransform(old => { const scale = Math.min(8, Math.max(0.05, old.scale * distance / Math.max(1, previous.distance))); return { scale, x: center.x - (previous.center.x - old.x) * scale / old.scale, y: center.y - (previous.center.y - old.y) * scale / old.scale }; });
+      pinch.current = { distance, center }; return;
+    }
     const stroke = gesture.current; if (!stroke || stroke.id !== event.pointerId) return;
     if (stroke.pan) { const dx = point.x - stroke.last.x, dy = point.y - stroke.last.y; setTransform(old => ({ ...old, x: old.x + dx, y: old.y + dy })); }
     else { const samples = event.nativeEvent.getCoalescedEvents?.(); for (const item of samples?.length ? samples : [event.nativeEvent]) { const next = position(item.clientX, item.clientY); paint(stroke.last, next); stroke.last = next; } redraw(); }
     stroke.last = point;
   };
+  const pointerEnd = (event: ReactPointerEvent) => { touches.current.delete(event.pointerId); pinch.current = null; finish(); };
   const zoom = (factor: number, anchor?: Point) => {
     if (!ready) return;
     finish(); const area = stage.current!, point = anchor || { x: area.clientWidth / 2, y: area.clientHeight / 2 };
@@ -133,7 +146,7 @@ export function MaskEditor({ original, mask, cutout, onSave, onClose }: { origin
     <header className="mask-heading"><div><h2 id="mask-title">手动修正抠图</h2><p>恢复衣服、头发与配饰，擦除残留背景。红色区域会被删除。</p></div><button title="关闭修正" onClick={close} disabled={saving}><X size={21}/></button></header>
     <div className="mask-toolbar"><div className="mask-tools">{([['restore', '恢复前景', Paintbrush], ['erase', '擦除背景', Eraser], ['pan', '移动画布', Hand]] as const).map(([value, label, Icon]) => <button key={value} className={tool === value ? 'selected' : ''} aria-pressed={tool === value} disabled={!ready || saving} onClick={() => { finish(); setTool(value); if (value !== 'pan' && view === 'original') setView('overlay'); }}><Icon size={16}/>{label}</button>)}</div><label>笔刷大小 <input aria-label="笔刷大小" type="range" min="1" max="200" value={diameter} disabled={saving} onChange={e => setDiameter(Number(e.target.value))}/><output>{diameter} px</output></label><label>边缘硬度 <input aria-label="边缘硬度" type="range" min="0" max="1" step="0.05" value={hardness} disabled={saving} onChange={e => setHardness(Number(e.target.value))}/><output>{Math.round(hardness * 100)}%</output></label><button title="撤销 (Ctrl+Z)" aria-label="撤销" disabled={saving || !doc?.canUndo} onClick={() => history()}><Undo2 size={18}/></button><button title="重做 (Ctrl+Shift+Z)" aria-label="重做" disabled={saving || !doc?.canRedo} onClick={() => history(true)}><Redo2 size={18}/></button></div>
     <div className="mask-viewbar"><div>{([['overlay', '修正叠加'], ['transparent', '透明结果'], ['mask', '黑白蒙版'], ['original', '原图对照']] as const).map(([value, label]) => <button className={view === value ? 'selected' : ''} key={value} disabled={saving} onClick={() => { finish(); setView(value); }}>{label}</button>)}</div><div><button aria-label="缩小画布" disabled={!ready || saving} onClick={() => zoom(1 / 1.25)}>−</button><output>{Math.round(transform.scale * 100)}%</output><button aria-label="放大画布" disabled={!ready || saving} onClick={() => zoom(1.25)}>＋</button><button disabled={!ready || saving} onClick={fit}>适应窗口</button><button disabled={!ready || saving} onClick={() => zoom(1 / transform.scale)}>100%</button></div></div>
-    <div ref={stage} className={`mask-canvas-stage ${tool === 'pan' ? 'panning' : ''}`} onPointerDown={pointerDown} onPointerMove={pointerMove} onPointerUp={finish} onPointerCancel={finish} onLostPointerCapture={finish} onPointerLeave={() => setCursor(null)}>
+    <div ref={stage} className={`mask-canvas-stage ${tool === 'pan' ? 'panning' : ''}`} onPointerDown={pointerDown} onPointerMove={pointerMove} onPointerUp={pointerEnd} onPointerCancel={pointerEnd} onLostPointerCapture={pointerEnd} onPointerLeave={() => setCursor(null)}>
       <canvas ref={screen} aria-label="抠图蒙版修正画布" style={{ width: surface.current?.width, height: surface.current?.height, transform: `translate(${transform.x}px,${transform.y}px) scale(${transform.scale})` }}/>
       {!ready && <span className="mask-loading">{error ? '图片读取失败' : '正在读取原图与蒙版…'}</span>}
       {ready && cursor && tool !== 'pan' && view !== 'original' && <span className={`mask-brush-cursor ${tool}`} style={{ left: cursor.x, top: cursor.y, width: diameter * transform.scale, height: diameter * transform.scale }}/ >}

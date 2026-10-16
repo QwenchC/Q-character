@@ -1,0 +1,105 @@
+{
+  "date": "2026-10-16",
+  "androidVersion": "0.1.0",
+  "desktopVersion": "0.4.0",
+  "testDevice": {
+    "kind": "Android Emulator",
+    "api": 36,
+    "device": "Pixel 7",
+    "webview": "133.0.6943.137",
+    "physicalPhoneTested": false
+  },
+  "server": {
+    "address": "redacted; user-configured HTTPS FRP endpoint",
+    "comfyui": "0.39.1",
+    "gpu": "RTX 5090 32 GB",
+    "certificate": "exact leaf certificate approved for this origin; expired/mismatched/unapproved certificates not bypassed"
+  },
+  "completedRealPipeline": [
+    "Qwen 2.1 reference-image editing",
+    "restart during generation and resume original prompt_id",
+    "BiRefNet foreground mask",
+    "touch brush mask revision saved without modifying original assets",
+    "Hunyuan3D draft geometry: 56560 triangles",
+    "reference projection texture with 7 palette colors",
+    "native system picker GLB, STL, three-view PNG and clay-guide PNG export",
+    "system picker reference image import"
+  ],
+  "preservedAssetsAcrossDebugUpgrade": 12,
+  "releaseInstall": {
+    "freshLaunch": true,
+    "emptyDefaultServer": true,
+    "preinstalledExampleAssets": 4,
+    "signedUpdateRetainedProjectName": "Android Upgrade Check",
+    "apkDebuggable": false,
+    "webviewDebuggingRequested": false,
+    "emulatorNote": "userdebug system image enables DevTools independently of app configuration",
+    "emulatorNoteSource": "https://chromium.googlesource.com/chromium/src.git/+/HEAD/android_webview/docs/net-debugging.md"
+  },
+  "automatedTests": 38,
+  "lintErrors": 0,
+  "lintWarnings": 8,
+  "nativeTransport": {
+    "checks": [
+      "Reject embedded credentials, invalid schemes, traversal, invalid ports and query credentials",
+      "Proxy prefix and nonstandard port preserved; Bearer sent only by native transport; secret absent from public settings",
+      "Address changes revoke old sessions; HTML with HTTP 200 rejected",
+      "Basic authentication works; redirects refused without forwarding credentials",
+      "Revoked in-flight download cannot commit an asset"
+    ],
+    "errors": [],
+    "completedAt": "2026-10-16T06:42:45.582Z"
+  },
+  "desktopRegression": {
+    "checks": [
+      "Manual foreground color pick adds a swatch; transparent background excluded; swatch can be removed",
+      "Offline desktop reference-to-texture, UVs and embedded PNG; new model version; geometry parent bytes unchanged",
+      "GLB export retains texture in clay display mode; STL and color reference sheet; clay recipe PNG exported",
+      "Target color edit is persisted and creates a distinct recolored model version",
+      "Reopened project retains recipe and texture; malformed model rejected"
+    ],
+    "errors": []
+  },
+  "blender": {
+    "blenderVersion": "5.1.1",
+    "meshes": 1,
+    "heightMeters": 0.07999999821186066,
+    "textures": [
+      {
+        "name": "Image_0",
+        "size": [
+          2048,
+          1024
+        ],
+        "packed": true,
+        "sampledColors": 109
+      }
+    ],
+    "rendered": [
+      "blender-front.png",
+      "blender-back.png"
+    ]
+  },
+  "exports": {
+    "GLB": "embedded texture/UV/material validation passed",
+    "STL": {
+      "faces": 56560,
+      "heightMm": 80
+    },
+    "threeViewsPx": [
+      2100,
+      1140
+    ],
+    "clayGuidePx": [
+      1500,
+      1740
+    ]
+  },
+  "apk": {
+    "name": "Q-Character-Android-0.1.0.apk",
+    "bytes": 4662014,
+    "sha256": "d47bd252260bc9b67edf718060cc25d36d289b87db129934ff7f4e0e42ac92d5",
+    "signerCertificateSHA256": "a138e795eb2b921ebdf3a42481c88c71514015e8b131324d9f32432a6d1cd8b6",
+    "privateEndpointEmbedded": false
+  }
+}

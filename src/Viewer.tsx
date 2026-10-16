@@ -102,7 +102,7 @@ export const Viewer = forwardRef<ViewerHandle, Props>(function Viewer({ url, fil
     setError(''); setLoading(!!url); setClay(false); setGrid(true);
     try {
       const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false, preserveDrawingBuffer: true });
-      renderer.setPixelRatio(Math.min(devicePixelRatio, 2)); renderer.setClearColor('#eeefea'); renderer.outputColorSpace = THREE.SRGBColorSpace; element.appendChild(renderer.domElement);
+      renderer.setPixelRatio(Math.min(devicePixelRatio, window.QNative ? 1.5 : 2)); renderer.setClearColor('#eeefea'); renderer.outputColorSpace = THREE.SRGBColorSpace; element.appendChild(renderer.domElement);
       const scene = new THREE.Scene(); scene.background = new THREE.Color('#eeefea');
       const camera = new THREE.OrthographicCamera(-2, 2, 2, -2, 0.01, 100); camera.position.set(5, 3.5, 7);
       const controls = new OrbitControls(camera, renderer.domElement); controls.target.set(0, 1.5, 0); controls.enableDamping = true; controls.minZoom = 0.3; controls.maxZoom = 4; controls.update();
@@ -122,7 +122,7 @@ export const Viewer = forwardRef<ViewerHandle, Props>(function Viewer({ url, fil
         else if (/\.obj$/i.test(filename || '')) object = await new OBJLoader().loadAsync(url);
         else {
           const manager = new THREE.LoadingManager();
-          manager.setURLModifier(resource => { if (/^(data:|blob:|qasset:)/.test(resource)) return resource; throw new Error('模型引用了外部资源。请导出为包含贴图的 GLB。'); });
+          manager.setURLModifier(resource => { if (/^(data:|blob:|qasset:)/.test(resource) || (window.QNative && resource.startsWith('https://appassets.androidplatform.net/projects/'))) return resource; throw new Error('模型引用了外部资源。请导出为包含贴图的 GLB。'); });
           object = (await new GLTFLoader(manager).loadAsync(url)).scene;
         }
         if (stopped) { disposeObject(object); return; }
@@ -145,6 +145,6 @@ export const Viewer = forwardRef<ViewerHandle, Props>(function Viewer({ url, fil
     {loading && <div className="viewer-overlay">正在加载模型…</div>}{error && <div className="viewer-overlay error">模型加载失败：{error}</div>}
     <div className="viewer-tools"><button onClick={() => view('perspective')} title="重置视角"><RotateCcw size={16}/></button><button className={clay ? 'selected' : ''} onClick={() => setClay(!clay)} title="素色泥模"><Box size={16}/></button><button className={grid ? 'selected' : ''} onClick={() => setGrid(!grid)} title="地面网格"><Grid2X2 size={16}/></button></div>
     <div className="view-presets"><button onClick={() => view('front')}><Scan size={14}/>正面</button><button onClick={() => view('side')}>侧面</button><button onClick={() => view('back')}>背面</button><button onClick={() => view('perspective')}><Camera size={14}/>自由视角</button></div>
-    <div className="viewer-hint">拖动旋转 · 滚轮缩放 · 右键平移</div>
+    <div className="viewer-hint">{window.QNative ? '单指旋转 · 双指缩放与平移' : '拖动旋转 · 滚轮缩放 · 右键平移'}</div>
   </div>;
 });
