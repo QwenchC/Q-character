@@ -1,0 +1,37 @@
+{
+  "result": {
+    "changed": 1,
+    "conflicts": 0,
+    "uploadedFiles": 0,
+    "downloadedFiles": 10,
+    "errors": []
+  },
+  "version": "0.4.0 · Android",
+  "config": {
+    "enabled": true,
+    "views": {
+      "front": "8c54b5d0-0189-4644-9969-f2d891a80d1e",
+      "left": "ec1ed463-c2c9-4f22-9e5c-522f0c914a96",
+      "back": "7828747f-07b4-461b-a621-75ed99a87e48"
+    },
+    "fov": 20
+  },
+  "model": {
+    "id": "e150af8c-9e1c-4d60-ba69-87b2c435050d",
+    "filename": "e60d0654-d04b-436f-8291-1098c1070674.glb",
+    "kind": "model",
+    "label": "Pixal3D · 多视图 AI 贴图模型",
+    "createdAt": "2026-10-16T09:51:14.399Z",
+    "jobId": "0d344b96-5c64-46e5-8aa6-de0a952ce815",
+    "sourceAssetId": "8c54b5d0-0189-4644-9969-f2d891a80d1e",
+    "textureSourceId": "8c54b5d0-0189-4644-9969-f2d891a80d1e",
+    "textureMethod": "pixal3d-pbr",
+    "inputViewIds": {
+      "front": "8c54b5d0-0189-4644-9969-f2d891a80d1e",
+      "left": "ec1ed463-c2c9-4f22-9e5c-522f0c914a96",
+      "back": "7828747f-07b4-461b-a621-75ed99a87e48"
+    },
+    "viewFov": 20
+  },
+  "completedAt": "2026-10-16T09:54:06.842Z"
+}

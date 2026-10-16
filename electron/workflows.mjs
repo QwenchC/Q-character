@@ -6,25 +6,39 @@ export function designPrompt(description, ratio = '2.5', style = 'clay') {
 }
 
 const node = (class_type, inputs) => ({ class_type, inputs });
+export function qwenViewPrompt(view, description = '') {
+  const directions = {
+    front: '严格正面，头部与身体都正对镜头',
+    left: '角色左侧的严格 90 度正侧面，鼻尖朝画面左侧，不要三分之二侧面',
+    back: '严格 180 度背面，头部、身体和双脚都背对镜头，不显示眼睛或正脸',
+    right: '角色右侧的严格 90 度正侧面，鼻尖朝画面右侧，不要三分之二侧面',
+  };
+  if (!directions[view]) throw new Error('生成视图方向无效。');
+  return `第一张图是同一个 Q 版角色的正面设计，其余参考图为已确认的其它方向。只改变相机角度，生成${directions[view]}的单张角色设计图。保持第一张图的身份、头身比例、头部大小、体型、发型与发色、服装款式、材质、颜色、配饰数量和静止站姿，保持全身完整、脚底水平、相机平视、不俯拍不仰拍。手臂仍自然离开身体，不要把转视角变成换动作或换人物。服装的正反面结构要合理衔接，背面不要出现正面五官或把胸前图案复制到背后。单人、单视图，不拼图、不加文字，纯白背景、无地面影子。不可见部分为设计推测，遵循用户补充的背面细节：${description || '保持简洁，与已见服装和发型连贯。'}`;
+}
 
 export function qwenEditPrompt(description = '', ratio = '2.5', style = 'clay') {
   const appearance = style === 'anime' ? '动漫收藏手办，轮廓清晰，色块简洁' : '超轻黏土手作手办，圆润体块，柔和哑光质感';
   return `将参考图片中的同一个人物改造成 ${ratio} 头身的 Q 版全身角色。以参考图为身份依据，保留人物的脸型轮廓、五官关系、发型、发色和肤色，服装保持原有颜色、款式与层次。仅保留原图中实际存在的配饰；除用户明确要求外，原图没有的眼镜、帽子或其他配饰全部省略。只改变为大头小身体的 Q 版比例和${appearance}风格。单人，全身完整入镜，正面自然站姿，脸朝正前方，双脚可见，手臂略离开身体，适合制作黏土手办。使用纯白背景，均匀柔和照明，无地面投影，不添加文字或第二个人。${description ? `用户补充要求：${description}` : ''}`;
 }
 
-export function buildQwenEditWorkflow({ model, encoder, vae, image, description, ratio, style, seed, steps = 25, resolution = 768 }) {
+export function buildQwenEditWorkflow({ model, encoder, vae, image, description, ratio, style, seed, steps = 25, resolution = 768, viewRole, references = [] }) {
   if (!model || !encoder || !vae || !image) throw new Error('Qwen 编辑需要参考图片、2.1 编辑模型、视觉编码器和配套 VAE。');
   if (!/^qwen_image_2\.1_(bf16|int8_convrot)\.safetensors$/i.test(model) || !/^qwen3vl_8b_(bf16|fp8_scaled|int8_convrot)\.safetensors$/i.test(encoder) || vae !== 'qwen_image_2.1_vae_bf16.safetensors') throw new Error('请选择配套的 Qwen-Image 2.1 模型、qwen3vl_8b 编码器和 2.1 VAE；提示词增强器不能替代视觉编码器。');
-  return {
+  const graph = {
     '1': node('UNETLoader', { unet_name: model, weight_dtype: 'default' }),
     '2': node('CLIPLoader', { clip_name: encoder, type: 'qwen_image', device: 'default' }),
     '3': node('VAELoader', { vae_name: vae }),
     '4': node('LoadImage', { image }),
-    '5': node('TextEncodeQwenImage21', { clip: ['2', 0], vae: ['3', 0], prompt: qwenEditPrompt(description, ratio, style), negative_prompt: '', resolution, 'images.image_1': ['4', 0] }),
+    '5': node('TextEncodeQwenImage21', { clip: ['2', 0], vae: ['3', 0], prompt: viewRole ? qwenViewPrompt(viewRole, description) : qwenEditPrompt(description, ratio, style), negative_prompt: '', resolution, 'images.image_1': ['4', 0] }),
     '6': node('KSampler', { model: ['1', 0], positive: ['5', 0], negative: ['5', 1], latent_image: ['5', 2], seed, steps, cfg: 1, sampler_name: 'euler', scheduler: 'simple', denoise: 1 }),
     '7': node('VAEDecode', { samples: ['6', 0], vae: ['3', 0] }),
     '8': node('SaveImage', { images: ['7', 0], filename_prefix: 'QCharacter/qwen-edit' }),
   };
+  if (viewRole) for (const [i, file] of references.slice(0, 3).entries()) {
+    const id = String(20 + i); graph[id] = node('LoadImage', { image: file }); graph['5'].inputs[`images.image_${i + 2}`] = [id, 0];
+  }
+  return graph;
 }
 
 export function buildMatteWorkflow({ image, model }) {

@@ -9,11 +9,11 @@ async function wait(fn) { for(let i=0;i<200;i++){if(fn())return;await tick();}th
 function phone({version='0.39.1',oldJob,server='https://example.test:8443/comfy'}={}){
   const project={id:'p',name:'Test',description:'a clay girl',ratio:'2.5',style:'clay',assets:[],jobs:oldJob?[oldJob]:[]};
   const settings={server,designCheckpoint:'sdxl.safetensors',imageEngine:'qwen21'};
-  const calls=[],events=[];let complete=false;
+  const calls=[],events=[];let complete=false,stale=false;
   const info=Object.fromEntries(['KSampler','CheckpointLoaderSimple','CLIPTextEncode','EmptyLatentImage','VAEDecode','SaveImage'].map(n=>[n,{input:{required:{}}}]));
   const native={postMessage(text){const {id,method,args}=JSON.parse(text);calls.push({method,args});Promise.resolve().then(()=>{
     let result;
-    if(method==='bootstrap') result={settings,projects:[structuredClone(project)]};
+    if(method==='bootstrap'){result={settings,projects:[structuredClone(project)]};if(stale){stale=false;result.projects[0].jobs.forEach(j=>j.status='running');}}
     else if(method==='saveJob'){const index=project.jobs.findIndex(j=>j.id===args.job.id);if(index<0)project.jobs.push(args.job);else project.jobs[index]=args.job;result=true;}
     else if(method==='beginRemote')result='session';
     else if(method==='remoteJson'){
@@ -28,7 +28,7 @@ function phone({version='0.39.1',oldJob,server='https://example.test:8443/comfy'
   }).catch(error=>native.onmessage({data:JSON.stringify({id,error:error.message})}));}};
   const context=vm.createContext({window:{QNative:native},document:{documentElement:{classList:{add(){}}}},crypto:webcrypto,console,Uint8Array,Uint32Array,setTimeout:(f,t)=>setTimeout(f,t===1800?5:t),clearTimeout});
   vm.runInContext(bundle,context);context.Mobile.initializeAndroidBridge();const api=context.window.studio;api.onJob(j=>events.push(j));
-  return{api,calls,events,project,finish(){complete=true;}};
+  return{api,calls,events,project,finish(){complete=true;},staleNextBootstrap(){stale=true;}};
 }
 test('Android 同时点击生成只提交一个任务；取消只针对自己的任务',async()=>{
   const p=phone();const first=p.api.generate('p',{kind:'design'});await assert.rejects(p.api.generate('p',{kind:'design'}),/等待/);await first;
@@ -46,4 +46,10 @@ test('重启恢复使用原 prompt_id；更换服务器后拒绝恢复，不重�
   const p=phone({oldJob:job});const data=await p.api.bootstrap();assert.equal(data.active.status,'interrupted');p.finish();await p.api.resumeJob('p','old');await wait(()=>p.events.at(-1)?.status==='completed');
   assert.equal(p.calls.filter(c=>c.args.route==='/prompt').length,0);assert.equal(p.events.at(-1).resultAssetId,'result');
   const other=phone({oldJob:job,server:'https://other.test'});await assert.rejects(other.api.resumeJob('p','old'),/地址不同/);assert.equal(other.calls.filter(c=>c.method==='beginRemote').length,0);
+});
+
+test('当前会话完成后，旧任务快照不能触发重启恢复并覆盖完成状态',async()=>{
+  const p=phone();await p.api.bootstrap();p.finish();await p.api.generate('p',{kind:'design'});await wait(()=>p.events.at(-1)?.status==='completed');
+  p.staleNextBootstrap();await p.api.bootstrap();
+  assert.equal(p.project.jobs[0].status,'completed');assert.equal(p.calls.filter(c=>c.method==='saveJob'&&c.args.job.status==='interrupted').length,0);
 });

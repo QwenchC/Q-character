@@ -1,3 +1,5 @@
+import { PNG } from 'pngjs';
+import { VIEW_ROLES, VIEW_LABELS, readyMultiView, prepareMultiViewImages } from './multiview.mjs';
 import { PIXAL_DEFAULTS, buildPixal3DWorkflow, pixalCapabilities } from './pixal3d.mjs';
 import { app, BrowserWindow, ipcMain, dialog, protocol, net, shell, nativeImage, safeStorage } from 'electron';
 import fs from 'node:fs/promises';
@@ -51,8 +53,9 @@ async function saveCutout(projectId, sourceId, imageBytes, maskBytes, job, prese
   const cutout = preserveAlpha ? imageBytes : applyForegroundMask(imageBytes, maskBytes);
   const withMask = await store.addAsset(projectId, maskBytes, '.png', 'mask', '前景蒙版 · 白色保留', job.id, { sourceAssetId: sourceId });
   const maskAsset = withMask.assets.at(-1);
-  const saved = await store.addAsset(projectId, cutout, '.png', 'cutout', '人物透明抠图 · 请检查衣服与配饰', job.id, { sourceAssetId: sourceId, maskAssetId: maskAsset.id });
+  const saved = await store.addAsset(projectId, cutout, '.png', 'cutout', '人物透明抠图 · 请检查衣服与配饰', job.id, { sourceAssetId: sourceId, maskAssetId: maskAsset.id, viewRole: job.viewRole });
   job.resultAssetId = saved.assets.at(-1).id;
+  if (job.viewRole) await store.setView(projectId, job.viewRole, job.resultAssetId, job.viewExpectedId);
 }
 async function runGeneration(projectId, options) {
   assertIdle();
@@ -67,7 +70,22 @@ async function runGeneration(projectId, options) {
   emit(job);
   void (async () => {
     try {
-      let image, source, sourceBytes;
+      let image, source, sourceBytes, views;
+      const multi = options.kind === 'shape' && options.multiView ? readyMultiView(project) : null;
+      if (multi) {
+        if (settings.shapeEngine === 'hunyuan3d') throw new Error('多视图建模请选择 Pixal3D 生成方式。');
+        options = { ...options, assetId: multi.views.front }; job.inputAssetId = multi.views.front;
+        job.inputViewIds = { ...multi.views }; job.viewFov = multi.fov;
+      }
+      if (options.viewRole) {
+        if (!VIEW_ROLES.includes(options.viewRole) || options.kind === 'shape') throw new Error('视图生成方向无效。');
+        job.viewRole = options.viewRole; job.viewExpectedId = project.multiView?.views[options.viewRole] || '';
+        if (options.kind === 'design' && options.viewRole !== 'front') {
+          const front = project.multiView?.views.front;
+          if (!front || settings.imageEngine !== 'qwen21') throw new Error('请先指定正面设计图，并使用 Qwen 参考编辑生成侧背面。');
+          options = { ...options, assetId: front }; job.inputAssetId = front;
+        }
+      }
       if (options.assetId) {
         source = project.assets.find(item => item.id === options.assetId && !['model', 'mask'].includes(item.kind));
         if (!source) throw new Error('找不到选中的角色图片。');
@@ -79,7 +97,17 @@ async function runGeneration(projectId, options) {
           job.status = 'completed'; job.message = '已保留图片原有透明通道。请检查衣服、头发和配饰，再生成 3D。';
           return;
         }
-        if (options.kind === 'shape') {
+        if (options.kind === 'shape' && multi) {
+          const decodedViews = {};
+          for (const [role, id] of Object.entries(multi.views)) { const asset = project.assets.find(a => a.id === id); decodedViews[role] = PNG.sync.read(normalizedImage(await fs.readFile(safeAsset(store.root, projectId, asset.filename)))); }
+          views = {};
+          for (const [role, pixels] of Object.entries(prepareMultiViewImages(decodedViews))) {
+            if (state.cancelRequested) throw new Error('QCHARACTER_CANCELLED');
+            const bytes = PNG.sync.write(pixels);
+            await store.addAsset(projectId, bytes, '.png', 'prepared', `${VIEW_LABELS[role]} · 多视图统一取景输入`, job.id, { sourceAssetId: multi.views[role], viewRole: role });
+            views[role] = await client.upload(bytes, 'view.png');
+          }
+        } else if (options.kind === 'shape') {
           if (source.kind !== 'cutout') throw new Error('请先自动抠图，检查透明轮廓后再生成 3D。旧版颜色清理图不能直接用于此流程。');
           const bytes = settings.shapeEngine === 'hunyuan3d' ? prepareShapeImage(sourceBytes) : sourceBytes;
           await store.addAsset(projectId, bytes, '.png', 'prepared', settings.shapeEngine === 'hunyuan3d' ? '3D 输入 · 前景蒙版合成白底' : 'Pixal3D 输入 · 保留修正后的透明蒙版', job.id, { sourceAssetId: source.id });
@@ -93,11 +121,16 @@ async function runGeneration(projectId, options) {
       const cap = await client.capabilities();
       const parts = (cap.stats.system.comfyui_version || '').split('.').map(Number);
       state.targetedInterrupt = parts[0] > 0 || parts[1] > 39 || (parts[1] === 39 && parts[2] >= 1);
-      const params = { checkpoint: options.kind === 'shape' ? settings.shapeCheckpoint : settings.designCheckpoint, description: project.description, ratio: project.ratio, style: project.style, seed: job.seed, image, quality: ['draft', 'standard', 'high'].includes(options.quality) ? options.quality : 'standard', denoise: Math.min(0.95, Math.max(0.2, Number(options.denoise) || 0.65)) };
+      const references = [];
+      if (options.kind === 'design' && options.viewRole && options.viewRole !== 'front') for (const role of VIEW_ROLES) {
+        const id = project.multiView?.views[role], asset = project.assets.find(a => a.id === id && a.kind === 'cutout');
+        if (role !== 'front' && role !== options.viewRole && asset) references.push(await client.upload(normalizedImage(await fs.readFile(safeAsset(store.root, projectId, asset.filename))), 'confirmed-view.png'));
+      }
+      const params = { views, fov: multi?.fov, viewRole: options.viewRole === 'front' ? undefined : options.viewRole, references, checkpoint: options.kind === 'shape' ? settings.shapeCheckpoint : settings.designCheckpoint, description: project.description, ratio: project.ratio, style: project.style, seed: job.seed, image, quality: ['draft', 'standard', 'high'].includes(options.quality) ? options.quality : 'standard', denoise: Math.min(0.95, Math.max(0.2, Number(options.denoise) || 0.65)) };
       const useQwen = options.kind === 'design' && image && settings.imageEngine === 'qwen21';
       const graph = options.kind === 'shape' ? (settings.shapeEngine === 'hunyuan3d' ? buildShapeWorkflow(params) : buildPixal3DWorkflow({ ...params, ...settings })) : options.kind === 'matte' ? buildMatteWorkflow({ image, model: settings.backgroundModel }) : useQwen ? buildQwenEditWorkflow({ ...params, model: settings.qwenModel, encoder: settings.qwenEncoder, vae: settings.qwenVae }) : buildDesignWorkflow(params);
       validateWorkflow(graph, cap.info);
-      job.workflow = graph; job.engine = options.kind === 'shape' ? (settings.shapeEngine === 'hunyuan3d' ? 'hunyuan3d' : 'pixal3d') : options.kind === 'matte' ? 'birefnet' : useQwen ? 'qwen21' : 'sdxl';
+      job.workflow = graph; job.engine = options.kind === 'shape' ? (settings.shapeEngine === 'hunyuan3d' ? 'hunyuan3d' : multi ? 'pixal3d-multiview' : 'pixal3d') : options.kind === 'matte' ? 'birefnet' : useQwen ? 'qwen21' : 'sdxl';
       state.closeSocket = client.watch(event => {
         if (event.data?.prompt_id !== job.promptId || state.cancelRequested) return;
         if (event.type === 'progress') { job.progress = Math.round(event.data.value / event.data.max * 100); job.message = `采样中 · ${event.data.value} / ${event.data.max}`; emit(job); }
@@ -121,9 +154,10 @@ async function runGeneration(projectId, options) {
         }
         const extension = path.extname(output.filename).toLowerCase();
         if (options.kind === 'shape' && bytes.subarray(0, 4).toString() !== 'glTF') throw new Error('生成服务返回的文件不是有效的 GLB。');
-        if (job.engine === 'pixal3d') validateTexturedGlb(bytes);
-        const updated = await store.addAsset(projectId, bytes, extension, options.kind === 'shape' ? 'model' : 'design', options.kind === 'shape' ? (job.engine === 'pixal3d' ? 'Pixal3D · AI 贴图模型' : '混元 3D 泥模') : useQwen ? 'Qwen 2.1 人物 Q 版设计' : 'Q 版设计图', job.id, { sourceAssetId: source?.id, ...(job.engine === 'pixal3d' ? { textureMethod: 'pixal3d-pbr', textureSourceId: source.id } : {}) });
+        if (job.engine?.startsWith('pixal3d')) validateTexturedGlb(bytes);
+        const updated = await store.addAsset(projectId, bytes, extension, options.kind === 'shape' ? 'model' : 'design', options.kind === 'shape' ? (job.engine?.startsWith('pixal3d') ? (multi ? 'Pixal3D · 多视图 AI 贴图模型' : 'Pixal3D · AI 贴图模型') : '混元 3D 泥模') : job.viewRole ? `${VIEW_LABELS[job.viewRole]} · 角色设计图` : useQwen ? 'Qwen 2.1 人物 Q 版设计' : 'Q 版设计图', job.id, { sourceAssetId: source?.id, viewRole: job.viewRole, ...(multi ? { inputViewIds: job.inputViewIds, viewFov: multi.fov } : {}), ...(job.engine?.startsWith('pixal3d') ? { textureMethod: 'pixal3d-pbr', textureSourceId: source.id } : {}) });
         job.resultAssetId = updated.assets.at(-1).id;
+        if (job.viewRole) await store.setView(projectId, job.viewRole, job.resultAssetId, job.viewExpectedId);
       }
       job.status = 'completed'; job.message = options.kind === 'matte' ? '自动抠图完成。请对照原图检查衣服、头发和配饰，再生成 3D。' : '生成完成，已保存到作品。';
     } catch (error) {
@@ -196,7 +230,7 @@ app.whenReady().then(async () => {
   handler('settings', async value => {
     assertIdle();
     const next = { server: normalizeServer(value.server), imageEngine: value.imageEngine === 'sdxl' ? 'sdxl' : 'qwen21', shapeEngine: value.shapeEngine === 'hunyuan3d' ? 'hunyuan3d' : 'pixal3d' };
-    for (const key of ['comfyPath', 'designCheckpoint', 'shapeCheckpoint', 'qwenModel', 'qwenEncoder', 'qwenVae', 'backgroundModel', 'pixalModel', 'pixalEncoder', 'pixalShapeVae', 'pixalTextureVae']) next[key] = String(value[key] ?? defaults[key]).slice(0, 500);
+    for (const key of ['comfyPath', 'designCheckpoint', 'shapeCheckpoint', 'qwenModel', 'qwenEncoder', 'qwenVae', 'backgroundModel', 'pixalModel', 'pixalMultiModel', 'pixalEncoder', 'pixalShapeVae', 'pixalTextureVae']) next[key] = String(value[key] ?? defaults[key]).slice(0, 500);
     settings = next;
     await writeJson(settingsFile, settings); return settings;
   });
@@ -209,6 +243,7 @@ app.whenReady().then(async () => {
     if ('ratio' in fields) value.ratio = ['2','2.5','3'].includes(fields.ratio) ? fields.ratio : '2.5';
     if ('style' in fields) value.style = fields.style === 'anime' ? 'anime' : 'clay';
     if ('heightMm' in fields) value.heightMm = Math.min(500,Math.max(10,Number(fields.heightMm)||80));
+    if ('multiView' in fields) value.multiView = fields.multiView;
     if (fields.workspace) {
       const w=fields.workspace, p=await store.read(id);
       if (!['design','workbench','library'].includes(w.page)||!['text','image'].includes(w.inputMode)||[w.sourceId,w.modelId].some(a=>a&&!p.assets.some(asset=>asset.id===a))) throw new Error('作品编辑位置无效。');
@@ -234,6 +269,7 @@ app.whenReady().then(async () => {
     return store.read(id);
   });
   handler('generate', runGeneration);
+  handler('set-view', async (id, role, assetId, expected) => { assertIdle(); return store.setView(id, role, assetId, expected); });
   handler('save-mask', async (projectId, cutoutId, bytes) => {
     assertIdle();
     if (!(bytes instanceof Uint8Array) || bytes.byteLength > 64 * 1024 * 1024) throw new Error('无效的蒙版文件。');

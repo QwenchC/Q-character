@@ -1,0 +1,14 @@
+{
+  "startedAt": "2026-10-16T10:05:40.625Z",
+  "executable": "release/win-unpacked/Q Character Studio.exe",
+  "version": "0.7.0",
+  "projectCount": 1,
+  "dataPath": "E:\\Lumi\\Q-character\\.runtime\\multiview-package-upgrade-final\\projects",
+  "imageEngine": "qwen21",
+  "hasCutout": true,
+  "triangles": 198532,
+  "completedAt": "2026-10-16T10:05:42.235Z",
+  "preservedFiles": 7,
+  "preservation": true,
+  "preservedMetadata": true
+}

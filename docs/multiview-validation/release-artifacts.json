@@ -1,0 +1,17 @@
+{
+  "version": "0.7.0",
+  "androidVersion": "0.4.0",
+  "androidCertificateSha256": "a138e795eb2b921ebdf3a42481c88c71514015e8b131324d9f32432a6d1cd8b6",
+  "assets": [
+    {
+      "name": "Q-Character-Studio-0.7.0-Windows.exe",
+      "bytes": 105369026,
+      "sha256": "7be60b9b8488afbbb8cb9edbb1a356a0d6858ef70c46a1251ea85665efe394d5"
+    },
+    {
+      "name": "Q-Character-Android-0.4.0.apk",
+      "bytes": 4686478,
+      "sha256": "5b33f6cfab9cba0da01134438342241cac0ad1a956f11103895ac3e81fa83e5e"
+    }
+  ]
+}

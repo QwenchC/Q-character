@@ -1,0 +1,148 @@
+{
+  "job": {
+    "id": "5ccf9289-ed99-4a80-bdcd-941d45b560eb",
+    "projectId": "292b85c9-15b7-4382-a008-54ae52e79684",
+    "kind": "design",
+    "inputAssetId": "8c54b5d0-0189-4644-9969-f2d891a80d1e",
+    "server": "http://10.0.2.2:8188",
+    "status": "completed",
+    "message": "生成完成，已保存到手机。",
+    "createdAt": "2026-10-16T10:05:15.883Z",
+    "seed": 1404046805,
+    "viewRole": "right",
+    "viewExpectedId": "",
+    "targetedInterrupt": true,
+    "workflow": {
+      "1": {
+        "class_type": "UNETLoader",
+        "inputs": {
+          "unet_name": "qwen_image_2.1_int8_convrot.safetensors",
+          "weight_dtype": "default"
+        }
+      },
+      "2": {
+        "class_type": "CLIPLoader",
+        "inputs": {
+          "clip_name": "qwen3vl_8b_int8_convrot.safetensors",
+          "type": "qwen_image",
+          "device": "default"
+        }
+      },
+      "3": {
+        "class_type": "VAELoader",
+        "inputs": {
+          "vae_name": "qwen_image_2.1_vae_bf16.safetensors"
+        }
+      },
+      "4": {
+        "class_type": "LoadImage",
+        "inputs": {
+          "image": "qcharacter-e46cae4c-f8d7-40d1-bdaa-fb291611106e.png"
+        }
+      },
+      "5": {
+        "class_type": "TextEncodeQwenImage21",
+        "inputs": {
+          "clip": [
+            "2",
+            0
+          ],
+          "vae": [
+            "3",
+            0
+          ],
+          "prompt": "第一张图是同一个 Q 版角色的正面设计，其余参考图为已确认的其它方向。只改变相机角度，生成角色右侧的严格 90 度正侧面，鼻尖朝画面右侧，不要三分之二侧面的单张角色设计图。保持第一张图的身份、头身比例、头部大小、体型、发型与发色、服装款式、材质、颜色、配饰数量和静止站姿，保持全身完整、脚底水平、相机平视、不俯拍不仰拍。手臂仍自然离开身体，不要把转视角变成换动作或换人物。服装的正反面结构要合理衔接，背面不要出现正面五官或把胸前图案复制到背后。单人、单视图，不拼图、不加文字，纯白背景、无地面影子。不可见部分为设计推测，遵循用户补充的背面细节：a young girl with short brown hair, wearing a green apron dress, round face, gentle smile",
+          "negative_prompt": "",
+          "resolution": 768,
+          "images.image_1": [
+            "4",
+            0
+          ],
+          "images.image_2": [
+            "20",
+            0
+          ],
+          "images.image_3": [
+            "21",
+            0
+          ]
+        }
+      },
+      "6": {
+        "class_type": "KSampler",
+        "inputs": {
+          "model": [
+            "1",
+            0
+          ],
+          "positive": [
+            "5",
+            0
+          ],
+          "negative": [
+            "5",
+            1
+          ],
+          "latent_image": [
+            "5",
+            2
+          ],
+          "seed": 1404046805,
+          "steps": 25,
+          "cfg": 1,
+          "sampler_name": "euler",
+          "scheduler": "simple",
+          "denoise": 1
+        }
+      },
+      "7": {
+        "class_type": "VAEDecode",
+        "inputs": {
+          "samples": [
+            "6",
+            0
+          ],
+          "vae": [
+            "3",
+            0
+          ]
+        }
+      },
+      "8": {
+        "class_type": "SaveImage",
+        "inputs": {
+          "images": [
+            "7",
+            0
+          ],
+          "filename_prefix": "QCharacter/qwen-edit"
+        }
+      },
+      "20": {
+        "class_type": "LoadImage",
+        "inputs": {
+          "image": "qcharacter-997f6dc3-d59a-4ddd-b765-7bb23e2e25f2.png"
+        }
+      },
+      "21": {
+        "class_type": "LoadImage",
+        "inputs": {
+          "image": "qcharacter-4b2e3f3c-c3e7-4943-84d8-484f55afae9d.png"
+        }
+      }
+    },
+    "engine": "qwen21",
+    "promptId": "f04ec5ec-456e-4fd8-8ef6-ec22ec731b3a",
+    "resultAssetId": "b2ac3cc3-d402-4d3f-806d-acb3e3b8a1ec"
+  },
+  "asset": {
+    "id": "b2ac3cc3-d402-4d3f-806d-acb3e3b8a1ec",
+    "filename": "070aa609-77d7-442a-9a96-0a1289d0f2dd.png",
+    "kind": "design",
+    "label": "右侧 · 角色设计图",
+    "createdAt": "2026-10-16T10:05:59.742Z",
+    "sourceAssetId": "8c54b5d0-0189-4644-9969-f2d891a80d1e",
+    "jobId": "5ccf9289-ed99-4a80-bdcd-941d45b560eb",
+    "viewRole": "right"
+  }
+}

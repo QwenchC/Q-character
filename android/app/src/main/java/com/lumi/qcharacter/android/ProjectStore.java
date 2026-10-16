@@ -40,7 +40,21 @@ final class ProjectStore {
     synchronized JSONObject fields(String id, JSONObject fields) throws Exception {
         JSONObject p = read(id);
         for (String key : new String[]{"name","description","ratio","style","heightMm","clayGuide","workspace"}) if (fields.has(key)) p.put(key, fields.get(key));
+        if(fields.has("multiView"))p.put("multiView",validateMultiView(fields.getJSONObject("multiView"),p.getJSONArray("assets")));
         p.put("updatedAt", now()); save(p); return p;
+    }
+    static JSONObject validateMultiView(JSONObject value, JSONArray assets) throws Exception {
+        if(!(value.get("enabled") instanceof Boolean))throw new IOException("多视图配置无效。");
+        double fov=value.optDouble("fov",20);if(!Double.isFinite(fov)||fov<1||fov>170)throw new IOException("多视图相机视角无效。");
+        JSONObject views=value.getJSONObject("views"),clean=new JSONObject();Set<String> used=new HashSet<>();
+        for(Iterator<String> it=views.keys();it.hasNext();){String role=it.next();if(!Arrays.asList("front","left","back","right").contains(role))throw new IOException("视图方向无效。");String aid=views.getString(role);if(aid.isEmpty())continue;JSONObject a=null;for(int i=0;i<assets.length();i++)if(assets.getJSONObject(i).getString("id").equals(aid))a=assets.getJSONObject(i);if(a==null||!Arrays.asList("reference","design","cutout").contains(a.getString("kind")))throw new IOException("视图缺少对应设计图或抠图。");if(!used.add(aid))throw new IOException("不同方向不能使用同一张图片。");clean.put(role,aid);}
+        return new JSONObject().put("enabled",value.getBoolean("enabled")).put("fov",fov).put("views",clean);
+    }
+    synchronized JSONObject setView(String projectId,String role,String assetId,String expected) throws Exception {
+        if(!Arrays.asList("front","left","back","right").contains(role))throw new IOException("视图方向无效。");
+        JSONObject p=read(projectId),m=p.optJSONObject("multiView");if(m==null)m=new JSONObject().put("enabled",false).put("fov",20).put("views",new JSONObject());
+        JSONObject views=m.getJSONObject("views");if(expected!=null&&!views.optString(role).equals(expected))return p;
+        views.put(role,assetId);p.put("multiView",validateMultiView(m,p.getJSONArray("assets")));p.put("updatedAt",now());save(p);return p;
     }
     synchronized JSONObject job(String id, JSONObject job) throws Exception {
         JSONObject p = read(id); JSONArray jobs = p.getJSONArray("jobs"); int index = -1;
@@ -58,7 +72,7 @@ final class ProjectStore {
         if(input.length()>LIMIT) throw new IOException("手机端单个素材不能超过 64 MB，请降低生成精度。");
         if(extension.equals(".glb")) validateGlb(input, metadata.optString("textureMethod").startsWith("pixal3d-pbr"));
         JSONObject p=read(projectId), a=new JSONObject().put("id",id()).put("filename",id()+extension).put("kind",kind).put("label",label).put("createdAt",now());
-        for(String key:new String[]{"sourceAssetId","maskAssetId","parentCutoutId","revisionType","parentModelId","textureSourceId","textureMethod","textureConfig","jobId"}) if(metadata.has(key)) a.put(key,metadata.get(key));
+        for(String key:new String[]{"sourceAssetId","maskAssetId","parentCutoutId","revisionType","parentModelId","textureSourceId","textureMethod","textureConfig","jobId","viewRole","inputViewIds","viewFov"}) if(metadata.has(key)) a.put(key,metadata.get(key));
         File target=file(projectId,a.getString("filename"));
         try { copy(new FileInputStream(input),new FileOutputStream(target)); p.getJSONArray("assets").put(a); p.put("updatedAt",now()); save(p); }
         catch(Exception e){target.delete();throw e;} return p;
@@ -70,7 +84,7 @@ final class ProjectStore {
         JSONObject m=new JSONObject(metadata.toString()).put("id",id()).put("filename",id()+".png").put("kind","mask").put("label","手动修正前景蒙版").put("createdAt",now());
         JSONObject c=new JSONObject(metadata.toString()).put("id",id()).put("filename",id()+".png").put("kind","cutout").put("label","手动修正抠图").put("createdAt",now()).put("maskAssetId",m.getString("id")).put("revisionType","manual");
         File mf=file(projectId,m.getString("filename")),cf=file(projectId,c.getString("filename"));
-        try{copy(new FileInputStream(mask),new FileOutputStream(mf));copy(new FileInputStream(cutout),new FileOutputStream(cf));p.getJSONArray("assets").put(m).put(c);p.put("updatedAt",now());save(p);}catch(Exception e){mf.delete();cf.delete();throw e;} return p;
+        try{copy(new FileInputStream(mask),new FileOutputStream(mf));copy(new FileInputStream(cutout),new FileOutputStream(cf));p.getJSONArray("assets").put(m).put(c);if(p.has("multiView")){JSONObject v=p.getJSONObject("multiView").getJSONObject("views");for(String role:new String[]{"front","left","back","right"})if(v.optString(role).equals(parentId))v.put(role,c.getString("id"));}p.put("updatedAt",now());save(p);}catch(Exception e){mf.delete();cf.delete();throw e;} return p;
     }
     static void copy(InputStream input,OutputStream output) throws Exception { try(InputStream in=input;OutputStream out=output){byte[] b=new byte[65536];int n;long total=0;while((n=in.read(b))!=-1){total+=n;if(total>LIMIT)throw new IOException("文件超过手机端 64 MB 限制。");out.write(b,0,n);}} }
     void normalizeImage(Uri uri,File output) throws Exception {

@@ -73,6 +73,7 @@ public class MainActivity extends Activity {
             case "bootstrap":return new JSONObject().put("settings",remote.publicSettings()).put("projects",store.list()).put("dataPath","手机应用私有存储 · 导出文件可通过系统文件选择器保存").put("version",BuildConfig.VERSION_NAME+" · Android").put("platform","android");
             case "settings":return remote.save(a.getJSONObject("value"));
             case "createProject":return store.create(a.optString("name","我的小角色"));
+            case "setView":return store.setView(a.getString("projectId"),a.getString("role"),a.getString("assetId"),a.has("expected")&&!a.isNull("expected")?a.getString("expected"):null);
             case "saveProject":return store.fields(a.getString("id"),a.getJSONObject("fields"));
             case "saveJob":return store.job(a.getString("id"),a.getJSONObject("job"));
             case "beginTransfer":{String id=ProjectStore.id();File temp=File.createTempFile("transfer-",".tmp",getCacheDir());transfers.put(id,temp);return id;}

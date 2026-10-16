@@ -2,6 +2,15 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { applyMask, alphaMask, shapeImage, summary } from '../src/mobile/pixels.ts';
 const image = (pixels) => ({ width: 2, height: 2, data: new Uint8ClampedArray(pixels.flat()) });
+
+test('透明蒙版保留浏览器 ImageData 的非枚举尺寸属性', () => {
+  const source = Object.create({ get width() { return 2; }, get height() { return 2; } });
+  source.data = image([[1,2,3,255],[1,2,3,128],[1,2,3,0],[1,2,3,255]]).data;
+  const mask = alphaMask(source);
+  assert.equal(mask.width, 2); assert.equal(mask.height, 2);
+  assert.equal(mask.data.length, mask.width * mask.height * 4);
+  assert.deepEqual([...mask.data.slice(4,8)], [128,128,128,255]);
+});
 test('手机蒙版保留浅色衣服原始 RGB，并保留原有半透明边缘', () => {
   const source = image([[250,250,250,255],[80,40,20,128],[0,150,0,255],[255,0,255,0]]);
   const mask = image([[255,255,255,255],[128,128,128,255],[0,0,0,255],[255,255,255,255]]);

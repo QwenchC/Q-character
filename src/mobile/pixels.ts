@@ -6,7 +6,7 @@ export function applyMask(source: Pixels, mask: Pixels, manual=false): Pixels {
   for(let i=0;i<output.data.length;i+=4){if(manual&&(mask.data[i]!==mask.data[i+1]||mask.data[i]!==mask.data[i+2]||mask.data[i+3]!==255))throw new Error('请保存不透明的黑白蒙版。');const alpha=manual?Math.min(source.data[i+3],mask.data[i]):Math.round(source.data[i+3]*mask.data[i]/255);output.data[i+3]=alpha<=8?0:alpha;}
   const valid=summary(output);if(!valid.hasTransparency||valid.foregroundRatio<0.005)throw new Error('没有获得有效人物前景，请检查蒙版。');return output;
 }
-export function alphaMask(source: Pixels): Pixels {const data=new Uint8ClampedArray(source.data.length);for(let i=0;i<data.length;i+=4){const a=source.data[i+3];data.set([a,a,a,255],i);}return{...source,data};}
+export function alphaMask(source: Pixels): Pixels {const data=new Uint8ClampedArray(source.data.length);for(let i=0;i<data.length;i+=4){const a=source.data[i+3];data.set([a,a,a,255],i);}return{width:source.width,height:source.height,data};}
 export function shapeImage(source: Pixels): Pixels {
   if(!summary(source).hasTransparency)throw new Error('请先自动抠图并修正透明轮廓，再生成 3D。');
   let left=source.width,top=source.height,right=-1,bottom=-1;

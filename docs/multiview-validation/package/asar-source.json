@@ -1,0 +1,8 @@
+{
+  "electron/main.mjs": "dc598b0b835127256246d7bf504db2dcc21246259b321dedf7a4e6f693c31184",
+  "electron/multiview.mjs": "703fd0bb80e7f3589b32af0dbbc09c8a8dfb977c6173f2ff334492cddf36268b",
+  "electron/pixal3d.mjs": "d48b6b6dbf86107cdd2647467b2bd75c573c9362254f81432969d6e978f0b29b",
+  "electron/store.mjs": "824c94b4b4607772ed3ac8f41057ac691c9d8a56b65f09558fcee41252816a72",
+  "electron/workflows.mjs": "2041e91aa5d48f4e2579a04f6a8ba0903659c1936585db0687cd3d30dc33fd06",
+  "electron/sync-protocol.mjs": "a328033e686266a05afdf6589752516f579938a246ecc05b9c7938e6cff91e4d"
+}

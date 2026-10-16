@@ -1,3 +1,5 @@
+import { MultiViewPanel } from './MultiViewPanel';
+import type { ViewRole, MultiView } from './types';
 import { PIXAL_DEFAULTS } from '../electron/pixal3d.mjs';
 import { ShapeSettings } from './ShapeSettings';
 import { originalPbrModel } from './pbr-model';
@@ -20,7 +22,7 @@ type Page = 'design' | 'workbench' | 'library';
 export function App() {
   const api = window.studio;
   const android = !!window.QNative;
-  const [data, setData] = useState<Bootstrap>({ settings: defaultSettings, projects: [], dataPath: '', active: null, version: '0.6.0' });
+  const [data, setData] = useState<Bootstrap>({ settings: defaultSettings, projects: [], dataPath: '', active: null, version: '0.7.0' });
   const [currentId, setCurrentId] = useState(''); const [page, setPage] = useState<Page>('design');
   const [inputMode, setInputMode] = useState<'text' | 'image'>('text');
   const [sourceId, setSourceId] = useState(''); const [modelId, setModelId] = useState('');
@@ -96,8 +98,27 @@ export function App() {
     if ((kind !== 'design' || inputMode === 'image') && !source) throw new Error('请先导入或生成一张角色图片。');
     await save();
     const inputId = kind === 'matte' && source?.kind === 'cutout' && original ? original.id : source?.id;
-    const next = await api!.generate(project.id, { kind, assetId: kind !== 'design' || inputMode === 'image' ? inputId : undefined, denoise, quality });
+    const next = await api!.generate(project.id, { kind, assetId: kind !== 'design' || inputMode === 'image' ? inputId : undefined, denoise, quality, multiView: kind === 'shape' && !!project.multiView?.enabled });
     setJob(next);
+  });
+  const assignView = (role: ViewRole, id: string) => perform(async () => {
+    if (!project) return; acceptProject(await api!.setView(project.id, role, id));
+  });
+  const configureViews = (multiView: MultiView) => perform(async () => {
+    if (!project) return; acceptProject(await api!.saveProject(project.id, { multiView }));
+  });
+  const importView = (role: ViewRole) => perform(async () => {
+    if (!project) return; await save(); const next = await api!.importAsset(project.id, 'reference');
+    if (next) { const asset = next.assets.at(-1)!; acceptProject(await api!.setView(project.id, role, asset.id)); setSourceId(asset.id); setPage('design'); }
+  });
+  const generateView = (role: ViewRole) => perform(async () => {
+    if (!project) return; await save();
+    const assetId = role === 'front' ? (source && source.kind !== 'prepared' ? source.id : undefined) : project.multiView?.views.front;
+    if (!assetId && (role !== 'front' || !project.description.trim())) throw new Error('先准备正面参考图或填写角色描述。');
+    setJob(await api!.generate(project.id, { kind: 'design', assetId, viewRole: role }));
+  });
+  const matteView = (role: ViewRole, assetId: string) => perform(async () => {
+    if (!project) return; await save(); setJob(await api!.generate(project.id, { kind: 'matte', assetId, viewRole: role }));
   });
   const exportModel = (format: 'glb' | 'stl') => perform(async () => {
     if (!project || !model || !viewer.current) return;
@@ -156,6 +177,7 @@ export function App() {
 
         {page === 'library' ? <div className="library-grid">{data.projects.map(p => { const cover = [...p.assets].reverse().find(x => !['model', 'mask', 'prepared'].includes(x.kind)); return <button className="project-card" key={p.id} onClick={() => void perform(async () => { await selectProject(p.id); setPage('design'); })}><div className="project-cover">{cover ? <img src={assetUrl(p, cover)}/> : <Box size={58} strokeWidth={1}/>}<span>{p.assets.filter(x => x.kind === 'model').length} 个模型</span></div><div><h3>{p.name}</h3><p>{new Date(p.updatedAt).toLocaleDateString('zh-CN')} · {p.assets.length} 个素材<ArrowUpRight size={18}/></p></div></button>; })}<button className="project-card add-card" onClick={createProject} disabled={disabled}><Plus size={30}/><span>开始一个新角色</span></button></div> : !project ? <div className="welcome-panel"><div><span className="pill">每一个可爱，都值得被创造</span><h2>你的第一个角色，<br/>会是什么样子？</h2><p>上传人物图片，或描述脑海中的小角色。<br/>先确认设计，再把它变成可旋转的 3D 泥模。</p><button className="primary" onClick={createProject} disabled={disabled}><Plus size={18}/>创建我的第一个作品</button></div><div className="welcome-model"><Viewer/></div></div> : <>
           <div className="project-title"><span className="project-dot"/><input aria-label="作品名称" value={project.name} disabled={disabled} onChange={e => update({ name: e.target.value })}/><span className="autosave">本机保存</span><button title="保存作品" onClick={() => void perform(async () => { await save(); notify('作品已保存'); })}><Save size={16}/></button>{!android && <button title="打开作品文件夹" onClick={() => void perform(async () => { await api!.openFolder(project.id); })}><FolderOpen size={17}/></button>}</div>
+          <MultiViewPanel project={project} current={source} disabled={disabled} pixal={data.settings.shapeEngine !== 'hunyuan3d'} quality={quality} onConfigure={configureViews} onAssign={assignView} onImport={importView} onGenerate={generateView} onMatte={matteView} onInspect={id => { setSourceId(id); setPage('design'); const a = project.assets.find(a => a.id === id); if (a?.kind === 'cutout' && a.sourceAssetId) setEditingMask(true); else setTimeout(() => document.querySelector('.preview-panel')?.scrollIntoView({ block: 'center', behavior: 'smooth' }), 100); }} onBuild={() => generate('shape')}/>
           <div className="studio-grid">
             <section className="design-panel panel">
               <div className="panel-heading"><span className="step-number">01</span><h2>设计你的小角色</h2><span className="subtle">CHARACTER</span></div>

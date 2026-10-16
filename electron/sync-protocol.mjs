@@ -1,3 +1,4 @@
+import { normalizeMultiView, readyMultiView } from './multiview.mjs';
 import { normalizeClayGuide, normalizeTextureConfig } from './texture.mjs';
 
 export const SYNC_VERSION = 1;
@@ -6,7 +7,7 @@ export const PROJECT_LIMIT = 512 * 1024 * 1024;
 export const UUID = /^[a-f0-9]{8}(-[a-f0-9]{4}){3}-[a-f0-9]{12}$/;
 export const HASH = /^[a-f0-9]{64}$/;
 export const ACTIVE = ['submitting', 'running', 'downloading', 'cancelling'];
-const fields = ['name', 'description', 'ratio', 'style', 'heightMm', 'clayGuide', 'workspace'];
+const fields = ['name', 'description', 'ratio', 'style', 'heightMm', 'clayGuide', 'workspace', 'multiView'];
 const references = ['sourceAssetId', 'maskAssetId', 'parentCutoutId', 'parentModelId', 'textureSourceId'];
 const clone = value => JSON.parse(JSON.stringify(value));
 export function canonical(value) {
@@ -41,6 +42,8 @@ export function validateManifest(input) {
     if (a.parentModelId && assets.get(a.parentModelId).kind !== 'model') throw new Error('父模型引用无效。');
     if (a.parentCutoutId && assets.get(a.parentCutoutId).kind !== 'cutout') throw new Error('抠图版本关系无效。');
   }
+  if (p.multiView) normalizeMultiView(p.multiView, p.assets);
+  for (const a of p.assets) if (a.inputViewIds) readyMultiView({ assets: p.assets, multiView: { enabled: true, views: a.inputViewIds, fov: a.viewFov ?? 20 } });
   if (p.clayGuide) { normalizeClayGuide(p.clayGuide); if (assets.get(p.clayGuide.referenceId)?.kind !== 'cutout') throw new Error('黏土调色缺少透明参考图。'); }
   if (p.workspace) {
     for (const key of ['sourceId', 'modelId']) if (p.workspace[key] && !assets.has(p.workspace[key])) throw new Error('编辑位置引用无效。');

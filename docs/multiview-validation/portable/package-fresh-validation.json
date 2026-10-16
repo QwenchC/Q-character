@@ -1,0 +1,18 @@
+{
+  "startedAt": "2026-10-16T10:06:16.292Z",
+  "executable": "release/Q-Character-Studio-0.7.0-Windows.exe",
+  "version": "0.7.0",
+  "projectCount": 1,
+  "dataPath": "E:\\Lumi\\Q-character\\.runtime\\multiview-package-portable-final\\projects",
+  "imageEngine": "qwen21",
+  "hasCutout": true,
+  "manualRevision": true,
+  "triangles": 198532,
+  "texture": {
+    "meshes": 1,
+    "textures": 1
+  },
+  "clayGuide": true,
+  "trialGrams": 5,
+  "completedAt": "2026-10-16T10:06:23.961Z"
+}

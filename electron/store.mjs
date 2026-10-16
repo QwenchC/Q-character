@@ -1,6 +1,7 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import { randomUUID } from 'node:crypto';
+import { normalizeMultiView, setViewSlot } from './multiview.mjs';
 
 export function safeAsset(root, projectId, filename) {
   if (!/^[a-f0-9-]{36}$/.test(projectId) || !/^[a-zA-Z0-9_.-]+$/.test(filename) || filename === '.' || filename === '..') throw new Error('无效的作品文件路径。');
@@ -52,16 +53,25 @@ export class ProjectStore {
     return this.mutate(async () => {
     const project = await this.read(id);
     for (const key of ['name', 'description', 'ratio', 'style', 'heightMm', 'clayGuide', 'workspace']) if (key in fields) project[key] = fields[key];
+    if ('multiView' in fields) project.multiView = normalizeMultiView(fields.multiView, project.assets);
     project.updatedAt = new Date().toISOString();
     await writeJson(this.projectFile(id), project);
     return project;
+    });
+  }
+  async setView(id, role, assetId, expected) {
+    return this.mutate(async () => {
+      const project = await this.read(id);
+      project.multiView = setViewSlot(project, role, assetId, expected);
+      project.updatedAt = new Date().toISOString();
+      await writeJson(this.projectFile(id), project); return project;
     });
   }
   async addAsset(id, bytes, extension, kind, label, jobId, metadata = {}) {
     return this.mutate(async () => {
     if (!['.png', '.jpg', '.jpeg', '.webp', '.glb', '.stl', '.obj'].includes(extension)) throw new Error('不支持的文件格式。');
     const asset = { id: randomUUID(), filename: `${randomUUID()}${extension}`, kind, label, createdAt: new Date().toISOString(), ...(jobId ? { jobId } : {}) };
-    for (const key of ['sourceAssetId', 'maskAssetId', 'parentModelId', 'textureSourceId', 'textureMethod', 'textureConfig']) if (metadata[key]) asset[key] = metadata[key];
+    for (const key of ['sourceAssetId', 'maskAssetId', 'parentModelId', 'textureSourceId', 'textureMethod', 'textureConfig', 'viewRole', 'inputViewIds', 'viewFov']) if (metadata[key]) asset[key] = metadata[key];
     await fs.writeFile(safeAsset(this.root, id, asset.filename), bytes);
     const project = await this.read(id);
     project.assets.push(asset);
@@ -95,6 +105,7 @@ export class ProjectStore {
         await fs.writeFile(files[1], cutoutBytes, { flag: 'wx' });
         created.push(files[1]);
         project.assets.push(mask, cutout); project.updatedAt = now;
+        if (project.multiView) for (const role of Object.keys(project.multiView.views)) if (project.multiView.views[role] === parentId) project.multiView.views[role] = cutout.id;
         await writeJson(this.projectFile(id), project);
       } catch (error) {
         for (const file of created) await fs.unlink(file).catch(() => {});

@@ -1,7 +1,9 @@
+import { VIEW_ROLES } from './multiview.mjs';
 // Browser-compatible workflow shared by Windows and Android.
 export const PIXAL_DEFAULTS = Object.freeze({
   shapeEngine: 'pixal3d',
   pixalModel: 'pixal3d_int8_convrot.safetensors',
+  pixalMultiModel: 'pixal3d_multiview_int8_convrot.safetensors',
   pixalEncoder: 'dino_v3_L_naf_fp32.safetensors',
   pixalShapeVae: 'trellis_2_shape_vae_bf16.safetensors',
   pixalTextureVae: 'trellis_2_texture_vae_bf16.safetensors',
@@ -11,19 +13,23 @@ const options = (info, type, name) => {
   const spec = info[type]?.input?.required?.[name];
   return Array.isArray(spec?.[0]) ? spec[0] : spec?.[1]?.options ?? [];
 };
-export function buildPixal3DWorkflow({ image, seed, quality = 'standard', ...settings }) {
-  if (!image) throw new Error('请先检查人物透明抠图，再生成 Pixal3D 模型。');
+export function buildPixal3DWorkflow({ image, views, fov = 20, seed, quality = 'standard', ...settings }) {
+  const multi = views !== undefined;
+  if (!multi && !image) throw new Error('请先检查人物透明抠图，再生成 Pixal3D 模型。');
+  if (multi && (!views?.front || !views?.back || !(views?.left || views?.right) || Object.entries(views).some(([role, file]) => !VIEW_ROLES.includes(role) || typeof file !== 'string' || !file))) throw new Error('多视图需要正面、背面和至少一个侧面输入。');
+  if (multi && (!Number.isFinite(fov) || fov < 1 || fov > 170)) throw new Error('多视图相机视角无效。');
   if (!['draft', 'standard', 'high'].includes(quality)) throw new Error('无效的 Pixal3D 精度。');
   const config = { ...PIXAL_DEFAULTS, ...settings };
   for (const key of ['pixalModel', 'pixalEncoder', 'pixalShapeVae', 'pixalTextureVae']) if (!config[key]) throw new Error('请在设置中选择完整的 Pixal3D 模型与编码器。');
-  if (/multiview/i.test(config.pixalModel)) throw new Error('当前单图流程不能使用多视图 Pixal3D 权重。');
+  if (!multi && /multiview/i.test(config.pixalModel)) throw new Error('当前单图流程不能使用多视图 Pixal3D 权重。');
+  if (multi && !/^pixal3d_multiview_.*\.safetensors$/i.test(config.pixalMultiModel)) throw new Error('请选择 Pixal3D 多视图专用权重。');
   const size = quality === 'high' ? 4096 : 2048;
   const sample = (model, stage, steps, cfg, scheduler = 'normal') => node('KSampler', { model, positive: [stage, 0], negative: [stage, 1], latent_image: [stage, 2], seed, steps, cfg, sampler_name: 'euler', scheduler, denoise: 1 });
   const graph = {
     '1': node('LoadImage', { image }),
     '2': node('InvertMask', { mask: ['1', 1] }),
     '3': node('ImageCropToMask', { images: ['1', 0], masks: ['2', 0], width: 1024, height: 1024, pad_factor: 1.1, grow_mask: 0, background: '#000000' }),
-    '4': node('UNETLoader', { unet_name: config.pixalModel, weight_dtype: 'default' }),
+    '4': node('UNETLoader', { unet_name: multi ? config.pixalMultiModel : config.pixalModel, weight_dtype: 'default' }),
     '5': node('CLIPVisionLoader', { clip_name: config.pixalEncoder }),
     '6': node('Pixal3DConditioning', { clip_vision_model: ['5', 0], image: ['3', 0], camera_angle_x: 49.13 }),
     '7': node('VAELoader', { vae_name: config.pixalShapeVae }),
@@ -39,6 +45,15 @@ export function buildPixal3DWorkflow({ image, seed, quality = 'standard', ...set
     '17': node('RescaleCFG', { model: ['16', 0], multiplier: 0.5 }),
     '18': sample(['17', 0], '15', 20, 7.5),
   };
+  if (multi) {
+    delete graph['1']; delete graph['2']; delete graph['3'];
+    const inputs = { clip_vision_model: ['5', 0], fov };
+    // These files are already aligned to a shared frame on the calling device.
+    for (const [i, role] of VIEW_ROLES.entries()) if (views[role]) {
+      const id = String(100 + i); graph[id] = node('LoadImage', { image: views[role] }); inputs[role] = [id, 0];
+    }
+    graph['6'] = node('Pixal3DMultiViewConditioning', inputs);
+  }
   let stage = '15', latent = '18';
   if (quality !== 'draft') {
     graph['19'] = node('Trellis2UpsampleStage', { positive: ['15', 0], negative: ['15', 1], shape_latent: ['18', 0], vae: ['7', 0], target_resolution: quality === 'high' ? 1536 : 1024 });
@@ -62,9 +77,12 @@ export function buildPixal3DWorkflow({ image, seed, quality = 'standard', ...set
   return graph;
 }
 export const PIXAL_REQUIRED_NODES = [...new Set(Object.values(buildPixal3DWorkflow({ image: 'check.png', seed: 0 })).map(n => n.class_type))];
+export const PIXAL_MULTIVIEW_REQUIRED_NODES = [...new Set(Object.values(buildPixal3DWorkflow({ views: { front: 'f.png', left: 'l.png', back: 'b.png' }, seed: 0 })).map(n => n.class_type))];
 export function pixalCapabilities(info) {
   return {
     models: options(info, 'UNETLoader', 'unet_name').filter(n => /^pixal3d_.*\.safetensors$/i.test(n) && !/multiview/i.test(n)),
+    multiviewModels: options(info, 'UNETLoader', 'unet_name').filter(n => /^pixal3d_multiview_.*\.safetensors$/i.test(n)),
+    missingMultiViewNodes: PIXAL_MULTIVIEW_REQUIRED_NODES.filter(n => !info[n]),
     encoders: options(info, 'CLIPVisionLoader', 'clip_name').filter(n => /^dino_v3_L_naf_.*\.safetensors$/i.test(n)),
     shapeVaes: options(info, 'VAELoader', 'vae_name').filter(n => /^trellis_2_shape_vae_.*\.safetensors$/i.test(n)),
     textureVaes: options(info, 'VAELoader', 'vae_name').filter(n => /^trellis_2_texture_vae_.*\.safetensors$/i.test(n)),

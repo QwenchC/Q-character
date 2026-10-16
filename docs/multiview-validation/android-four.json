@@ -1,0 +1,478 @@
+{
+  "job": {
+    "id": "2eb36e44-7444-4088-a8d6-1b2a83e16c06",
+    "projectId": "292b85c9-15b7-4382-a008-54ae52e79684",
+    "kind": "shape",
+    "inputAssetId": "8c54b5d0-0189-4644-9969-f2d891a80d1e",
+    "server": "http://10.0.2.2:8188",
+    "status": "completed",
+    "message": "生成完成，已保存到手机。",
+    "createdAt": "2026-10-16T10:06:43.859Z",
+    "seed": 1342470735,
+    "inputViewIds": {
+      "front": "8c54b5d0-0189-4644-9969-f2d891a80d1e",
+      "left": "f7af0b54-b5fe-4912-bf19-395a08a9972a",
+      "back": "7828747f-07b4-461b-a621-75ed99a87e48",
+      "right": "b646aec1-daa8-42ae-81b6-a1eff8621fef"
+    },
+    "viewFov": 20,
+    "targetedInterrupt": true,
+    "workflow": {
+      "4": {
+        "class_type": "UNETLoader",
+        "inputs": {
+          "unet_name": "pixal3d_multiview_int8_convrot.safetensors",
+          "weight_dtype": "default"
+        }
+      },
+      "5": {
+        "class_type": "CLIPVisionLoader",
+        "inputs": {
+          "clip_name": "dino_v3_L_naf_fp32.safetensors"
+        }
+      },
+      "6": {
+        "class_type": "Pixal3DMultiViewConditioning",
+        "inputs": {
+          "clip_vision_model": [
+            "5",
+            0
+          ],
+          "fov": 20,
+          "front": [
+            "100",
+            0
+          ],
+          "left": [
+            "101",
+            0
+          ],
+          "back": [
+            "102",
+            0
+          ],
+          "right": [
+            "103",
+            0
+          ]
+        }
+      },
+      "7": {
+        "class_type": "VAELoader",
+        "inputs": {
+          "vae_name": "trellis_2_shape_vae_bf16.safetensors"
+        }
+      },
+      "8": {
+        "class_type": "VAELoader",
+        "inputs": {
+          "vae_name": "trellis_2_texture_vae_bf16.safetensors"
+        }
+      },
+      "9": {
+        "class_type": "CFGOverride",
+        "inputs": {
+          "model": [
+            "4",
+            0
+          ],
+          "cfg": 1,
+          "start_percent": 0.667,
+          "end_percent": 1
+        }
+      },
+      "10": {
+        "class_type": "RescaleCFG",
+        "inputs": {
+          "model": [
+            "9",
+            0
+          ],
+          "multiplier": 0.7
+        }
+      },
+      "11": {
+        "class_type": "ModelSamplingSD3",
+        "inputs": {
+          "model": [
+            "10",
+            0
+          ],
+          "shift": 5
+        }
+      },
+      "12": {
+        "class_type": "EmptyTrellis2LatentStructure",
+        "inputs": {
+          "batch_size": 1
+        }
+      },
+      "13": {
+        "class_type": "KSampler",
+        "inputs": {
+          "model": [
+            "11",
+            0
+          ],
+          "positive": [
+            "6",
+            0
+          ],
+          "negative": [
+            "6",
+            1
+          ],
+          "latent_image": [
+            "12",
+            0
+          ],
+          "seed": 1342470735,
+          "steps": 12,
+          "cfg": 7.5,
+          "sampler_name": "euler",
+          "scheduler": "normal",
+          "denoise": 1
+        }
+      },
+      "14": {
+        "class_type": "VaeDecodeStructureTrellis2",
+        "inputs": {
+          "samples": [
+            "13",
+            0
+          ],
+          "vae": [
+            "7",
+            0
+          ],
+          "resolution": "32"
+        }
+      },
+      "15": {
+        "class_type": "Trellis2ShapeStage",
+        "inputs": {
+          "positive": [
+            "6",
+            0
+          ],
+          "negative": [
+            "6",
+            1
+          ],
+          "voxel": [
+            "14",
+            0
+          ]
+        }
+      },
+      "16": {
+        "class_type": "CFGOverride",
+        "inputs": {
+          "model": [
+            "4",
+            0
+          ],
+          "cfg": 1,
+          "start_percent": 0.769,
+          "end_percent": 1
+        }
+      },
+      "17": {
+        "class_type": "RescaleCFG",
+        "inputs": {
+          "model": [
+            "16",
+            0
+          ],
+          "multiplier": 0.5
+        }
+      },
+      "18": {
+        "class_type": "KSampler",
+        "inputs": {
+          "model": [
+            "17",
+            0
+          ],
+          "positive": [
+            "15",
+            0
+          ],
+          "negative": [
+            "15",
+            1
+          ],
+          "latent_image": [
+            "15",
+            2
+          ],
+          "seed": 1342470735,
+          "steps": 20,
+          "cfg": 7.5,
+          "sampler_name": "euler",
+          "scheduler": "normal",
+          "denoise": 1
+        }
+      },
+      "21": {
+        "class_type": "VaeDecodeShapeTrellis",
+        "inputs": {
+          "samples": [
+            "18",
+            0
+          ],
+          "vae": [
+            "7",
+            0
+          ]
+        }
+      },
+      "22": {
+        "class_type": "Trellis2TextureStage",
+        "inputs": {
+          "positive": [
+            "15",
+            0
+          ],
+          "negative": [
+            "15",
+            1
+          ],
+          "shape_latent": [
+            "18",
+            0
+          ]
+        }
+      },
+      "23": {
+        "class_type": "KSampler",
+        "inputs": {
+          "model": [
+            "4",
+            0
+          ],
+          "positive": [
+            "22",
+            0
+          ],
+          "negative": [
+            "22",
+            1
+          ],
+          "latent_image": [
+            "22",
+            2
+          ],
+          "seed": 1342470735,
+          "steps": 12,
+          "cfg": 1,
+          "sampler_name": "euler",
+          "scheduler": "normal",
+          "denoise": 1
+        }
+      },
+      "24": {
+        "class_type": "VaeDecodeTextureTrellis",
+        "inputs": {
+          "samples": [
+            "23",
+            0
+          ],
+          "vae": [
+            "8",
+            0
+          ],
+          "shape_subdivides": [
+            "21",
+            1
+          ]
+        }
+      },
+      "25": {
+        "class_type": "DecimateMesh",
+        "inputs": {
+          "mesh": [
+            "32",
+            0
+          ],
+          "target_face_count": 100000,
+          "placement_mode": "midpoint"
+        }
+      },
+      "26": {
+        "class_type": "MeshSmoothNormals",
+        "inputs": {
+          "mesh": [
+            "25",
+            0
+          ],
+          "crease_angle": 180
+        }
+      },
+      "27": {
+        "class_type": "UnwrapMesh",
+        "inputs": {
+          "mesh": [
+            "26",
+            0
+          ],
+          "segmenter": "pec",
+          "resolution": 2048,
+          "padding": 2,
+          "weld_distance": 0.0002
+        }
+      },
+      "28": {
+        "class_type": "BakeTextureFromVoxel",
+        "inputs": {
+          "mesh": [
+            "27",
+            0
+          ],
+          "voxel_colors": [
+            "24",
+            0
+          ],
+          "texture_size": 2048,
+          "reference_mesh": [
+            "21",
+            0
+          ]
+        }
+      },
+      "29": {
+        "class_type": "BakeNormalMapFromMesh",
+        "inputs": {
+          "low_poly": [
+            "27",
+            0
+          ],
+          "high_poly": [
+            "32",
+            0
+          ],
+          "resolution": 2048,
+          "cage_distance": 0.05,
+          "ignore_backfaces": true
+        }
+      },
+      "30": {
+        "class_type": "ApplyTextureToMesh",
+        "inputs": {
+          "mesh": [
+            "27",
+            0
+          ],
+          "base_color": [
+            "28",
+            0
+          ],
+          "metallic": [
+            "28",
+            1
+          ],
+          "roughness": [
+            "28",
+            2
+          ],
+          "normal_map": [
+            "29",
+            0
+          ]
+        }
+      },
+      "31": {
+        "class_type": "SaveGLB",
+        "inputs": {
+          "mesh": [
+            "30",
+            0
+          ],
+          "filename_prefix": "QCharacter/pixal3d"
+        }
+      },
+      "32": {
+        "class_type": "RemeshMesh",
+        "inputs": {
+          "mesh": [
+            "21",
+            0
+          ],
+          "resolution": 256,
+          "sign_mode": "udf",
+          "sign_mode.qef": false,
+          "sign_mode.drop_inverted_components": true,
+          "sign_mode.drop_enclosed_components": false,
+          "band": 1,
+          "project_back": 0,
+          "fix_poles": true,
+          "smooth_iters": 3,
+          "drop_small_components": 0.001,
+          "precluster_max_verts": 20000000
+        }
+      },
+      "100": {
+        "class_type": "LoadImage",
+        "inputs": {
+          "image": "qcharacter-cb89f7e8-f282-41f2-8773-ae63680d28a4.png"
+        }
+      },
+      "101": {
+        "class_type": "LoadImage",
+        "inputs": {
+          "image": "qcharacter-5a011ccf-7f04-4a04-9210-6c4269c1e521.png"
+        }
+      },
+      "102": {
+        "class_type": "LoadImage",
+        "inputs": {
+          "image": "qcharacter-627a8d43-9a27-45a7-ba59-06841d10d0c6.png"
+        }
+      },
+      "103": {
+        "class_type": "LoadImage",
+        "inputs": {
+          "image": "qcharacter-71b18d2b-be90-4acd-af79-0506dc47eeb8.png"
+        }
+      }
+    },
+    "engine": "pixal3d-multiview",
+    "promptId": "82428666-7d7e-418b-837a-58b7d414df45",
+    "resultAssetId": "843fb557-f599-4a18-a2ae-259216448dbb"
+  },
+  "model": {
+    "id": "843fb557-f599-4a18-a2ae-259216448dbb",
+    "filename": "ff3ef347-71a9-42dd-ba02-64bb742da01e.glb",
+    "kind": "model",
+    "label": "Pixal3D · 多视图 AI 贴图模型",
+    "createdAt": "2026-10-16T10:07:39.030Z",
+    "sourceAssetId": "8c54b5d0-0189-4644-9969-f2d891a80d1e",
+    "textureSourceId": "8c54b5d0-0189-4644-9969-f2d891a80d1e",
+    "textureMethod": "pixal3d-pbr",
+    "jobId": "2eb36e44-7444-4088-a8d6-1b2a83e16c06",
+    "inputViewIds": {
+      "front": "8c54b5d0-0189-4644-9969-f2d891a80d1e",
+      "left": "f7af0b54-b5fe-4912-bf19-395a08a9972a",
+      "back": "7828747f-07b4-461b-a621-75ed99a87e48",
+      "right": "b646aec1-daa8-42ae-81b6-a1eff8621fef"
+    },
+    "viewFov": 20
+  },
+  "config": {
+    "enabled": true,
+    "fov": 20,
+    "views": {
+      "front": "8c54b5d0-0189-4644-9969-f2d891a80d1e",
+      "left": "f7af0b54-b5fe-4912-bf19-395a08a9972a",
+      "back": "7828747f-07b4-461b-a621-75ed99a87e48",
+      "right": "b646aec1-daa8-42ae-81b6-a1eff8621fef"
+    }
+  },
+  "sync": {
+    "changed": 1,
+    "conflicts": 0,
+    "uploadedFiles": 5,
+    "downloadedFiles": 0,
+    "errors": []
+  }
+}

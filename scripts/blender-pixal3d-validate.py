@@ -62,7 +62,7 @@ for name, position, energy in [('Key', (.1, -.15, .18), .5), ('Fill', (-.1, -.08
     scene.collection.objects.link(light)
     light.location = position
     light.rotation_euler = (target - light.location).to_track_quat('-Z', 'Y').to_euler()
-for view, position in [('front', (0, -.24, .04)), ('back', (0, .24, .04)), ('clay', (.09, -.23, .05))]:
+for view, position in [('front', (0, -.24, .04)), ('left', (.24, 0, .04)), ('back', (0, .24, .04)), ('right', (-.24, 0, .04)), ('clay', (.09, -.23, .05))]:
     if view == 'clay':
         clay = bpy.data.materials.new('Clay')
         clay.use_nodes = True
