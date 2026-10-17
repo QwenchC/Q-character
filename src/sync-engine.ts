@@ -58,6 +58,9 @@ export async function synchronize(call: Call, options: { ids?: string[]; progres
           const other = await remote<{ manifest: SyncManifest | null }>(`/projects/${copy.project.id}/manifest`);
           if (!other.manifest) await push(copy, null, id);
           else if (contentKey(other.manifest) !== contentKey(copy)) throw new Error('电脑冲突副本已更新，请先同步该副本。');
+          // Both devices now hold this exact copy. Its next edit needs a common
+          // ancestor, otherwise merely accepting a suggestion forks it again.
+          await call('syncBasePut', { session: sid, serverId: info.serverId, id: copy.project.id, manifest: copy });
           result.conflicts++;
         }
         let accepted = desktop;

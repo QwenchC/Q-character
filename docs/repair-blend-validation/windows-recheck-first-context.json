@@ -1,0 +1,737 @@
+{
+  "job": {
+    "id": "6895bf34-8b44-412f-85d7-f04c28b16a70",
+    "projectId": "aa64717a-b2c3-4b09-a0f0-c7008e8e158e",
+    "kind": "review",
+    "status": "completed",
+    "createdAt": "2026-10-17T02:42:52.375Z",
+    "message": "视觉检查完成，请逐项核对标记与建议；确认后才会重绘。",
+    "seed": 0,
+    "server": "http://127.0.0.1:8200",
+    "visionModel": "qwen3.6:35b-a3b",
+    "engine": "local-vision",
+    "inputViewIds": {
+      "front": "859ef768-0380-4f73-a79c-27f15d44ff42",
+      "left": "6176a398-7f6d-4b5d-9a3f-46d63e93f2ed",
+      "back": "f74d80fe-8465-4c87-aedc-e595d9e9a8e9"
+    },
+    "workflow": {
+      "900": {
+        "class_type": "QCharacterVisionReview",
+        "inputs": {
+          "model": "qwen3.6:35b-a3b",
+          "description": "丸子头、绿色上衣、卡其色下装的同一个角色。",
+          "review_policy": "repair-aware-v3",
+          "front": [
+            "920",
+            0
+          ],
+          "left": [
+            "921",
+            0
+          ],
+          "back": [
+            "922",
+            0
+          ],
+          "left_before": [
+            "941",
+            0
+          ],
+          "left_selection": [
+            "951",
+            0
+          ]
+        }
+      },
+      "910": {
+        "class_type": "LoadImage",
+        "inputs": {
+          "image": "qcharacter-ca54877b-4e00-45d6-a57a-069fd8cd4fab.png"
+        }
+      },
+      "911": {
+        "class_type": "LoadImage",
+        "inputs": {
+          "image": "qcharacter-6bbc1b00-12dd-4fd2-a4d8-db063083db24.png"
+        }
+      },
+      "912": {
+        "class_type": "LoadImage",
+        "inputs": {
+          "image": "qcharacter-1c88e645-8df9-4ab5-a353-89eb134f4cd5.png"
+        }
+      },
+      "920": {
+        "class_type": "JoinImageWithAlpha",
+        "inputs": {
+          "image": [
+            "910",
+            0
+          ],
+          "alpha": [
+            "910",
+            1
+          ]
+        }
+      },
+      "921": {
+        "class_type": "JoinImageWithAlpha",
+        "inputs": {
+          "image": [
+            "911",
+            0
+          ],
+          "alpha": [
+            "911",
+            1
+          ]
+        }
+      },
+      "922": {
+        "class_type": "JoinImageWithAlpha",
+        "inputs": {
+          "image": [
+            "912",
+            0
+          ],
+          "alpha": [
+            "912",
+            1
+          ]
+        }
+      },
+      "931": {
+        "class_type": "LoadImage",
+        "inputs": {
+          "image": "qcharacter-302ede50-4b1d-439d-beab-c7033457d074.png"
+        }
+      },
+      "941": {
+        "class_type": "JoinImageWithAlpha",
+        "inputs": {
+          "image": [
+            "931",
+            0
+          ],
+          "alpha": [
+            "931",
+            1
+          ]
+        }
+      },
+      "951": {
+        "class_type": "LoadImage",
+        "inputs": {
+          "image": "qcharacter-640a6b96-86e0-4f30-acef-2e63d9e20261.png"
+        }
+      }
+    },
+    "promptId": "e34afa83-5c5b-4769-8278-a05b2dee36e6",
+    "reviewResult": {
+      "version": 3,
+      "analysis": {
+        "policy": "repair-aware-v3",
+        "repairs": {
+          "left": {
+            "viewId": "6176a398-7f6d-4b5d-9a3f-46d63e93f2ed",
+            "beforeId": "64da52de-fa92-4aad-90d3-fbcaddc277db",
+            "maskId": "4e4c1b89-3381-467f-8ca5-1ff931f012fa"
+          }
+        },
+        "candidateCount": 4,
+        "overviewMs": 21531,
+        "verificationMs": 15437,
+        "checks": [
+          {
+            "candidate_index": 0,
+            "role": "left",
+            "part": "clothes",
+            "kind": "structure",
+            "title": "胸前纽扣数量与位置异常",
+            "reason": "Front图有2颗纽扣，Left图仅1颗，上方疑似修补痕迹非实体部件。",
+            "reference_evidence": "Front参考图显示绿色上衣正面有上下两颗清晰的黄色圆形纽扣。",
+            "target_evidence": "Left目标图对应位置仅可见下方一颗清晰黄色纽扣，上方区域为模糊的低对比度绿色色块（疑似修补残留），无实体纽扣特征。",
+            "suggestion": "在 Left 图中修正胸前纽扣，确保可见的纽扣数量为两颗（或根据设计意图保持与 Front 一致），并调整其位置以符合正面设计的垂直排列逻辑。",
+            "confidence": 0.95,
+            "reference_count": 2,
+            "target_count": 1,
+            "bbox": [
+              376,
+              518,
+              624,
+              788
+            ],
+            "reference_bbox": [
+              376,
+              518,
+              624,
+              788
+            ],
+            "verdict": "uncertain",
+            "reference_visibility": "clear",
+            "target_visibility": "clear",
+            "correspondence": "same_component",
+            "basis": "count",
+            "alternative": "none",
+            "count_unit": "per_component",
+            "model_verdict": "structural",
+            "gates": [
+              "数量与结构类型不匹配"
+            ],
+            "repair_relation": "interior",
+            "repair_assessment": "component_change",
+            "component_evidence": "present",
+            "repair_evidence": "对照历史表，BEFORE图该位置有清晰纽扣，CURRENT图变为模糊色块，说明是修补导致的变化。",
+            "repair_coverage": {
+              "selected": 0.12398089913813184,
+              "boundary": 0.13737479617982762
+            }
+          },
+          {
+            "candidate_index": 1,
+            "role": "left",
+            "part": "clothes",
+            "kind": "count",
+            "title": "胸前纽扣数量与位置不一致",
+            "reason": "Front图有2颗纽扣，Left图仅1颗，上方疑似修补痕迹非实体部件。",
+            "reference_evidence": "Front参考图显示绿色上衣正面有上下两颗清晰的黄色圆形纽扣。",
+            "target_evidence": "Left目标图对应位置仅可见下方一颗清晰黄色纽扣，上方区域为模糊的低对比度绿色色块（疑似修补残留），无实体纽扣特征。",
+            "suggestion": "在 Left 图中修正胸前纽扣，确保可见的纽扣数量为两颗（或根据设计意图保持与 Front 一致），并调整其位置以符合正面设计的垂直排列逻辑。",
+            "confidence": 0.95,
+            "reference_count": 2,
+            "target_count": 1,
+            "bbox": [
+              468,
+              718,
+              532,
+              778
+            ],
+            "reference_bbox": [
+              468,
+              718,
+              532,
+              778
+            ],
+            "verdict": "structural",
+            "reference_visibility": "clear",
+            "target_visibility": "clear",
+            "correspondence": "same_component",
+            "basis": "count",
+            "alternative": "none",
+            "count_unit": "per_component",
+            "model_verdict": "structural",
+            "gates": [],
+            "repair_relation": "interior",
+            "repair_assessment": "component_change",
+            "component_evidence": "present",
+            "repair_evidence": "对照历史表，BEFORE图该位置有清晰纽扣，CURRENT图变为模糊色块，说明是修补导致的变化。",
+            "repair_coverage": {
+              "selected": 0.04420731707317073,
+              "boundary": 0.23932926829268292
+            }
+          },
+          {
+            "candidate_index": 2,
+            "role": "left",
+            "part": "clothes",
+            "kind": "structure",
+            "title": "胸前纽扣位置异常",
+            "reason": "Front图有2颗纽扣，Left图仅1颗，上方疑似修补痕迹非实体部件。",
+            "reference_evidence": "Front参考图显示绿色上衣正面有上下两颗清晰的黄色圆形纽扣。",
+            "target_evidence": "Left目标图对应位置仅可见下方一颗清晰黄色纽扣，上方区域为模糊的低对比度绿色色块（疑似修补残留），无实体纽扣特征。",
+            "suggestion": "在 Left 图中修正胸前纽扣的位置，确保其布局与 Front 图一致（即上下各一颗）。",
+            "confidence": 0.95,
+            "reference_count": 2,
+            "target_count": 1,
+            "bbox": [
+              468,
+              718,
+              532,
+              778
+            ],
+            "reference_bbox": [
+              468,
+              570,
+              532,
+              630
+            ],
+            "verdict": "uncertain",
+            "reference_visibility": "clear",
+            "target_visibility": "clear",
+            "correspondence": "same_component",
+            "basis": "count",
+            "alternative": "none",
+            "count_unit": "per_component",
+            "model_verdict": "structural",
+            "gates": [
+              "数量与结构类型不匹配"
+            ],
+            "repair_relation": "interior",
+            "repair_assessment": "component_change",
+            "component_evidence": "present",
+            "repair_evidence": "对照历史表，BEFORE图该位置有清晰纽扣，CURRENT图变为模糊色块，说明是修补导致的变化。",
+            "repair_coverage": {
+              "selected": 0.04420731707317073,
+              "boundary": 0.23932926829268292
+            }
+          },
+          {
+            "candidate_index": 3,
+            "role": "left",
+            "part": "clothes",
+            "kind": "structure",
+            "title": "胸前纽扣位置异常",
+            "reason": "Front图有2颗纽扣，Left图仅1颗，上方疑似修补痕迹非实体部件。",
+            "reference_evidence": "Front参考图显示绿色上衣正面有上下两颗清晰的黄色圆形纽扣。",
+            "target_evidence": "Left目标图对应位置仅可见下方一颗清晰黄色纽扣，上方区域为模糊的低对比度绿色色块（疑似修补残留），无实体纽扣特征。",
+            "suggestion": "在 Left 图中修正胸前纽扣的位置，确保其布局与 Front 图一致（即上下各一颗）。",
+            "confidence": 0.95,
+            "reference_count": 2,
+            "target_count": 1,
+            "bbox": [
+              468,
+              718,
+              532,
+              778
+            ],
+            "reference_bbox": [
+              468,
+              718,
+              532,
+              778
+            ],
+            "verdict": "uncertain",
+            "reference_visibility": "clear",
+            "target_visibility": "clear",
+            "correspondence": "same_component",
+            "basis": "count",
+            "alternative": "none",
+            "count_unit": "per_component",
+            "model_verdict": "structural",
+            "gates": [
+              "数量与结构类型不匹配"
+            ],
+            "repair_relation": "interior",
+            "repair_assessment": "component_change",
+            "component_evidence": "present",
+            "repair_evidence": "对照历史表，BEFORE图该位置有清晰纽扣，CURRENT图变为模糊色块，说明是修补导致的变化。",
+            "repair_coverage": {
+              "selected": 0.04420731707317073,
+              "boundary": 0.23932926829268292
+            }
+          }
+        ]
+      },
+      "id": "6895bf34-8b44-412f-85d7-f04c28b16a70",
+      "createdAt": "2026-10-17T02:43:30.271Z",
+      "model": "qwen3.6:35b-a3b",
+      "elapsedMs": 36968,
+      "views": {
+        "front": "859ef768-0380-4f73-a79c-27f15d44ff42",
+        "left": "6176a398-7f6d-4b5d-9a3f-46d63e93f2ed",
+        "back": "f74d80fe-8465-4c87-aedc-e595d9e9a8e9"
+      },
+      "confirmed": false,
+      "summary": "复核了左侧视图（left）的绿色上衣区域。候选项指出胸前存在非纽扣圆形痕迹及纽扣数量/位置异常。经独立观察原图及局部对照表：Front参考图显示绿色上衣有上下两颗黄色纽扣；Left目标图对应位置仅可见下方一颗清晰黄色纽扣，上方区域为模糊的低对比度绿色色块（疑似修补残留或表面瑕疵），并非实体纽扣。候选项关于“非纽扣圆形痕迹”和“纽扣数量不一致”的观察是准确的。由于该差异涉及部件数量的明确缺失（1 vs 2），且无法通过透视解释，判定为真实结构差异。",
+      "observations": [
+        {
+          "role": "front",
+          "part": "hair",
+          "name": "丸子头",
+          "visible_count": 2,
+          "description": "正面可见两个对称的深棕色丸子头，位于头顶两侧。"
+        },
+        {
+          "role": "front",
+          "part": "clothes",
+          "name": "绿色上衣与卡其色裤子",
+          "visible_count": 2,
+          "description": "正面可见绿色方形上衣，中间垂直排列两颗黄色圆形纽扣；下身穿着卡其色裤子。"
+        },
+        {
+          "role": "front",
+          "part": "accessories",
+          "name": "无配饰",
+          "visible_count": 0,
+          "description": "角色未佩戴任何可见配饰（如耳环、项链等）。"
+        },
+        {
+          "role": "left",
+          "part": "hair",
+          "name": "丸子头",
+          "visible_count": 2,
+          "description": "侧面视角下，两个深棕色丸子头清晰可见，结构正常。"
+        },
+        {
+          "role": "left",
+          "part": "clothes",
+          "name": "绿色上衣与卡其色裤子",
+          "visible_count": 2,
+          "description": "侧面可见绿色上衣，胸前有一个模糊的圆形轮廓痕迹（非纽扣），下方有一颗黄色纽扣；下身卡其色裤子。"
+        },
+        {
+          "role": "left",
+          "part": "accessories",
+          "name": "无配饰",
+          "visible_count": 0,
+          "description": "侧面视角下未见任何可见配饰。"
+        },
+        {
+          "role": "back",
+          "part": "hair",
+          "name": "丸子头",
+          "visible_count": 2,
+          "description": "背面视角下，两个深棕色丸子头清晰可见。"
+        },
+        {
+          "role": "back",
+          "part": "clothes",
+          "name": "绿色上衣与卡其色裤子",
+          "visible_count": 2,
+          "description": "背面视角下，绿色上衣和卡其色裤子均被头发遮挡或不可见细节。"
+        },
+        {
+          "role": "back",
+          "part": "accessories",
+          "name": "无配饰",
+          "visible_count": 0,
+          "description": "背面视角下未见任何可见配饰。"
+        }
+      ],
+      "findings": [
+        {
+          "role": "left",
+          "part": "clothes",
+          "kind": "count",
+          "title": "胸前纽扣数量与位置不一致",
+          "evidence": "正面：Front参考图显示绿色上衣正面有上下两颗清晰的黄色圆形纽扣。；目标：Left目标图对应位置仅可见下方一颗清晰黄色纽扣，上方区域为模糊的低对比度绿色色块（疑似修补残留），无实体纽扣特征。；复核：Front图有2颗纽扣，Left图仅1颗，上方疑似修补痕迹非实体部件。",
+          "suggestion": "在 Left 图中修正胸前纽扣，确保可见的纽扣数量为两颗（或根据设计意图保持与 Front 一致），并调整其位置以符合正面设计的垂直排列逻辑。",
+          "confidence": 0.95,
+          "reference_count": 2,
+          "target_count": 1,
+          "bbox": [
+            468,
+            718,
+            532,
+            778
+          ],
+          "reference_bbox": [
+            468,
+            718,
+            532,
+            778
+          ],
+          "assessmentIndex": 1,
+          "id": "6895bf34-8b44-412f-85d7-f04c28b16a70:0",
+          "decision": "pending",
+          "note": ""
+        }
+      ],
+      "uncertainties": []
+    },
+    "finishedAt": "2026-10-17T02:43:30.273Z"
+  },
+  "report": {
+    "version": 3,
+    "analysis": {
+      "policy": "repair-aware-v3",
+      "repairs": {
+        "left": {
+          "viewId": "6176a398-7f6d-4b5d-9a3f-46d63e93f2ed",
+          "beforeId": "64da52de-fa92-4aad-90d3-fbcaddc277db",
+          "maskId": "4e4c1b89-3381-467f-8ca5-1ff931f012fa"
+        }
+      },
+      "candidateCount": 4,
+      "overviewMs": 21531,
+      "verificationMs": 15437,
+      "checks": [
+        {
+          "candidate_index": 0,
+          "role": "left",
+          "part": "clothes",
+          "kind": "structure",
+          "title": "胸前纽扣数量与位置异常",
+          "reason": "Front图有2颗纽扣，Left图仅1颗，上方疑似修补痕迹非实体部件。",
+          "reference_evidence": "Front参考图显示绿色上衣正面有上下两颗清晰的黄色圆形纽扣。",
+          "target_evidence": "Left目标图对应位置仅可见下方一颗清晰黄色纽扣，上方区域为模糊的低对比度绿色色块（疑似修补残留），无实体纽扣特征。",
+          "suggestion": "在 Left 图中修正胸前纽扣，确保可见的纽扣数量为两颗（或根据设计意图保持与 Front 一致），并调整其位置以符合正面设计的垂直排列逻辑。",
+          "confidence": 0.95,
+          "reference_count": 2,
+          "target_count": 1,
+          "bbox": [
+            376,
+            518,
+            624,
+            788
+          ],
+          "reference_bbox": [
+            376,
+            518,
+            624,
+            788
+          ],
+          "verdict": "uncertain",
+          "reference_visibility": "clear",
+          "target_visibility": "clear",
+          "correspondence": "same_component",
+          "basis": "count",
+          "alternative": "none",
+          "count_unit": "per_component",
+          "model_verdict": "structural",
+          "gates": [
+            "数量与结构类型不匹配"
+          ],
+          "repair_relation": "interior",
+          "repair_assessment": "component_change",
+          "component_evidence": "present",
+          "repair_evidence": "对照历史表，BEFORE图该位置有清晰纽扣，CURRENT图变为模糊色块，说明是修补导致的变化。",
+          "repair_coverage": {
+            "selected": 0.12398089913813184,
+            "boundary": 0.13737479617982762
+          }
+        },
+        {
+          "candidate_index": 1,
+          "role": "left",
+          "part": "clothes",
+          "kind": "count",
+          "title": "胸前纽扣数量与位置不一致",
+          "reason": "Front图有2颗纽扣，Left图仅1颗，上方疑似修补痕迹非实体部件。",
+          "reference_evidence": "Front参考图显示绿色上衣正面有上下两颗清晰的黄色圆形纽扣。",
+          "target_evidence": "Left目标图对应位置仅可见下方一颗清晰黄色纽扣，上方区域为模糊的低对比度绿色色块（疑似修补残留），无实体纽扣特征。",
+          "suggestion": "在 Left 图中修正胸前纽扣，确保可见的纽扣数量为两颗（或根据设计意图保持与 Front 一致），并调整其位置以符合正面设计的垂直排列逻辑。",
+          "confidence": 0.95,
+          "reference_count": 2,
+          "target_count": 1,
+          "bbox": [
+            468,
+            718,
+            532,
+            778
+          ],
+          "reference_bbox": [
+            468,
+            718,
+            532,
+            778
+          ],
+          "verdict": "structural",
+          "reference_visibility": "clear",
+          "target_visibility": "clear",
+          "correspondence": "same_component",
+          "basis": "count",
+          "alternative": "none",
+          "count_unit": "per_component",
+          "model_verdict": "structural",
+          "gates": [],
+          "repair_relation": "interior",
+          "repair_assessment": "component_change",
+          "component_evidence": "present",
+          "repair_evidence": "对照历史表，BEFORE图该位置有清晰纽扣，CURRENT图变为模糊色块，说明是修补导致的变化。",
+          "repair_coverage": {
+            "selected": 0.04420731707317073,
+            "boundary": 0.23932926829268292
+          }
+        },
+        {
+          "candidate_index": 2,
+          "role": "left",
+          "part": "clothes",
+          "kind": "structure",
+          "title": "胸前纽扣位置异常",
+          "reason": "Front图有2颗纽扣，Left图仅1颗，上方疑似修补痕迹非实体部件。",
+          "reference_evidence": "Front参考图显示绿色上衣正面有上下两颗清晰的黄色圆形纽扣。",
+          "target_evidence": "Left目标图对应位置仅可见下方一颗清晰黄色纽扣，上方区域为模糊的低对比度绿色色块（疑似修补残留），无实体纽扣特征。",
+          "suggestion": "在 Left 图中修正胸前纽扣的位置，确保其布局与 Front 图一致（即上下各一颗）。",
+          "confidence": 0.95,
+          "reference_count": 2,
+          "target_count": 1,
+          "bbox": [
+            468,
+            718,
+            532,
+            778
+          ],
+          "reference_bbox": [
+            468,
+            570,
+            532,
+            630
+          ],
+          "verdict": "uncertain",
+          "reference_visibility": "clear",
+          "target_visibility": "clear",
+          "correspondence": "same_component",
+          "basis": "count",
+          "alternative": "none",
+          "count_unit": "per_component",
+          "model_verdict": "structural",
+          "gates": [
+            "数量与结构类型不匹配"
+          ],
+          "repair_relation": "interior",
+          "repair_assessment": "component_change",
+          "component_evidence": "present",
+          "repair_evidence": "对照历史表，BEFORE图该位置有清晰纽扣，CURRENT图变为模糊色块，说明是修补导致的变化。",
+          "repair_coverage": {
+            "selected": 0.04420731707317073,
+            "boundary": 0.23932926829268292
+          }
+        },
+        {
+          "candidate_index": 3,
+          "role": "left",
+          "part": "clothes",
+          "kind": "structure",
+          "title": "胸前纽扣位置异常",
+          "reason": "Front图有2颗纽扣，Left图仅1颗，上方疑似修补痕迹非实体部件。",
+          "reference_evidence": "Front参考图显示绿色上衣正面有上下两颗清晰的黄色圆形纽扣。",
+          "target_evidence": "Left目标图对应位置仅可见下方一颗清晰黄色纽扣，上方区域为模糊的低对比度绿色色块（疑似修补残留），无实体纽扣特征。",
+          "suggestion": "在 Left 图中修正胸前纽扣的位置，确保其布局与 Front 图一致（即上下各一颗）。",
+          "confidence": 0.95,
+          "reference_count": 2,
+          "target_count": 1,
+          "bbox": [
+            468,
+            718,
+            532,
+            778
+          ],
+          "reference_bbox": [
+            468,
+            718,
+            532,
+            778
+          ],
+          "verdict": "uncertain",
+          "reference_visibility": "clear",
+          "target_visibility": "clear",
+          "correspondence": "same_component",
+          "basis": "count",
+          "alternative": "none",
+          "count_unit": "per_component",
+          "model_verdict": "structural",
+          "gates": [
+            "数量与结构类型不匹配"
+          ],
+          "repair_relation": "interior",
+          "repair_assessment": "component_change",
+          "component_evidence": "present",
+          "repair_evidence": "对照历史表，BEFORE图该位置有清晰纽扣，CURRENT图变为模糊色块，说明是修补导致的变化。",
+          "repair_coverage": {
+            "selected": 0.04420731707317073,
+            "boundary": 0.23932926829268292
+          }
+        }
+      ]
+    },
+    "id": "6895bf34-8b44-412f-85d7-f04c28b16a70",
+    "createdAt": "2026-10-17T02:43:30.271Z",
+    "model": "qwen3.6:35b-a3b",
+    "elapsedMs": 36968,
+    "views": {
+      "front": "859ef768-0380-4f73-a79c-27f15d44ff42",
+      "left": "6176a398-7f6d-4b5d-9a3f-46d63e93f2ed",
+      "back": "f74d80fe-8465-4c87-aedc-e595d9e9a8e9"
+    },
+    "confirmed": false,
+    "summary": "复核了左侧视图（left）的绿色上衣区域。候选项指出胸前存在非纽扣圆形痕迹及纽扣数量/位置异常。经独立观察原图及局部对照表：Front参考图显示绿色上衣有上下两颗黄色纽扣；Left目标图对应位置仅可见下方一颗清晰黄色纽扣，上方区域为模糊的低对比度绿色色块（疑似修补残留或表面瑕疵），并非实体纽扣。候选项关于“非纽扣圆形痕迹”和“纽扣数量不一致”的观察是准确的。由于该差异涉及部件数量的明确缺失（1 vs 2），且无法通过透视解释，判定为真实结构差异。",
+    "observations": [
+      {
+        "role": "front",
+        "part": "hair",
+        "name": "丸子头",
+        "visible_count": 2,
+        "description": "正面可见两个对称的深棕色丸子头，位于头顶两侧。"
+      },
+      {
+        "role": "front",
+        "part": "clothes",
+        "name": "绿色上衣与卡其色裤子",
+        "visible_count": 2,
+        "description": "正面可见绿色方形上衣，中间垂直排列两颗黄色圆形纽扣；下身穿着卡其色裤子。"
+      },
+      {
+        "role": "front",
+        "part": "accessories",
+        "name": "无配饰",
+        "visible_count": 0,
+        "description": "角色未佩戴任何可见配饰（如耳环、项链等）。"
+      },
+      {
+        "role": "left",
+        "part": "hair",
+        "name": "丸子头",
+        "visible_count": 2,
+        "description": "侧面视角下，两个深棕色丸子头清晰可见，结构正常。"
+      },
+      {
+        "role": "left",
+        "part": "clothes",
+        "name": "绿色上衣与卡其色裤子",
+        "visible_count": 2,
+        "description": "侧面可见绿色上衣，胸前有一个模糊的圆形轮廓痕迹（非纽扣），下方有一颗黄色纽扣；下身卡其色裤子。"
+      },
+      {
+        "role": "left",
+        "part": "accessories",
+        "name": "无配饰",
+        "visible_count": 0,
+        "description": "侧面视角下未见任何可见配饰。"
+      },
+      {
+        "role": "back",
+        "part": "hair",
+        "name": "丸子头",
+        "visible_count": 2,
+        "description": "背面视角下，两个深棕色丸子头清晰可见。"
+      },
+      {
+        "role": "back",
+        "part": "clothes",
+        "name": "绿色上衣与卡其色裤子",
+        "visible_count": 2,
+        "description": "背面视角下，绿色上衣和卡其色裤子均被头发遮挡或不可见细节。"
+      },
+      {
+        "role": "back",
+        "part": "accessories",
+        "name": "无配饰",
+        "visible_count": 0,
+        "description": "背面视角下未见任何可见配饰。"
+      }
+    ],
+    "findings": [
+      {
+        "role": "left",
+        "part": "clothes",
+        "kind": "count",
+        "title": "胸前纽扣数量与位置不一致",
+        "evidence": "正面：Front参考图显示绿色上衣正面有上下两颗清晰的黄色圆形纽扣。；目标：Left目标图对应位置仅可见下方一颗清晰黄色纽扣，上方区域为模糊的低对比度绿色色块（疑似修补残留），无实体纽扣特征。；复核：Front图有2颗纽扣，Left图仅1颗，上方疑似修补痕迹非实体部件。",
+        "suggestion": "在 Left 图中修正胸前纽扣，确保可见的纽扣数量为两颗（或根据设计意图保持与 Front 一致），并调整其位置以符合正面设计的垂直排列逻辑。",
+        "confidence": 0.95,
+        "reference_count": 2,
+        "target_count": 1,
+        "bbox": [
+          468,
+          718,
+          532,
+          778
+        ],
+        "reference_bbox": [
+          468,
+          718,
+          532,
+          778
+        ],
+        "assessmentIndex": 1,
+        "id": "6895bf34-8b44-412f-85d7-f04c28b16a70:0",
+        "decision": "pending",
+        "note": ""
+      }
+    ],
+    "uncertainties": []
+  }
+}

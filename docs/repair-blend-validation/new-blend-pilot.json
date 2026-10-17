@@ -1,0 +1,172 @@
+{
+  "version": 3,
+  "summary": "复核了左侧视图（left）的服装和面部特征。候选1关于纽扣重影的描述符合图像特征，判定为渲染伪影（repair_artifact），非结构差异；候选2关于双眼可见性的描述符合当前设计（正面脸），判定为透视/不同表面解释。未发现真实部件缺失或新增。",
+  "observations": [
+    {
+      "role": "front",
+      "part": "hair",
+      "name": "发型结构",
+      "visible_count": null,
+      "description": "正面可见，深棕色丸子头（双发髻），面部五官清晰。"
+    },
+    {
+      "role": "front",
+      "part": "clothes",
+      "name": "服装结构",
+      "visible_count": 2,
+      "description": "正面可见绿色上衣，胸前垂直排列两个黄色圆形纽扣。"
+    },
+    {
+      "role": "front",
+      "part": "accessories",
+      "name": "配饰",
+      "visible_count": null,
+      "description": "未发现明显配饰。"
+    },
+    {
+      "role": "left",
+      "part": "hair",
+      "name": "发型结构",
+      "visible_count": null,
+      "description": "左侧面可见，丸子头轮廓完整，面部五官清晰（双眼、嘴）。"
+    },
+    {
+      "role": "left",
+      "part": "clothes",
+      "name": "服装结构",
+      "visible_count": 2,
+      "description": "左侧面可见绿色上衣，胸前有两个黄色圆形纽扣。上方纽扣清晰，下方纽扣周围有模糊的半透明重影（ghosting）。"
+    },
+    {
+      "role": "left",
+      "part": "accessories",
+      "name": "配饰",
+      "visible_count": null,
+      "description": "未发现明显配饰。"
+    },
+    {
+      "role": "back",
+      "part": "hair",
+      "name": "发型结构",
+      "visible_count": null,
+      "description": "背面可见，丸子头轮廓完整，无面部特征。"
+    },
+    {
+      "role": "back",
+      "part": "clothes",
+      "name": "服装结构",
+      "visible_count": 0,
+      "description": "背面可见绿色上衣背部，无纽扣或装饰。"
+    },
+    {
+      "role": "back",
+      "part": "accessories",
+      "name": "配饰",
+      "visible_count": null,
+      "description": "未发现明显配饰。"
+    }
+  ],
+  "findings": [],
+  "uncertainties": [],
+  "model": "qwen3.6:35b-a3b",
+  "elapsedMs": 23234,
+  "analysis": {
+    "policy": "repair-aware-v3",
+    "repairRoles": [
+      "left"
+    ],
+    "candidateCount": 2,
+    "overviewMs": 11218,
+    "verificationMs": 12016,
+    "checks": [
+      {
+        "candidate_index": 0,
+        "role": "left",
+        "part": "clothes",
+        "reference_evidence": "front图中绿色上衣有两颗清晰可见的黄色纽扣，位于垂直中轴线上。",
+        "target_evidence": "left图中绿色上衣同样有两颗黄色纽扣。下方纽扣周围存在明显的半透明重影（ghosting）和模糊效果，上方纽扣边缘也略显模糊。",
+        "reference_count": 2,
+        "target_count": 2,
+        "bbox": [
+          625,
+          718,
+          743,
+          781
+        ],
+        "reference_bbox": [
+          469,
+          718,
+          531,
+          781
+        ],
+        "repair_evidence": "对比left方向的BEFORE和CURRENT图，下方纽扣的重影在修正前后均存在，属于修补残留或渲染伪影。",
+        "repair_relation": "interior",
+        "component_evidence": "absent",
+        "repair_assessment": "surface_trace",
+        "kind": "structure",
+        "basis": "surface_detail",
+        "reference_visibility": "clear",
+        "target_visibility": "clear",
+        "correspondence": "same_component",
+        "count_unit": "per_component",
+        "alternative": "perspective",
+        "title": "服装纽扣重影/模糊异常",
+        "reason": "左侧视图下方纽扣的重影和模糊是渲染伪影（repair_artifact），非真实结构差异。两侧均有两颗纽扣，数量一致。建议人工核对，暂不重绘。",
+        "suggestion": "人工核对，暂不重绘",
+        "confidence": 0.95,
+        "verdict": "uncertain",
+        "repair_coverage": {
+          "selected": 0.0,
+          "boundary": 0.0
+        },
+        "model_verdict": "perspective",
+        "gates": [
+          "标记与修正选区边缘不相符"
+        ]
+      },
+      {
+        "candidate_index": 1,
+        "role": "left",
+        "part": "hair",
+        "reference_evidence": "front图中角色面部为正面视角，双眼和嘴巴均清晰可见。",
+        "target_evidence": "left图中角色面部同样呈现双眼和嘴巴，符合正面脸（flat face）的设计特征。",
+        "reference_count": null,
+        "target_count": null,
+        "bbox": [
+          375,
+          281,
+          625,
+          525
+        ],
+        "reference_bbox": [
+          375,
+          281,
+          625,
+          525
+        ],
+        "repair_evidence": "无该方向历史修正记录。",
+        "repair_relation": "none",
+        "component_evidence": "absent",
+        "repair_assessment": "none",
+        "kind": "structure",
+        "basis": "outline",
+        "reference_visibility": "clear",
+        "target_visibility": "clear",
+        "correspondence": "same_component",
+        "count_unit": "per_component",
+        "alternative": "different_surface",
+        "title": "面部特征在侧面视图中的可见性",
+        "reason": "left图的面部设计为正面脸，双眼可见符合该设定，非透视错误或结构缺失。建议人工核对，暂不重绘。",
+        "suggestion": "人工核对，暂不重绘",
+        "confidence": 0.85,
+        "verdict": "perspective",
+        "repair_coverage": {
+          "selected": 0.0,
+          "boundary": 0.0
+        },
+        "model_verdict": "perspective",
+        "gates": []
+      }
+    ]
+  }
+}

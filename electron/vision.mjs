@@ -1,6 +1,8 @@
 import { normalizeAnalysis, validateFindingLinks, VISION_POLICY } from './vision-analysis.mjs';
 export { CLASS_LABELS, VISIBILITY_LABELS, VISION_POLICY, visionPolicy, assertVisionPolicy } from './vision-analysis.mjs';
 import { VIEW_ROLES, readyMultiView } from './multiview.mjs';
+import {repairHistory} from './vision-history.mjs';
+export {repairHistory} from './vision-history.mjs';
 export const DEFAULT_VISION_MODEL='qwen3.6:35b-a3b';
 const uuid=/^[a-f0-9]{8}(-[a-f0-9]{4}){3}-[a-f0-9]{12}$/;
 const parts=['hair','clothes','accessories'];
@@ -23,10 +25,10 @@ function payload(value, roles){
   return {summary,observations,findings,uncertainties:value.uncertainties.map(v=>text(v,1000))};
 }
 export function normalizeVisionReview(value,assets){
-  if(!value||![1,2].includes(value.version)||!uuid.test(value.id)||typeof value.createdAt!=='string'||value.createdAt.length>80||!Number.isFinite(Date.parse(value.createdAt))||typeof value.confirmed!=='boolean'||!Number.isFinite(value.elapsedMs)||value.elapsedMs<0||value.elapsedMs>3600000)throw new Error('本地视觉检查记录无效。');
+  if(!value||![1,2,3].includes(value.version)||!uuid.test(value.id)||typeof value.createdAt!=='string'||value.createdAt.length>80||!Number.isFinite(Date.parse(value.createdAt))||typeof value.confirmed!=='boolean'||!Number.isFinite(value.elapsedMs)||value.elapsedMs<0||value.elapsedMs>3600000)throw new Error('本地视觉检查记录无效。');
   const model=text(value.model,200),views=readyMultiView({assets,multiView:{enabled:true,fov:20,views:value.views}}).views;
   const data=payload(value,Object.keys(views)),used=new Set();
-  const analysis=value.version===2?normalizeAnalysis(value.analysis,Object.keys(views),normalizeBox):undefined;
+  const analysis=value.version>=2?normalizeAnalysis(value.analysis,Object.keys(views),normalizeBox,value.version,assets,views):undefined;
   if(value.version===1&&value.analysis)throw new Error('请更新应用后读取新版视觉报告。');
   const findings=data.findings.map((f,i)=>{const raw=value.findings[i];if(typeof raw.id!=='string'||!raw.id.startsWith(value.id+':')||raw.id.length>80||used.has(raw.id)||!['pending','accepted','dismissed'].includes(raw.decision)||typeof raw.note!=='string'||raw.note.length>1000)throw new Error('视觉建议的确认状态无效。');used.add(raw.id);return {...f,id:raw.id,decision:raw.decision,note:raw.note};});
   if(analysis)validateFindingLinks(findings,analysis);
@@ -36,8 +38,10 @@ export function normalizeVisionReview(value,assets){
 }
 export function createVisionReview(raw,project,job){
   const views=readyMultiView({assets:project.assets,multiView:{enabled:true,fov:20,views:job.inputViewIds}}).views;
-  const data=payload(raw,Object.keys(views));
-  return normalizeVisionReview({version:raw.version===2?2:1,...(raw.version===2?{analysis:raw.analysis}:{}),id:job.id,createdAt:new Date().toISOString(),model:raw.model,elapsedMs:raw.elapsedMs,views,confirmed:false,...data,findings:data.findings.map((f,i)=>({...f,id:job.id+':'+i,decision:'pending',note:''}))},project.assets);
+  const data=payload(raw,Object.keys(views)),version=raw.version??1;
+  let analysis=raw.analysis;
+  if(version===3){const repairs=repairHistory(project.assets,views);if(!Array.isArray(analysis?.repairRoles)||analysis.repairRoles.length!==Object.keys(repairs).length||new Set(analysis.repairRoles).size!==analysis.repairRoles.length||analysis.repairRoles.some(r=>!repairs[r]))throw new Error('视觉报告与本次修正历史不匹配。');analysis={...analysis,repairs};}
+  return normalizeVisionReview({version,...(version>=2?{analysis}:{}),id:job.id,createdAt:new Date().toISOString(),model:raw.model,elapsedMs:raw.elapsedMs,views,confirmed:false,...data,findings:data.findings.map((f,i)=>({...f,id:job.id+':'+i,decision:'pending',note:''}))},project.assets);
 }
 export function visionState(project){
   const r=project.visionReview;if(!r)return 'unchecked';
@@ -54,10 +58,11 @@ export function readVisionOutput(entry){
   if(!Array.isArray(strings)||strings.length!==1||typeof strings[0]!=='string'||strings[0].length>120000)throw new Error('本地视觉节点没有返回完整报告。');
   return [JSON.parse(strings[0])];
 }
-export function buildVisionWorkflow({views,model=DEFAULT_VISION_MODEL,description=''}){
+export function buildVisionWorkflow({views,repairs={},model=DEFAULT_VISION_MODEL,description=''}){
   if(typeof model!=='string'||!model.trim()||model.length>200||/cloud/i.test(model))throw new Error('请选择本机已安装的视觉模型。');
   const graph={},inputs={model,description,review_policy:VISION_POLICY};
   for(const [i,role]of VIEW_ROLES.entries())if(views[role]){const id=String(910+i),alpha=String(920+i);graph[id]={class_type:'LoadImage',inputs:{image:views[role]}};graph[alpha]={class_type:'JoinImageWithAlpha',inputs:{image:[id,0],alpha:[id,1]}};inputs[role]=[alpha,0];}
+  for(const [i,role]of VIEW_ROLES.entries())if(repairs[role]){if(!views[role]||!repairs[role].before||!repairs[role].mask)throw new Error('修正历史图片不完整。');const id=String(930+i),alpha=String(940+i),mask=String(950+i);graph[id]={class_type:'LoadImage',inputs:{image:repairs[role].before}};graph[alpha]={class_type:'JoinImageWithAlpha',inputs:{image:[id,0],alpha:[id,1]}};graph[mask]={class_type:'LoadImage',inputs:{image:repairs[role].mask}};inputs[role+'_before']=[alpha,0];inputs[role+'_selection']=[mask,0];}
   graph['900']={class_type:'QCharacterVisionReview',inputs};return graph;
 }
 export function boxSelection(width,height,box){

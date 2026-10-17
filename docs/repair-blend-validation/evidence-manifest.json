@@ -1,0 +1,195 @@
+{
+  "createdAt": "2026-10-17T02:54:51.864Z",
+  "files": [
+    {
+      "name": "android-after.png",
+      "size": 28217,
+      "sha256": "8f978775409fc46107a7859553426066e0a3c1448ac9b6ee839dc41182f2d72b"
+    },
+    {
+      "name": "android-approval.json",
+      "size": 656,
+      "sha256": "c67981c6751f55e6f5d83d0bc558874b0d7dcc257131c541cc34f36cb1037c6b"
+    },
+    {
+      "name": "android-artifact-final.json",
+      "size": 16690,
+      "sha256": "1d26830c95f171b914098c1633c52db903f79e2f6564432f0d957a92da5950c3"
+    },
+    {
+      "name": "android-before.png",
+      "size": 7948,
+      "sha256": "90942e5ea710b1455a3de6f7e19b62612e649b5e18dd8dda0a8be13ac42d5f5e"
+    },
+    {
+      "name": "android-history-ui.json",
+      "size": 2290,
+      "sha256": "46fa920837d1f6587d82e775630f75f74dd4c9fb5aab4b7875fb73705b655525"
+    },
+    {
+      "name": "android-history-ui.png",
+      "size": 357718,
+      "sha256": "500d0febbadc8f38c79853ac66458713d8a2502576bcfeffc60cbc4408bd59c9"
+    },
+    {
+      "name": "android-mask.png",
+      "size": 15427,
+      "sha256": "1fb55edef6bac22033ff175a3c9a093dc3221a639b6ed6d28583cb0a7b656fe2"
+    },
+    {
+      "name": "android-recheck.json",
+      "size": 20818,
+      "sha256": "e14e89cf53198f6f652c701218cb484d12ebfc27e8f4076e851a3c3bbfc383a4"
+    },
+    {
+      "name": "android-region-geometry.json",
+      "size": 834,
+      "sha256": "9c72d7a90f64e166121e2ad4f93cc6311e9509085a8baa6e0031b2657ec27dfd"
+    },
+    {
+      "name": "artifact-pilot.json",
+      "size": 5790,
+      "sha256": "7be7612fca68916af7efb7df9d7e445597bc2dec090f5f41bda84045951e7ac0"
+    },
+    {
+      "name": "blend-metrics.json",
+      "size": 531,
+      "sha256": "2a85ea35af333308cc478c711690952513d3a2a6949e510c55a816c21cfc0c8d"
+    },
+    {
+      "name": "candidate.png",
+      "size": 416014,
+      "sha256": "f05d5069565308c4c1380b5e7867dcbaf864454a5bfc3279d47b1c3f8efd8f92"
+    },
+    {
+      "name": "control-double-blend.png",
+      "size": 16991,
+      "sha256": "03ca97a7751d8c43531077a38a3ff22c7fc428bd414efccc32945e199bcd06bd"
+    },
+    {
+      "name": "native-validation.json",
+      "size": 2725,
+      "sha256": "8c6683400d58b100f028cc9d97c340b187cb248193bba6c493815a3a34b49fbd"
+    },
+    {
+      "name": "new-blend-pilot.json",
+      "size": 5966,
+      "sha256": "2ba765d106ac5921d9e24a5a57cb324e6d54de024123adc27bfd0788dc9025b4"
+    },
+    {
+      "name": "new-blend.png",
+      "size": 17273,
+      "sha256": "774d8e9e2a23c3d8eb80cd16898ec498348971c7367e99920ed13971e315b099"
+    },
+    {
+      "name": "node-tests.txt",
+      "size": 8817,
+      "sha256": "f16a73b84a9a3bac5ce9692d2f921e214c2d829e6bb8427239845276a6b531d6"
+    },
+    {
+      "name": "package/package-fresh-validation.json",
+      "size": 480,
+      "sha256": "0033559975021ef1b49725b08640bafc2740e003c35e82939e0654d0f73926a8"
+    },
+    {
+      "name": "package/packaged-fresh.png",
+      "size": 167770,
+      "sha256": "c75afd59255576228684404b27afc25467fcfb3b23a84c21b1be3954848c0648"
+    },
+    {
+      "name": "raw-history.json",
+      "size": 7516,
+      "sha256": "c39fc702f1cfa835650501e06f70f5a7820e9992147ed1c9205b16f3df276b40"
+    },
+    {
+      "name": "raw-job.json",
+      "size": 5571,
+      "sha256": "dbc38b6e34e57670f6a785d28b9dc3b36bb972042f2c0217bc27819e655f41d9"
+    },
+    {
+      "name": "real-button-pilot.json",
+      "size": 5392,
+      "sha256": "c1171e706ba596204ee38de1db1c70de4b87b9e7dca98c0b44d995e07a76ec6a"
+    },
+    {
+      "name": "remote-final.json",
+      "size": 410,
+      "sha256": "077b5abf88ec7653c6094f05890c024dbf0eb56b639a4f4525c3a04060689af4"
+    },
+    {
+      "name": "REPORT.md",
+      "size": 8473,
+      "sha256": "cd70a47a62793923e98abb3a2e73446442b41ed3daa7ebf93b6e0d282ef7494e"
+    },
+    {
+      "name": "sync-validation.json",
+      "size": 1634,
+      "sha256": "92431c6caec39324cdcc5e370788e54574dfee90acc8de53d07fcb56782269c8"
+    },
+    {
+      "name": "verification.json",
+      "size": 1929,
+      "sha256": "063b54de551a4baf471c36583251ecd50fb0b39ec4358480dafdd6526cd2e381"
+    },
+    {
+      "name": "windows-after.png",
+      "size": 17360,
+      "sha256": "23eecadabd6f9fdb8ccbc6c86fb8e348c2dfa60df36b6d37110bfe95c16471ce"
+    },
+    {
+      "name": "windows-approval.json",
+      "size": 656,
+      "sha256": "3df914424f5c5ff032dd418dfed8eee1f9cfb8dc69cfae6a2ad81f78171ebb60"
+    },
+    {
+      "name": "windows-artifact-final.json",
+      "size": 16721,
+      "sha256": "bc81f5781e9f209a2fc012245dec686d9697f0275640efbafbf06655fabdf4f5"
+    },
+    {
+      "name": "windows-before.png",
+      "size": 7948,
+      "sha256": "90942e5ea710b1455a3de6f7e19b62612e649b5e18dd8dda0a8be13ac42d5f5e"
+    },
+    {
+      "name": "windows-history-ui.json",
+      "size": 2248,
+      "sha256": "6476aac5789a2b60977b35a4b3805a10bac2460054beac63d2becd21cef06bfb"
+    },
+    {
+      "name": "windows-history-ui.png",
+      "size": 132001,
+      "sha256": "b2b9817006c3de7fca4b2f0561b1781dba15eb003dcb02650c7b44d6bb196dd6"
+    },
+    {
+      "name": "windows-mask.png",
+      "size": 17382,
+      "sha256": "16af8384ba3e2fed64bffd515a933baa8b00d44185215a47e079bc9ac0595e67"
+    },
+    {
+      "name": "windows-recheck-first-context.json",
+      "size": 28365,
+      "sha256": "333ee0f17df15b00f73a5c43b4eeac08d8ddf5087cb2226461befa51236b7857"
+    },
+    {
+      "name": "windows-recheck.json",
+      "size": 24575,
+      "sha256": "80fce6e986d2f21b0c297c79fc6707c6a72272c648205374ec86a3bbfc53a814"
+    },
+    {
+      "name": "windows-region-geometry.json",
+      "size": 738,
+      "sha256": "1105ea2dca3d6ff5f3767b6244c9a3a2d64f2ef4f73d1e2320dbc4b4c87ff192"
+    },
+    {
+      "name": "../../comfyui/QCharacterVision/__init__.py",
+      "size": 2426,
+      "sha256": "407e020422dbc354d8c7edf8d3d63fa2be2c357be638f1549ca8a1e44ea8e414"
+    },
+    {
+      "name": "../../comfyui/QCharacterVision/vision.py",
+      "size": 29733,
+      "sha256": "9926cbee34c890d28252c73f4f0492db74a10cdc4a151d7b8505ce45034563c2"
+    }
+  ]
+}

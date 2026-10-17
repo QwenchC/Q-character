@@ -6,7 +6,7 @@ import json
 import time
 import urllib.error
 import urllib.request
-from PIL import Image, ImageDraw
+from PIL import Image, ImageDraw, ImageChops, ImageFilter
 
 BASE = "http://127.0.0.1:11434"
 LOCAL_HTTP = urllib.request.build_opener(urllib.request.ProxyHandler({}))
@@ -39,6 +39,7 @@ SCHEMA = {
 }
 
 POLICY = "visibility-v2"
+REPAIR_POLICY = "repair-aware-v3"
 ENUMS = {
     "verdict": ["structural", "perspective", "occluded", "uncertain"],
     "reference_visibility": ["clear", "partial", "hidden", "unknown"],
@@ -101,13 +102,13 @@ def valid_box(box):
     return isinstance(box, list) and len(box) == 4 and all(isinstance(v, (float, int)) and not isinstance(v, bool) and 0 <= v <= 1000 for v in box) and box[0] < box[2] and box[1] < box[3]
 
 
-def review_checks(checks, candidates, roles):
+def review_checks(checks, candidates, roles, history=None, v3=False):
     if not isinstance(checks, list) or len(checks) > 12:
         raise ValueError("视觉复核报告不完整。")
     seen = set()
     for c in checks:
         for key, values in ENUMS.items():
-            if c.get(key) not in values:
+            if c.get(key) not in (values + ["repair_artifact"] if v3 and key == "verdict" else values):
                 raise ValueError("视觉复核分类无效。")
         index = c.get("candidate_index")
         if type(index) is not int or index < -1 or index >= len(candidates) or (index >= 0 and index in seen):
@@ -127,6 +128,10 @@ def review_checks(checks, candidates, roles):
         if type(c.get("confidence")) not in [int, float] or not 0 <= c["confidence"] <= 1:
             raise ValueError("视觉复核自评无效。")
         model_verdict = c["verdict"]
+        if v3:
+            if c.get("repair_relation") not in ("none", "boundary", "interior", "outside", "unknown") or c.get("repair_assessment") not in ("surface_trace", "component_change", "none", "uncertain") or c.get("component_evidence") not in ("present", "absent", "uncertain") or not isinstance(c.get("repair_evidence"), str) or not c["repair_evidence"].strip() or len(c["repair_evidence"]) > 1000:
+                raise ValueError("修补痕迹复核证据不完整。")
+            c["repair_coverage"] = repair_coverage(c["bbox"], history[c["role"]]["mask"]) if c["role"] in (history or {}) else None
         gates = []
         if c["reference_visibility"] != "clear" or c["target_visibility"] != "clear": gates.append("双方部件未完整清晰可见")
         if c["correspondence"] != "same_component": gates.append("对应部件或表面尚未确认")
@@ -135,13 +140,83 @@ def review_checks(checks, candidates, roles):
         if c["reference_bbox"] is None: gates.append("缺少正面对应区域")
         if c["kind"] == "count" and (c["basis"] != "count" or c["count_unit"] != "per_component" or c["reference_count"] is None or c["target_count"] is None or c["reference_count"] == c["target_count"]): gates.append("数量比较单位或差异证据不足")
         if c["kind"] == "structure" and c["basis"] == "count": gates.append("数量与结构类型不匹配")
+        if v3 and c["component_evidence"] != "present": gates.append("缺少独立部件的类型、连接或数量依据")
+        artifact = v3 and (model_verdict == "repair_artifact" or c["repair_assessment"] == "surface_trace")
+        if artifact:
+            gates = []
+            if c["repair_coverage"] is None: gates.append("没有该方向的修正前图与实际选区")
+            elif c["repair_coverage"]["selected"] < .05 or c["repair_coverage"]["boundary"] < .02: gates.append("标记与修正选区边缘不相符")
+            if c["repair_relation"] not in ("boundary", "interior"): gates.append("未确认痕迹位于修补选区")
+            if c["repair_assessment"] != "surface_trace": gates.append("没有明确的修补表面痕迹依据")
+            if c["component_evidence"] != "absent": gates.append("仍可能存在真实部件")
+            if c["target_visibility"] != "clear": gates.append("目标区域未清晰可见")
+            if c["basis"] not in ("outline", "surface_detail"): gates.append("不能把真实数量差异归为修补痕迹")
+            if c["reference_count"] is not None and c["target_count"] is not None and c["reference_count"] != c["target_count"]: gates.append("部件数量仍有差异")
         c["model_verdict"] = model_verdict
-        c["gates"] = gates if model_verdict == "structural" else []
-        if model_verdict == "structural" and gates:
+        c["gates"] = gates if artifact or model_verdict == "structural" else []
+        if artifact:
+            c["verdict"] = "uncertain" if gates else "repair_artifact"
+        elif model_verdict == "structural" and gates:
             c["verdict"] = "uncertain"
     if seen != set(range(len(candidates))):
         raise ValueError("视觉复核遗漏候选，不能视为通过。")
     return checks
+
+
+def prepare_history(images, prepared, history):
+    result = {}
+    for role, pair in (history or {}).items():
+        if role not in prepared or set(pair) != {"before", "mask"} or any(im.size != images[role].size for im in pair.values()):
+            raise ValueError("修正前图、当前图与选区的尺寸或方向不一致。")
+        mask = pair["mask"].convert("RGB")
+        r, g, b = mask.split()
+        if ImageChops.difference(r, g).getbbox() or ImageChops.difference(r, b).getbbox() or not r.getbbox():
+            raise ValueError("修正历史需要有效灰阶选区。")
+        before = pair["before"].convert("RGBA")
+        white = Image.new("RGB", before.size, "white")
+        white.paste(before, mask=before.getchannel("A"))
+        result[role] = {"before": white.resize(prepared[role].size, Image.Resampling.LANCZOS), "mask": r.resize(prepared[role].size, Image.Resampling.BOX)}
+    return result
+
+
+def repair_coverage(box, mask):
+    x1, y1, x2, y2 = box
+    crop = (int(x1/1000*mask.width), int(y1/1000*mask.height), max(int(x1/1000*mask.width)+1, int(x2/1000*mask.width)), max(int(y1/1000*mask.height)+1, int(y2/1000*mask.height)))
+    expanded = (crop[0]-8, crop[1]-8, crop[2]+8, crop[3]+8)
+    binary = mask.crop(expanded).point(lambda v: 255 if v else 0)
+    band = ImageChops.subtract(binary.filter(ImageFilter.MaxFilter(17)), binary.filter(ImageFilter.MinFilter(17)))
+    inner = (8,8,8+crop[2]-crop[0],8+crop[3]-crop[1])
+    values = list(binary.crop(inner).getdata()); edges = list(band.crop(inner).getdata())
+    return {"selected": sum(v > 0 for v in values)/len(values), "boundary": sum(v > 0 for v in edges)/len(edges)}
+
+
+def history_sheet(prepared, history):
+    if not history:
+        return None
+    sheet = Image.new("RGB", (1280, 240*len(history)), "white")
+    draw = ImageDraw.Draw(sheet)
+    for i, (role, pair) in enumerate(history.items()):
+        x1, y1, x2, y2 = pair["mask"].getbbox()
+        # Include surrounding components: a tight repair crop can hide buttons
+        # just above/below the selection and be mistaken for the whole garment.
+        pad = max(64, int(max(x2-x1, y2-y1)*1.5))
+        box = (max(0,x1-pad), max(0,y1-pad), min(pair["mask"].width,x2+pad), min(pair["mask"].height,y2+pad))
+        columns=(("FRONT reference - full",prepared["front"]),(role+" BEFORE - not front",pair["before"]),(role+" CURRENT",prepared[role]),(role+" SELECTION",pair["mask"].convert("RGB")))
+        for j, (label, im) in enumerate(columns):
+            crop = im.copy() if j==0 else im.crop(box);crop.thumbnail((310,210));sheet.paste(crop,(j*320+(320-crop.width)//2,i*240+25))
+            draw.text((j*320+6,i*240+5), label, fill="black")
+    return sheet
+
+
+def repair_prompt(history):
+    return f"""\n修正历史对照表每行四栏：第一栏FRONT是当前正面全图；其余三栏全部是标注的 {', '.join(history) or '无'} 方向的 BEFORE(修正前)、CURRENT(当前)、SELECTION(白色为实际选区)，后三栏同一位置同一尺度。BEFORE不是正面参照，不得把它的旧部件数算作正面数量。表不是新增视角。只对当前原图记录观察和数量。
+判断是否有真实部件差异的依据(component_evidence=present/absent/uncertain)：present包括真实部件的新增、缺失或连接变化的明确依据；absent表示只有表面色差/轮廓而无部件差异依据，不是说目标图没有物体。真实纽扣、口袋、发饰需要可见的实体形状、连接、材质或同类数量依据。单纯低对比圆圈、色块、接缝不等于多一颗纽扣；黄色纽扣与绿色修补轮廓不能混算。
+对有历史的方向，独立比较修正前后的变化和选区边缘。repair_relation=boundary/interior/outside/unknown；无该方向历史填none。repair_evidence用中文说明前后变化与边缘关系，缺少历史时明确说明。
+独立填写repair_assessment：surface_trace=对照修正前后确认只有修补残留色差或轮廓；component_change=当前仍有真实新增/缺失/连接变化；none=没有可关联的修正影响；uncertain=无法区分。此项只判断修正影响，不能用perspective代替。若理由明确是低对比修补残留且没有实体差异，填写surface_trace；真实黄色纽扣与绿色浅圈必须区分。程序还会核验历史、实际选区和数量，不能仅凭该项隐藏问题。
+同一方向BEFORE与CURRENT相机相同，修正造成的色差或残留轮廓不能归为正常透视(perspective)。候选的selection_geometry是程序计算的选区/边缘覆盖比例，仅用于核对位置，不能独自证明是假部件。
+boundary包括白色选区的内外过渡带，不限最外一条像素；应结合边缘覆盖比例和轮廓，不因检测框也包住了选区中心就直接判interior。先写两图证据和修正前后依据，最后给出与证据一致的verdict；若原因认为是修补残留，不能又把verdict写成structural或perspective。
+verdict可增加repair_artifact(可能为修补痕迹)：仅有选区边缘的低对比色差或轮廓、没有独立部件证据时使用，basis=surface_detail/outline、kind=structure、component_evidence=absent。它仍需用户核对，不是自动通过。存在真实形状、连接或数量差异时即使位于选区边缘，也必须按structural报告；不能因发生过重绘就忽略新增部件。无法排除真实部件则uncertain。structural必须component_evidence=present。只有structural给出修改建议，其它写人工核对，暂不重绘。
+不要将历史表中的before部件当成当前仍存在。不要把修补痕迹数量与真实部件数相加，也不能忽略同位置新增的真实纽扣或配饰。"""
 
 
 def finding_from_check(c, index):
@@ -158,6 +233,10 @@ def detail_sheet(images, candidates):
     for i, c in enumerate(candidates):
         for column, role, box in [(0, "front", c.get("reference_bbox")), (1, c["role"], c["bbox"])]:
             im = images[role]
+            # Count the complete visible unit; a tight candidate crop may omit
+            # unchanged instances and turn a surface trace into a missing part.
+            if c.get("kind") == "count":
+                box = None
             if box is not None:
                 x1, y1, x2, y2 = box
                 pad = 35
@@ -214,7 +293,10 @@ def chat(model, images, content_prompt, schema, loaded, check_interrupt):
     return result
 
 
-def analyze(images, description, model, check_interrupt=lambda: None):
+def analyze(images, description, model, check_interrupt=lambda: None, history=None, policy=POLICY):
+    if policy not in (POLICY, REPAIR_POLICY):
+        raise ValueError("未知视觉复核策略。")
+    v3 = policy == REPAIR_POLICY
     if not isinstance(model, str) or not model.strip() or len(model) > 200 or "cloud" in model.lower():
         raise ValueError("只支持已安装在本机的 Ollama 视觉模型。")
     info = _json("/api/show", {"model": model})
@@ -231,6 +313,9 @@ def analyze(images, description, model, check_interrupt=lambda: None):
         white.thumbnail((1024, 1024))
         prepared[role] = white
     loaded = any(m.get("name") == model or m.get("model") == model for m in _json("/api/ps").get("models", []))
+    repaired = prepare_history(images, prepared, history) if v3 else {}
+    context = history_sheet(prepared, repaired)
+    context_images = [context] if context is not None else []
     schema = copy.deepcopy(SCHEMA)
     schema["properties"]["observations"].update(minItems=len(roles)*3, maxItems=len(roles)*3)
     schema["properties"]["findings"]["maxItems"] = 6
@@ -248,13 +333,22 @@ def analyze(images, description, model, check_interrupt=lambda: None):
     check_interrupt()
     sheet = detail_sheet(prepared, candidates)
     verification_images = list(prepared.values()) + ([sheet] if sheet is not None else [])
-    checked = chat(model, verification_images, verification_prompt(roles, candidates), VERIFY_SCHEMA, loaded, check_interrupt)
-    checks = review_checks(checked.get("checks"), candidates, roles)
+    verify_schema = copy.deepcopy(VERIFY_SCHEMA)
+    if v3:
+        props = verify_schema["properties"]["checks"]["items"]["properties"]
+        props["verdict"]["enum"].append("repair_artifact")
+        props.update({"repair_relation": {"type": "string", "enum": ["none", "boundary", "interior", "outside", "unknown"]}, "repair_assessment": {"type": "string", "enum": ["surface_trace", "component_change", "none", "uncertain"]}, "component_evidence": {"type": "string", "enum": ["present", "absent", "uncertain"]}, "repair_evidence": {"type": "string"}})
+        order = ["candidate_index", "role", "part", "reference_evidence", "target_evidence", "reference_count", "target_count", "bbox", "reference_bbox", "repair_evidence", "repair_relation", "component_evidence", "repair_assessment", "kind", "basis", "reference_visibility", "target_visibility", "correspondence", "count_unit", "alternative", "title", "reason", "suggestion", "confidence", "verdict"]
+        verify_schema["properties"]["checks"]["items"]["properties"] = {k: props[k] for k in order}
+        verify_schema["properties"]["checks"]["items"]["required"] = order
+    verification_candidates = [{**c, "selection_geometry": repair_coverage(c["bbox"], repaired[c["role"]]["mask"]) if c["role"] in repaired else None} for c in candidates] if v3 else candidates
+    checked = chat(model, verification_images+context_images, verification_prompt(roles, verification_candidates)+(repair_prompt(repaired) if v3 else ""), verify_schema, loaded, check_interrupt)
+    checks = review_checks(checked.get("checks"), candidates, roles, repaired, v3)
     findings = [finding_from_check(c, i) for i, c in enumerate(checks) if c["verdict"] == "structural"]
     elapsed = round((time.monotonic()-started)*1000)
     if not isinstance(checked.get("summary"), str) or not checked["summary"].strip():
         raise ValueError("视觉复核缺少总结。")
-    return {"version": 2, "summary": checked["summary"], "observations": observations, "findings": findings,
+    return {"version": 3 if v3 else 2, "summary": checked["summary"], "observations": observations, "findings": findings,
             "uncertainties": overview["uncertainties"], "model": model, "elapsedMs": elapsed,
-            "analysis": {"policy": POLICY, "candidateCount": len(candidates), "overviewMs": overview_ms,
+            "analysis": {"policy": policy, **({"repairRoles": list(repaired)} if v3 else {}), "candidateCount": len(candidates), "overviewMs": overview_ms,
                          "verificationMs": elapsed-overview_ms, "checks": checks}}

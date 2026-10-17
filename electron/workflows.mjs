@@ -59,7 +59,8 @@ export function buildRepairWorkflow({ mask, width, height, instruction, backgrou
   graph['55']=node('LoadBackgroundRemovalModel',{bg_removal_name:backgroundModel});
   graph['56']=node('RemoveBackground',{bg_removal_model:['55',0],image:['54',0]});
   graph['57']=node('InvertMask',{mask:['56',0]});
-  graph['58']=node('JoinImageWithAlpha',{image:['54',0],alpha:['57',0]});
+  // Matting sees the stable composite; the client blends the candidate exactly once.
+  graph['58']=node('JoinImageWithAlpha',{image:['53',0],alpha:['57',0]});
   graph['8'].inputs={images:['58',0],filename_prefix:'QCharacter/local-repair'};
   return graph;
 }

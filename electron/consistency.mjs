@@ -1,4 +1,5 @@
 import { VIEW_ROLES, VIEW_LABELS, readyMultiView } from './multiview.mjs';
+import { blendRepair } from './repair-blend.mjs';
 
 export const REVIEW_PARTS = ['hair', 'clothes', 'accessories'];
 export const PART_LABELS = { hair: '发型与发色', clothes: '服装与层次', accessories: '配饰与数量' };
@@ -62,12 +63,7 @@ export function validateRepairMask(source, mask) {
 export function compositeRepair(source, generated, mask) {
   validateRepairMask(source,mask);
   if(source.width!==generated.width||source.height!==generated.height||generated.data.length!==source.data.length)throw new Error('重绘结果与目标图片尺寸不一致。');
-  const data=new Uint8ClampedArray(source.data);
-  for(let i=0;i<data.length;i+=4){const w=mask.data[i]/255;if(!w)continue;const a=source.data[i+3]/255,b=generated.data[i+3]/255,out=a*(1-w)+b*w;
-    for(let c=0;c<3;c++)data[i+c]=out?Math.round((source.data[i+c]*a*(1-w)+generated.data[i+c]*b*w)/out):0;
-    data[i+3]=Math.round(out*255);
-  }
-  return {width:source.width,height:source.height,data};
+  return blendRepair(source,generated,mask);
 }
 export function repairPrompt(role, instruction) {
   if(!VIEW_ROLES.includes(role)||typeof instruction!=='string'||!instruction.trim()||instruction.length>2000)throw new Error('请填写不超过 2000 字的局部修正要求。');

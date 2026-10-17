@@ -27,7 +27,7 @@ test('二次复核保留真正数量差异，透视、遮挡与证据不足不�
 test('复核分类、候选覆盖与重绘引用防止同步或恢复任务时丢失证据',()=>{
  for(const mutate of [r=>delete r.analysis,r=>r.analysis.policy='future',r=>r.analysis.checks=[],r=>r.analysis.checks.push(structuredClone(r.analysis.checks[0])),r=>r.findings[0].assessmentIndex=1,r=>r.findings[0].bbox=[0,0,20,20],r=>r.findings=[],r=>r.analysis.checks[0].gates=['不能重绘'],r=>r.analysis.checks[0].verdict='perspective']){const bad=reportV2();mutate(bad);assert.throws(()=>normalizeVisionReview(bad,assets));}
  const old=report();assert.equal(normalizeVisionReview(old,assets).version,1);old.analysis=reportV2().analysis;assert.throws(()=>normalizeVisionReview(old,assets));
- assert.equal(visionPolicy({QCharacterVisionReview:{input:{optional:{review_policy:[['visibility-v2']]}}}}),'visibility-v2');assert.throws(()=>assertVisionPolicy({QCharacterVisionReview:{input:{}}}),/更新/);assert.equal(buildVisionWorkflow({views:project.multiView.views})['900'].inputs.review_policy,'visibility-v2');
+ assert.equal(visionPolicy({QCharacterVisionReview:{input:{optional:{review_policy:[['visibility-v2','repair-aware-v3']]}}}}),'repair-aware-v3');assert.throws(()=>assertVisionPolicy({QCharacterVisionReview:{input:{}}}),/更新/);assert.equal(buildVisionWorkflow({views:project.multiView.views})['900'].inputs.review_policy,'repair-aware-v3');
  const r=reportV2();assert.deepEqual(normalizeVisionReview(JSON.parse(JSON.stringify(r)),assets),r);
 });
 test('模型结果始终待确认，逐项接受绑定方向与版本；未处理、修改视图或蒙版阻止建模',()=>{

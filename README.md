@@ -2,11 +2,11 @@
 
 面向超轻黏土手作的 Windows 桌面与 Android 应用：从文字或人物图片设计 Q 版角色，连接现有 ComfyUI 生成真实 3D 网格，再导出 Blender 可导入的 GLB、STL 和三视图参考。
 
-[下载 Windows 免安装版 v0.10.1](https://github.com/QwenchC/Q-character/releases/tag/v0.10.1) · [全部版本](https://github.com/QwenchC/Q-character/releases) · [贴图与调色说明](docs/TEXTURE-CLAY.md)
+[下载 Windows 免安装版 v0.11.0](https://github.com/QwenchC/Q-character/releases/tag/v0.11.0) · [全部版本](https://github.com/QwenchC/Q-character/releases) · [贴图与调色说明](docs/TEXTURE-CLAY.md)
 
-[下载 Android APK v0.7.1](https://github.com/QwenchC/Q-character/releases/download/v0.10.1/Q-Character-Android-0.7.1.apk) · [Android Release 与校验文件](https://github.com/QwenchC/Q-character/releases/tag/v0.10.1) · [Android 使用说明](docs/ANDROID.md)
+[下载 Android APK v0.8.0](https://github.com/QwenchC/Q-character/releases/download/v0.11.0/Q-Character-Android-0.8.0.apk) · [Android Release 与校验文件](https://github.com/QwenchC/Q-character/releases/tag/v0.11.0) · [Android 使用说明](docs/ANDROID.md)
 
-Android 0.7.1 已支持远程／内网穿透 ComfyUI、独立证书授权、Token／账号认证、触屏蒙版修正、3D 贴图与调色导出。Windows 0.10.1 可提供 HTTPS 作品同步服务，让手机和电脑继续编辑同一作品，详见 [作品同步与穿透设置](docs/SYNC.md)。最低 Android 8.0，需要支持 WebGL 2 的较新版 Android System WebView／Chrome。
+Android 0.8.0 已支持远程／内网穿透 ComfyUI、独立证书授权、Token／账号认证、触屏蒙版修正、3D 贴图与调色导出。Windows 0.11.0 可提供 HTTPS 作品同步服务，让手机和电脑继续编辑同一作品，详见 [作品同步与穿透设置](docs/SYNC.md)。最低 Android 8.0，需要支持 WebGL 2 的较新版 Android System WebView／Chrome。
 
 - 文字生成 Q 版设计图，或使用 Qwen 2.1 将人物照片转成 Q 版参考。
 - BiRefNet 自动抠图，支持恢复/擦除画笔、缩放平移和撤销重做。
@@ -21,7 +21,7 @@ Android 0.7.1 已支持远程／内网穿透 ComfyUI、独立证书授权、Toke
 ## 使用
 
 1. 在绘世启动器中启动 `F:\ComfyUI-aki\ComfyUI`。
-2. 从 [GitHub Release](https://github.com/QwenchC/Q-character/releases/tag/v0.10.1) 下载并运行 `Q-Character-Studio-0.10.1-Windows.exe`。这是免安装版，无需安装 Node.js。Release 提供 `SHA256SUMS.txt` 用于校验文件。
+2. 从 [GitHub Release](https://github.com/QwenchC/Q-character/releases/tag/v0.11.0) 下载并运行 `Q-Character-Studio-0.11.0-Windows.exe`。这是免安装版，无需安装 Node.js。Release 提供 `SHA256SUMS.txt` 用于校验文件。
 3. 点击左下角“生成服务设置”。默认地址为 `http://127.0.0.1:8188`；如绘世显示其他端口，请修改地址。目录字段仅记录环境位置，不代替服务地址，也不会启动或安装 ComfyUI。
 4. 点击“连接 ComfyUI”，再新建作品。填写角色描述，或切换“图片参考”导入人物图片。
 5. 生成并确认 Q 版设计图。图片参考默认使用 Qwen 2.1 专用人物编辑；文字设计仍使用 SDXL。已有满意的 Q 版图片也可直接导入。
@@ -87,10 +87,12 @@ npm run package
 
 ## 本地视觉结构与数量检查
 
-Windows 0.10.1 / Android 0.7.1 可通过本机 Ollama 检查多视图的服装、发型与配饰，标出疑似差异并生成局部重绘建议。先确认建议、调整选区，再执行修正；报告、决定和历史随作品同步。参见 [安装与使用](docs/LOCAL-VISION.md) 和 [验证记录](docs/vision-validation/REPORT.md)。视觉模型可能误判视角与遮挡，不能替代人工核对。
+Windows 0.11.0 / Android 0.8.0 可通过本机 Ollama 检查多视图的服装、发型与配饰，标出疑似差异并生成局部重绘建议。先确认建议、调整选区，再执行修正；报告、决定和历史随作品同步。参见 [安装与使用](docs/LOCAL-VISION.md) 和 [验证记录](docs/vision-validation/REPORT.md)。视觉模型可能误判视角与遮挡，不能替代人工核对。
 
 0.9.1 / Android 0.6.1 修复建议选区撤销后无法继续重绘的问题；已在重启后的本地 ComfyUI 和手机外网连接完成检测、标记、确认后重绘与重新检测。见 [完整流程与外网验证](docs/remote-vision-validation/REPORT.md)。
 
 0.10.0 / Android 0.7.0 增加独立的透视、遮挡与结构复核，显示分类证据并随作品同步。需要升级两端及视觉节点、重启 ComfyUI；样例结果和未解决的漏检见 [准确度验证](docs/vision-accuracy-validation/REPORT.md)。
 
 0.10.1 / Android 0.7.1 修复小选区重绘保留原有多余结构的问题；已在重启后的日常 ComfyUI 和 Android 原外网地址完成新版复核、标记、确认、画笔、局部重绘与复检。两端样例均移除多余纽扣且选区外 RGBA 不变；Android 复检保留了修补痕迹提示并填写接受说明。见 [完整实测与限制](docs/vision-v2-remote-validation/REPORT.md)。
+
+0.11.0 / Android 0.8.0 改进局部重绘融合：候选图只混合一次，按选区周围材质小幅校色并减轻低对比边缘，选区外 RGBA 不变。视觉复检结合修正前图与实际选区，单独显示“可能为修补痕迹”；真实部件仍需独立证据，矛盾结果保留为证据不足。两端需更新客户端及 QCharacterVision 节点并重启 ComfyUI，历史报告继续可读。[使用与实测限制](docs/repair-blend-validation/REPORT.md)。

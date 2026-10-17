@@ -1,0 +1,261 @@
+{
+  "promptId": "9c8d145e-87c9-4e71-b0af-5b1848220d92",
+  "workflow": {
+    "1": {
+      "class_type": "UNETLoader",
+      "inputs": {
+        "unet_name": "qwen_image_2.1_int8_convrot.safetensors",
+        "weight_dtype": "default"
+      }
+    },
+    "2": {
+      "class_type": "CLIPLoader",
+      "inputs": {
+        "clip_name": "qwen3vl_8b_int8_convrot.safetensors",
+        "type": "qwen_image",
+        "device": "default"
+      }
+    },
+    "3": {
+      "class_type": "VAELoader",
+      "inputs": {
+        "vae_name": "qwen_image_2.1_vae_bf16.safetensors"
+      }
+    },
+    "4": {
+      "class_type": "LoadImage",
+      "inputs": {
+        "image": "qcharacter-24dc3945-8724-445f-900a-66a9f0dedc08.png"
+      }
+    },
+    "5": {
+      "class_type": "TextEncodeQwenImage21",
+      "inputs": {
+        "clip": [
+          "2",
+          0
+        ],
+        "vae": [
+          "3",
+          0
+        ],
+        "prompt": "第一张是待修正的左侧目标图，其余图为同一角色其它方向的参考。保持第一张图的相机方向、姿势、比例、身份、取景、背景和未要求修改的部分。只修正指定区域，使服装、发型或配饰与参考设计合理衔接，不要把侧面改成正面、背面不要出现正面五官，不要改变角色或添加无关装饰。修正要求：以正面设计的两颗黄色纽扣为准：只移除目标图绿色上衣正中间多出的一颗黄色纽扣，将这一小块恢复为与周围一致的纯绿色布料。保留最上面和最下面两颗纽扣，保持当前图的相机、姿态、发型、脸、手臂、服装轮廓、裤子、鞋子和透明背景。不要新增纽扣、线条、口袋或饰物。",
+        "negative_prompt": "",
+        "resolution": 0,
+        "images.image_1": [
+          "4",
+          0
+        ],
+        "images.image_2": [
+          "20",
+          0
+        ],
+        "images.image_3": [
+          "21",
+          0
+        ]
+      }
+    },
+    "6": {
+      "class_type": "KSampler",
+      "inputs": {
+        "model": [
+          "1",
+          0
+        ],
+        "positive": [
+          "5",
+          0
+        ],
+        "negative": [
+          "5",
+          1
+        ],
+        "latent_image": [
+          "52",
+          0
+        ],
+        "seed": 1977993288,
+        "steps": 25,
+        "cfg": 1,
+        "sampler_name": "euler",
+        "scheduler": "simple",
+        "denoise": 1
+      }
+    },
+    "7": {
+      "class_type": "VAEDecode",
+      "inputs": {
+        "samples": [
+          "6",
+          0
+        ],
+        "vae": [
+          "3",
+          0
+        ]
+      }
+    },
+    "8": {
+      "class_type": "SaveImage",
+      "inputs": {
+        "images": [
+          "58",
+          0
+        ],
+        "filename_prefix": "QCharacter/repair-blend/raw-candidate"
+      }
+    },
+    "20": {
+      "class_type": "LoadImage",
+      "inputs": {
+        "image": "qcharacter-29b6163f-19a7-4769-a41b-dee5754d9832.png"
+      }
+    },
+    "21": {
+      "class_type": "LoadImage",
+      "inputs": {
+        "image": "qcharacter-45702e33-3dfa-4271-960f-b69980c4c7f5.png"
+      }
+    },
+    "50": {
+      "class_type": "LoadImage",
+      "inputs": {
+        "image": "qcharacter-51662c69-6fbc-40fb-86f9-0e0ea7d4c642.png"
+      }
+    },
+    "51": {
+      "class_type": "ImageToMask",
+      "inputs": {
+        "image": [
+          "50",
+          0
+        ],
+        "channel": "red"
+      }
+    },
+    "52": {
+      "class_type": "SetLatentNoiseMask",
+      "inputs": {
+        "samples": [
+          "60",
+          0
+        ],
+        "mask": [
+          "51",
+          0
+        ]
+      }
+    },
+    "53": {
+      "class_type": "ImageScale",
+      "inputs": {
+        "image": [
+          "7",
+          0
+        ],
+        "upscale_method": "lanczos",
+        "width": 640,
+        "height": 800,
+        "crop": "disabled"
+      }
+    },
+    "54": {
+      "class_type": "ImageCompositeMasked",
+      "inputs": {
+        "destination": [
+          "4",
+          0
+        ],
+        "source": [
+          "53",
+          0
+        ],
+        "x": 0,
+        "y": 0,
+        "resize_source": false,
+        "mask": [
+          "51",
+          0
+        ]
+      }
+    },
+    "55": {
+      "class_type": "LoadBackgroundRemovalModel",
+      "inputs": {
+        "bg_removal_name": "birefnet.safetensors"
+      }
+    },
+    "56": {
+      "class_type": "RemoveBackground",
+      "inputs": {
+        "bg_removal_model": [
+          "55",
+          0
+        ],
+        "image": [
+          "54",
+          0
+        ]
+      }
+    },
+    "57": {
+      "class_type": "InvertMask",
+      "inputs": {
+        "mask": [
+          "56",
+          0
+        ]
+      }
+    },
+    "58": {
+      "class_type": "JoinImageWithAlpha",
+      "inputs": {
+        "image": [
+          "53",
+          0
+        ],
+        "alpha": [
+          "57",
+          0
+        ]
+      }
+    },
+    "59": {
+      "class_type": "ImageScale",
+      "inputs": {
+        "image": [
+          "4",
+          0
+        ],
+        "upscale_method": "lanczos",
+        "width": 640,
+        "height": 800,
+        "crop": "disabled"
+      }
+    },
+    "60": {
+      "class_type": "VAEEncode",
+      "inputs": {
+        "pixels": [
+          "59",
+          0
+        ],
+        "vae": [
+          "3",
+          0
+        ]
+      }
+    },
+    "81": {
+      "class_type": "SaveImage",
+      "inputs": {
+        "images": [
+          "54",
+          0
+        ],
+        "filename_prefix": "QCharacter/repair-blend/old-server-composite"
+      }
+    }
+  }
+}

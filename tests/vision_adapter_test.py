@@ -5,7 +5,7 @@ import json
 import unittest
 from unittest.mock import patch
 from pathlib import Path
-from PIL import Image
+from PIL import Image, ImageDraw
 
 spec = importlib.util.spec_from_file_location("vision", Path(__file__).parents[1] / "comfyui/QCharacterVision/vision.py")
 vision = importlib.util.module_from_spec(spec)
@@ -73,6 +73,41 @@ class AdapterTest(unittest.TestCase):
             vision.review_checks([], candidates, ["front", "left", "back"])
         with self.assertRaises(ValueError):
             vision.review_checks([dict(base), dict(base)], candidates, ["front", "left", "back"])
+
+    def test_repair_trace_requires_history_geometry_and_absent_component_evidence(self):
+        mask = Image.new('L', (64,64));ImageDraw.Draw(mask).ellipse((16,16,48,48), fill=255)
+        history = {'left': {'mask': mask}}
+        base = dict(candidate_index=0, role='left', part='clothes', kind='structure', title='浅色痕迹', reason='只有色差', reference_evidence='两颗纽扣', target_evidence='两颗纽扣和浅色轮廓', suggestion='人工核对，暂不重绘', confidence=.9, reference_count=2,target_count=2,bbox=[200,200,800,800],reference_bbox=None,verdict='repair_artifact',reference_visibility='clear',target_visibility='clear',correspondence='same_component',basis='surface_detail',alternative='none',count_unit='per_component',repair_assessment='surface_trace',repair_relation='boundary',component_evidence='absent',repair_evidence='前图为纽扣，当前留下与选区形状接近的浅色轮廓')
+        candidates=[{'role':'left','part':'clothes'}]
+        valid=vision.review_checks([dict(base)],candidates,['front','left','back'],history,True)[0]
+        self.assertEqual(valid['verdict'],'repair_artifact');self.assertGreater(valid['repair_coverage']['boundary'],.02)
+        for changes in ({'component_evidence':'present'},{'repair_relation':'outside'},{'target_count':3},{'target_visibility':'hidden'},{'bbox':[0,0,100,100]},{'repair_assessment':'uncertain'}):
+            c=vision.review_checks([{**base,**changes}],candidates,['front','left','back'],history,True)[0]
+            self.assertEqual(c['verdict'],'uncertain');self.assertTrue(c['gates'])
+        c=vision.review_checks([dict(base)],candidates,['front','left','back'],{},True)[0]
+        self.assertEqual(c['verdict'],'uncertain')
+        genuine={**base,'verdict':'structural','repair_assessment':'component_change','component_evidence':'present','kind':'count','basis':'count','target_count':3,'reference_bbox':[200,200,800,800]}
+        self.assertEqual(vision.review_checks([genuine],candidates,['front','left','back'],history,True)[0]['verdict'],'structural')
+
+    def test_history_rejects_mismatched_or_colored_masks(self):
+        prepared={r:Image.new('RGB',im.size,'white') for r,im in self.images.items()}
+        before=Image.new('RGBA',(16,32),'green');mask=Image.new('RGB',(16,32),'white')
+        valid=vision.prepare_history(self.images,prepared,{'left':{'before':before,'mask':mask}})
+        self.assertEqual(list(valid),['left'])
+        for pair in ({'before':before},{'before':before,'mask':Image.new('RGB',(16,32),'red')},{'before':Image.new('RGB',(32,32)),'mask':mask}):
+            with self.assertRaises(ValueError):vision.prepare_history(self.images,prepared,{'left':pair})
+
+    def test_current_only_overview_and_complete_count_context(self):
+        overview = {'summary':'初检', 'observations':[{'role':r,'part':p} for r in self.images for p in ('hair','clothes','accessories')], 'findings':[], 'uncertainties':[]}
+        history = {'left':{'before':self.images['left'],'mask':Image.new('RGB',(16,32),'white')}}
+        with patch.object(vision,'_json',side_effect=[{'capabilities':['vision'],'details':{'format':'gguf'}},{'models':[]}]), patch.object(vision,'chat',side_effect=[overview,{'summary':'复核','checks':[]}]) as chat:
+            result=vision.analyze(self.images,'','local',history=history,policy=vision.REPAIR_POLICY)
+        self.assertEqual(len(chat.call_args_list[0].args[1]),3)  # Never count historical buttons as current.
+        self.assertEqual(len(chat.call_args_list[1].args[1]),4)
+        self.assertEqual(result['analysis']['repairRoles'],['left'])
+        im=Image.new('RGB',(64,128),'white');ImageDraw.Draw(im).rectangle((10,100,20,110),fill=(250,190,0))
+        sheet=vision.detail_sheet({'front':im,'left':im},[{'role':'left','kind':'count','bbox':[0,0,200,200],'reference_bbox':[0,0,200,200]}])
+        self.assertIn((250,190,0),list(sheet.getdata()))  # Count context retains instances outside a tight candidate box.
 
 
 if __name__ == "__main__":

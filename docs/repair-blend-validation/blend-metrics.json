@@ -1,0 +1,26 @@
+{
+  "candidate": {
+    "outside": 507742,
+    "outchanged": 503428,
+    "bandN": 2504,
+    "bandMeanAbsRGB": 2.9644568690095863,
+    "bandMax": 17.666666666666668,
+    "centerGold": 0
+  },
+  "control-double-blend": {
+    "outside": 507742,
+    "outchanged": 0,
+    "bandN": 2504,
+    "bandMeanAbsRGB": 2.143903088391906,
+    "bandMax": 14,
+    "centerGold": 0
+  },
+  "new-blend": {
+    "outside": 507742,
+    "outchanged": 0,
+    "bandN": 2504,
+    "bandMeanAbsRGB": 1.4848242811501589,
+    "bandMax": 11,
+    "centerGold": 0
+  }
+}

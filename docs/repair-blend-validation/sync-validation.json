@@ -1,0 +1,66 @@
+{
+  "initial": {
+    "changed": 1,
+    "conflicts": 0,
+    "uploadedFiles": 0,
+    "downloadedFiles": 4,
+    "errors": []
+  },
+  "concurrent": {
+    "changed": 1,
+    "conflicts": 1,
+    "uploadedFiles": 0,
+    "downloadedFiles": 0,
+    "errors": []
+  },
+  "copy": {
+    "id": "b604ab9c-2935-5256-227a-a726d7694ebd",
+    "source": "4c1ff6c2-123a-438f-a4f0-3d480a155138",
+    "reportId": "78166936-adc5-416e-8979-6151c9b80a1f"
+  },
+  "continuation": {
+    "changed": 1,
+    "conflicts": 0,
+    "uploadedFiles": 0,
+    "downloadedFiles": 0,
+    "errors": []
+  },
+  "independent": {
+    "changed": 1,
+    "conflicts": 0,
+    "uploadedFiles": 0,
+    "downloadedFiles": 0,
+    "errors": []
+  },
+  "windowsToAndroid": {
+    "result": {
+      "changed": 0,
+      "conflicts": 0,
+      "uploadedFiles": 0,
+      "downloadedFiles": 0,
+      "errors": []
+    },
+    "reportId": "34f2f0bf-7ac2-4955-91aa-a29bbc3c1e7f",
+    "confirmed": true
+  },
+  "androidToWindows": {
+    "reportId": "78166936-adc5-416e-8979-6151c9b80a1f",
+    "decision": "accepted",
+    "jobsBefore": 5,
+    "jobsAfter": 5,
+    "assetsBefore": 11,
+    "assetsAfter": 11,
+    "repairs": {
+      "left": {
+        "viewId": "d7ca57ab-47be-463b-98dc-98a69754be72",
+        "beforeId": "64da52de-fa92-4aad-90d3-fbcaddc277db",
+        "maskId": "5ad8e75c-0153-4714-a031-bd3a1bfa4fe7"
+      }
+    },
+    "hashes": {
+      "viewId": "8f978775409fc46107a7859553426066e0a3c1448ac9b6ee839dc41182f2d72b",
+      "beforeId": "90942e5ea710b1455a3de6f7e19b62612e649b5e18dd8dda0a8be13ac42d5f5e",
+      "maskId": "1fb55edef6bac22033ff175a3c9a093dc3221a639b6ed6d28583cb0a7b656fe2"
+    }
+  }
+}

@@ -12,7 +12,7 @@ function phone({version='0.39.1',oldJob,vision=false,server='https://example.tes
   const settings={server,designCheckpoint:'sdxl.safetensors',imageEngine:'qwen21'};
   const calls=[],events=[];let complete=false,stale=false;
   const info=Object.fromEntries(['KSampler','CheckpointLoaderSimple','CLIPTextEncode','EmptyLatentImage','VAEDecode','SaveImage','LoadImage','JoinImageWithAlpha','QCharacterVisionReview'].map(n=>[n,{input:{required:{}}}]));
-  info.QCharacterVisionReview.input.optional={review_policy:[['visibility-v2']]};
+  info.QCharacterVisionReview.input.optional={review_policy:[['visibility-v2','repair-aware-v3']]};
   const native={postMessage(text){const {id,method,args}=JSON.parse(text);calls.push({method,args});Promise.resolve().then(()=>{
     let result;
     if(method==='bootstrap'){result={settings,projects:[structuredClone(project)]};if(stale){stale=false;result.projects[0].jobs.forEach(j=>j.status='running');}}
@@ -24,7 +24,7 @@ function phone({version='0.39.1',oldJob,vision=false,server='https://example.tes
       if(args.route==='/system_stats')result={system:{comfyui_version:version},devices:[]};
       else if(args.route==='/object_info')result=info;
       else if(args.route==='/prompt')result={prompt_id:'original-prompt'};
-      else if(args.route.startsWith('/history/'))result=complete?{'original-prompt':{status:{completed:true},outputs:vision?{'900':{text:[JSON.stringify({version:2,analysis:{policy:'visibility-v2',candidateCount:0,overviewMs:50,verificationMs:50,checks:[]},model:'qwen3.6:35b-a3b',elapsedMs:100,summary:'未见明确差异',observations:['front','left','back'].flatMap(role=>['hair','clothes','accessories'].map(part=>({role,part,name:part,visible_count:null,description:'遮挡不推断数量'}))),findings:[],uncertainties:['背面耳饰不可见']})]}}:{'7':{images:[{filename:'result.png',type:'output'}]}}}}:{};
+      else if(args.route.startsWith('/history/'))result=complete?{'original-prompt':{status:{completed:true},outputs:vision?{'900':{text:[JSON.stringify({version:3,analysis:{policy:'repair-aware-v3',repairRoles:[],candidateCount:0,overviewMs:50,verificationMs:50,checks:[]},model:'qwen3.6:35b-a3b',elapsedMs:100,summary:'未见明确差异',observations:['front','left','back'].flatMap(role=>['hair','clothes','accessories'].map(part=>({role,part,name:part,visible_count:null,description:'遮挡不推断数量'}))),findings:[],uncertainties:['背面耳饰不可见']})]}}:{'7':{images:[{filename:'result.png',type:'output'}]}}}}:{};
       else result={};
     }else if(method==='remoteDownload'){project.assets.push({id:'result',filename:'result.png',kind:'design',jobId:args.metadata.jobId});result=structuredClone(project);}
     else result=true;

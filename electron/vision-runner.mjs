@@ -2,7 +2,7 @@ import { randomUUID } from 'node:crypto';
 import fs from 'node:fs/promises';
 import { safeAsset } from './store.mjs';
 import { readyMultiView } from './multiview.mjs';
-import { buildVisionWorkflow, createVisionReview, readVisionOutput, DEFAULT_VISION_MODEL, assertVisionPolicy } from './vision.mjs';
+import { buildVisionWorkflow, createVisionReview, readVisionOutput, DEFAULT_VISION_MODEL, assertVisionPolicy, repairHistory } from './vision.mjs';
 import { validateWorkflow } from './workflows.mjs';
 
 // The same ComfyUI queue owns both vision and generation; cancellation never interrupts another user's prompt.
@@ -22,7 +22,8 @@ export async function startVisionReview(projectId, { store, client, model=DEFAUL
       if(state.cancelRequested)throw new Error('QCHARACTER_CANCELLED');
       const a=project.assets.find(a=>a.id===id);views[role]=await client.upload(await fs.readFile(safeAsset(store.root,projectId,a.filename)),'vision-view.png');
     }
-    const graph=buildVisionWorkflow({views,model,description:project.description});validateWorkflow(graph,cap.info);job.workflow=graph;
+    const repairs={};for(const [role,r]of Object.entries(repairHistory(project.assets,multi.views))){repairs[role]={};for(const [key,id]of [['before',r.beforeId],['mask',r.maskId]]){if(state.cancelRequested)throw new Error('QCHARACTER_CANCELLED');const a=project.assets.find(a=>a.id===id);repairs[role][key]=await client.upload(await fs.readFile(safeAsset(store.root,projectId,a.filename)),'repair-context.png');}}
+    const graph=buildVisionWorkflow({views,repairs,model,description:project.description});validateWorkflow(graph,cap.info);job.workflow=graph;
     if(state.cancelRequested)throw new Error('QCHARACTER_CANCELLED');
     const response=await client.json('/prompt',{prompt:graph,client_id:client.clientId});
     if(!response.prompt_id)throw new Error('视觉检查未返回任务编号。');
@@ -30,7 +31,7 @@ export async function startVisionReview(projectId, { store, client, model=DEFAUL
     if(state.cancelRequested){await client.cancel(job.promptId,state.targetedInterrupt);state.cancelled=true;}
     const [raw]=await client.waitFor(job.promptId,'review',()=>state.cancelled,message=>{job.message=message;emit(job);},readVisionOutput);
     if(state.cancelRequested)throw new Error('QCHARACTER_CANCELLED');
-    if(raw?.version!==2)throw new Error('视觉节点未返回独立复核结果，请更新节点并重启 ComfyUI。');
+    if(raw?.version!==3)throw new Error('视觉节点未返回修补痕迹复核结果，请更新节点并重启 ComfyUI。');
     const report=createVisionReview(raw,project,job);job.reviewResult=report;
     await store.saveFields(projectId,{visionReview:report});
     job.status='completed';job.message='视觉检查完成，请逐项核对标记与建议；确认后才会重绘。';

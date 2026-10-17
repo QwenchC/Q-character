@@ -1,0 +1,18 @@
+{
+  "startedAt": "2026-10-17T02:53:11.126Z",
+  "executable": "release/Q-Character-Studio-0.11.0-Windows.exe",
+  "version": "0.11.0",
+  "projectCount": 1,
+  "dataPath": "E:\\Lumi\\Q-character\\.runtime\\repair-blend-package-release\\projects",
+  "imageEngine": "qwen21",
+  "hasCutout": true,
+  "manualRevision": true,
+  "triangles": 198532,
+  "texture": {
+    "meshes": 1,
+    "textures": 1
+  },
+  "clayGuide": true,
+  "trialGrams": 5,
+  "completedAt": "2026-10-17T02:53:18.564Z"
+}

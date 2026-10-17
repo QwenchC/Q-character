@@ -1,0 +1,12 @@
+{
+  "version": "0.8.0 · Android",
+  "origin": "https://frp-rib.com:35961",
+  "fingerprint": "02:2A:5F:0B:7B:62:F7:34:6B:D6:76:D2:C0:49:EC:08:56:1F:D4:B3:0B:2F:27:6B:D4:6E:61:56:C5:30:05:A6",
+  "policy": null,
+  "gate": {
+    "status": "failed",
+    "message": "请先更新电脑端 QCharacterVision 节点并重启 ComfyUI，以启用修补痕迹复核。",
+    "noSubmission": true
+  },
+  "restored": true
+}

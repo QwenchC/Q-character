@@ -1,0 +1,30 @@
+{
+  "version": "0.8.0 · Android",
+  "cases": [
+    {
+      "rejected": true,
+      "error": "{\"exceptionId\":1,\"text\":\"Uncaught (in promise) Error: 视觉检查记录无效，请重新检测。\",\"lineNumber\":0,\"columnNumber\":0,\"exception\":{\"type\":\"object\",\"subtype\":\"error\",\"className\":\"Error\",\"description\":\"Error: 视觉检查记录无效，请重新检测。\\n    at QNative.onmessage (<anonymous>:1:171)\",\"objectId\":\"6406123907984294190.3.1\"}}"
+    },
+    {
+      "rejected": true,
+      "error": "{\"exceptionId\":2,\"text\":\"Uncaught (in promise) Error: 视觉检查记录无效，请重新检测。\",\"lineNumber\":0,\"columnNumber\":0,\"exception\":{\"type\":\"object\",\"subtype\":\"error\",\"className\":\"Error\",\"description\":\"Error: 视觉检查记录无效，请重新检测。\\n    at QNative.onmessage (<anonymous>:1:171)\",\"objectId\":\"6406123907984294190.3.2\"}}"
+    },
+    {
+      "rejected": true,
+      "error": "{\"exceptionId\":3,\"text\":\"Uncaught (in promise) Error: 视觉检查记录无效，请重新检测。\",\"lineNumber\":0,\"columnNumber\":0,\"exception\":{\"type\":\"object\",\"subtype\":\"error\",\"className\":\"Error\",\"description\":\"Error: 视觉检查记录无效，请重新检测。\\n    at QNative.onmessage (<anonymous>:1:171)\",\"objectId\":\"6406123907984294190.3.3\"}}"
+    },
+    {
+      "rejected": true,
+      "error": "{\"exceptionId\":4,\"text\":\"Uncaught (in promise) Error: 视觉检查记录无效，请重新检测。\",\"lineNumber\":0,\"columnNumber\":0,\"exception\":{\"type\":\"object\",\"subtype\":\"error\",\"className\":\"Error\",\"description\":\"Error: 视觉检查记录无效，请重新检测。\\n    at QNative.onmessage (<anonymous>:1:171)\",\"objectId\":\"6406123907984294190.3.4\"}}"
+    },
+    {
+      "rejected": true,
+      "error": "{\"exceptionId\":5,\"text\":\"Uncaught (in promise) Error: 视觉检查记录无效，请重新检测。\",\"lineNumber\":0,\"columnNumber\":0,\"exception\":{\"type\":\"object\",\"subtype\":\"error\",\"className\":\"Error\",\"description\":\"Error: 视觉检查记录无效，请重新检测。\\n    at QNative.onmessage (<anonymous>:1:171)\",\"objectId\":\"6406123907984294190.3.5\"}}"
+    },
+    {
+      "rejected": true,
+      "error": "{\"exceptionId\":6,\"text\":\"Uncaught (in promise) Error: 视觉检查记录无效，请重新检测。\",\"lineNumber\":0,\"columnNumber\":0,\"exception\":{\"type\":\"object\",\"subtype\":\"error\",\"className\":\"Error\",\"description\":\"Error: 视觉检查记录无效，请重新检测。\\n    at QNative.onmessage (<anonymous>:1:171)\",\"objectId\":\"6406123907984294190.3.6\"}}"
+    }
+  ],
+  "reportUnchanged": true
+}
