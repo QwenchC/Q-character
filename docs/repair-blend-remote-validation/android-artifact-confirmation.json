@@ -1,0 +1,243 @@
+{
+  "ui": {
+    "history": [
+      [
+        640,
+        800
+      ],
+      [
+        640,
+        800
+      ],
+      [
+        640,
+        800
+      ]
+    ],
+    "classes": "疑似结构差异 0\n可能为正常透视 1\n遮挡／不可见 0\n证据不足 0\n可能为修补痕迹 1",
+    "boxes": [
+      {
+        "label": "正面 · 蓝框为参照",
+        "image": [
+          170.33334350585938,
+          212.9166717529297
+        ],
+        "overlay": [
+          170.33334350585938,
+          212.9166717529297
+        ],
+        "boxes": 0
+      },
+      {
+        "label": "左侧",
+        "image": [
+          170.33334350585938,
+          212.9166717529297
+        ],
+        "overlay": [
+          170.33334350585938,
+          212.9166717529297
+        ],
+        "boxes": 1
+      },
+      {
+        "label": "背面",
+        "image": [
+          170.33334350585938,
+          212.9166717529297
+        ],
+        "overlay": [
+          170.33334350585938,
+          212.9166717529297
+        ],
+        "boxes": 0
+      }
+    ]
+  },
+  "reportId": "fb5839b9-1b2a-4273-b458-02cceedd27fa",
+  "confirmedBefore": false,
+  "confirmedAfter": true,
+  "assets": 5,
+  "jobs": 1,
+  "repairs": {
+    "left": {
+      "viewId": "0fc2f8a4-38ae-4e36-b77e-83b71ecb493a",
+      "beforeId": "92746ef7-6884-4da0-b826-e07978b7012b",
+      "maskId": "d072bb58-cc7f-4150-9ed1-846a8ba01064"
+    }
+  },
+  "review": {
+    "version": 3,
+    "analysis": {
+      "policy": "repair-aware-v3",
+      "repairs": {
+        "left": {
+          "viewId": "0fc2f8a4-38ae-4e36-b77e-83b71ecb493a",
+          "beforeId": "92746ef7-6884-4da0-b826-e07978b7012b",
+          "maskId": "d072bb58-cc7f-4150-9ed1-846a8ba01064"
+        }
+      },
+      "candidateCount": 2,
+      "overviewMs": 11625,
+      "verificationMs": 12157,
+      "checks": [
+        {
+          "candidate_index": 0,
+          "role": "left",
+          "part": "clothes",
+          "kind": "structure",
+          "title": "胸前纽扣中间多出一个轮廓",
+          "reason": "左侧视图中绿色上衣中间的浅色圆形轮廓经核实为修补痕迹（surface_trace），非真实新增部件。两侧视图的纽扣数量一致，均为2个。该差异由视角和图像修复导致，判定为perspective。",
+          "reference_evidence": "正面视图中绿色上衣有两个黄色纽扣，中间无其他部件。",
+          "target_evidence": "左侧视图中绿色上衣两个黄色纽扣之间有一个颜色较浅的圆形轮廓。对比修正历史图（BEFORE/CURRENT），该轮廓在修正前已存在且位置固定，非相机转动产生；结合选区分析，其边缘特征符合修补残留痕迹。",
+          "suggestion": "人工核对，暂不重绘",
+          "confidence": 0.95,
+          "reference_count": 2,
+          "target_count": 2,
+          "bbox": [
+            438,
+            627,
+            562,
+            750
+          ],
+          "reference_bbox": null,
+          "verdict": "repair_artifact",
+          "reference_visibility": "clear",
+          "target_visibility": "clear",
+          "correspondence": "same_component",
+          "basis": "surface_detail",
+          "alternative": "perspective",
+          "count_unit": "per_component",
+          "model_verdict": "perspective",
+          "gates": [],
+          "repair_relation": "interior",
+          "repair_assessment": "surface_trace",
+          "component_evidence": "absent",
+          "repair_evidence": "对比BEFORE和CURRENT图，该浅色圆形轮廓在修正前后均存在且位置未变，属于历史遗留的修补痕迹。",
+          "repair_coverage": {
+            "selected": 0.5692366705024933,
+            "boundary": 0.5188594808847974
+          }
+        },
+        {
+          "candidate_index": 1,
+          "role": "back",
+          "part": "hair",
+          "kind": "structure",
+          "title": "背面缺少面部特征",
+          "reason": "背面视图看不到面部特征是正常视角遮挡（perspective），符合角色设计逻辑，非结构差异。",
+          "reference_evidence": "正面视图中角色头部有面部特征（眼睛、嘴巴）。",
+          "target_evidence": "背面视图中角色头部完全被头发覆盖，无面部特征。",
+          "suggestion": "人工核对，暂不重绘",
+          "confidence": 0.95,
+          "reference_count": null,
+          "target_count": null,
+          "bbox": [
+            312,
+            284,
+            687,
+            516
+          ],
+          "reference_bbox": [
+            312,
+            284,
+            687,
+            516
+          ],
+          "verdict": "perspective",
+          "reference_visibility": "clear",
+          "target_visibility": "clear",
+          "correspondence": "same_component",
+          "basis": "outline",
+          "alternative": "perspective",
+          "count_unit": "per_component",
+          "model_verdict": "perspective",
+          "gates": [],
+          "repair_relation": "none",
+          "repair_assessment": "none",
+          "component_evidence": "absent",
+          "repair_evidence": "无该方向历史。",
+          "repair_coverage": null
+        }
+      ]
+    },
+    "id": "fb5839b9-1b2a-4273-b458-02cceedd27fa",
+    "createdAt": "2026-10-17T03:12:31.726Z",
+    "model": "qwen3.6:35b-a3b",
+    "elapsedMs": 23782,
+    "views": {
+      "front": "d3e055be-1e76-492b-9db0-304928f70fea",
+      "left": "0fc2f8a4-38ae-4e36-b77e-83b71ecb493a",
+      "back": "abf6a8f7-4e64-41b0-a716-b898f975f5f9"
+    },
+    "confirmed": true,
+    "summary": "复核了左侧视图和背面视图的候选项。左侧视图中绿色上衣中间出现的浅色圆形轮廓，经对比修正历史（BEFORE/CURRENT）及选区分析，判定为修补痕迹（surface_trace），非真实新增部件。背面视图无面部特征符合角色设计逻辑，确认为正常视角差异。",
+    "observations": [
+      {
+        "role": "front",
+        "part": "hair",
+        "name": "发型结构",
+        "visible_count": null,
+        "description": "正面可见两个深棕色丸子头，位于头顶两侧。"
+      },
+      {
+        "role": "front",
+        "part": "clothes",
+        "name": "服装结构",
+        "visible_count": 2,
+        "description": "绿色上衣胸前有两个黄色圆形纽扣，垂直排列。"
+      },
+      {
+        "role": "front",
+        "part": "accessories",
+        "name": "配饰",
+        "visible_count": null,
+        "description": "未发现可见配饰。"
+      },
+      {
+        "role": "left",
+        "part": "hair",
+        "name": "发型结构",
+        "visible_count": null,
+        "description": "侧面可见一个深棕色丸子头，位于头部上方。"
+      },
+      {
+        "role": "left",
+        "part": "clothes",
+        "name": "服装结构",
+        "visible_count": 2,
+        "description": "绿色上衣胸前有两个黄色圆形纽扣，垂直排列。中间有一个颜色较浅的圆形轮廓。"
+      },
+      {
+        "role": "left",
+        "part": "accessories",
+        "name": "配饰",
+        "visible_count": null,
+        "description": "未发现可见配饰。"
+      },
+      {
+        "role": "back",
+        "part": "hair",
+        "name": "发型结构",
+        "visible_count": null,
+        "description": "背面可见两个深棕色丸子头，位于头顶两侧。"
+      },
+      {
+        "role": "back",
+        "part": "clothes",
+        "name": "服装结构",
+        "visible_count": 0,
+        "description": "绿色上衣背部平坦，没有可见的纽扣或装饰。"
+      },
+      {
+        "role": "back",
+        "part": "accessories",
+        "name": "配饰",
+        "visible_count": null,
+        "description": "未发现可见配饰。"
+      }
+    ],
+    "findings": [],
+    "uncertainties": []
+  }
+}

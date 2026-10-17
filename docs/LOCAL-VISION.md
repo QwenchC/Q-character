@@ -8,7 +8,7 @@ Windows 0.11.0 / Android 0.8.0 共用此功能。先初检，再结合原图与�
 2. 将 Release 中 `QCharacterVision-node.zip` 解压，里面的整个 `QCharacterVision` 文件夹放到 `ComfyUI/custom_nodes/`。开发环境也可运行 `npm run vision:install -- F:\ComfyUI-aki\ComfyUI`。更新会备份同名旧文件，不改 ComfyUI 核心、不自动安装依赖或下载模型。
 3. 空闲时重启 ComfyUI，让新节点生效。在应用中检查连接，确认没有提示缺少 `QCharacterVisionReview`、`JoinImageWithAlpha` 或 `LoadImage`。
 
-历史 0.10.1 / Android 0.7.1 已在日常 ComfyUI 的 visibility-v2 和原外网地址完成检查、确认后重绘与复检，记录保存在 [此前实测](vision-v2-remote-validation/REPORT.md)。**当前 0.11.0 / Android 0.8.0 需更新本版节点并重启 ComfyUI**，使 repair-aware-v3 生效。当前机器已安装新版文件，但日常服务仍加载旧版；测试使用独立服务，不自动重启日常进程。[本次实测与限制](repair-blend-validation/REPORT.md)。
+历史 0.10.1 / Android 0.7.1 的 visibility-v2 与原外网验证保存在 [此前实测](vision-v2-remote-validation/REPORT.md)。0.11.0 / Android 0.8.0 首次启用需要更新节点并重启 ComfyUI；此电脑已在 2026-10-17 重启后加载 repair-aware-v3，完成 Windows 和 Android 原外网的检查、标记、确认后重绘与复检，无需再次重启。复检仍可能误数并保留为证据不足，必须查看新图再确认。[重启后完整实测](repair-blend-remote-validation/REPORT.md) · [开发阶段的融合对照](repair-blend-validation/REPORT.md)。
 
 ## 使用步骤
 

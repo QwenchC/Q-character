@@ -1,0 +1,17 @@
+{
+  "version": "0.8.0 · Android",
+  "origin": "https://frp-rib.com:35961",
+  "pin": "02:2A:5F:0B:7B:62:F7:34:6B:D6:76:D2:C0:49:EC:08:56:1F:D4:B3:0B:2F:27:6B:D4:6E:61:56:C5:30:05:A6",
+  "certificate": {
+    "server": "https://frp-rib.com:35961",
+    "subject": "2.5.4.5=#1309353037333937313637,CN=SakuraFrp Automatic TLS sn.507397167,C=CN",
+    "issuer": "2.5.4.5=#1309353037333937313637,CN=SakuraFrp Automatic TLS sn.507397167,C=CN",
+    "fingerprint": "02:2A:5F:0B:7B:62:F7:34:6B:D6:76:D2:C0:49:EC:08:56:1F:D4:B3:0B:2F:27:6B:D4:6E:61:56:C5:30:05:A6",
+    "validFrom": "Wed Oct 07 08:19:12 GMT 2026",
+    "validTo": "Thu Oct 07 08:19:12 GMT 2027"
+  },
+  "policy": "repair-aware-v3",
+  "comfyVersion": "0.39.1",
+  "missingEditNodes": [],
+  "missingMatteNodes": []
+}

@@ -1,0 +1,8 @@
+{
+  "version": "0.11.0",
+  "server": "http://127.0.0.1:8188",
+  "policy": "repair-aware-v3",
+  "comfyVersion": "0.39.1",
+  "missingEditNodes": [],
+  "missingMatteNodes": []
+}

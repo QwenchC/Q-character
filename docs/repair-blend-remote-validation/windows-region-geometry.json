@@ -1,0 +1,53 @@
+[
+  {
+    "label": "正面 · 蓝框为参照",
+    "natural": [
+      640,
+      800
+    ],
+    "display": [
+      354.328125,
+      442.90625
+    ],
+    "overlay": [
+      354.328125,
+      442.90625
+    ],
+    "referenceBoxes": 1,
+    "targetBoxes": 0
+  },
+  {
+    "label": "左侧",
+    "natural": [
+      640,
+      800
+    ],
+    "display": [
+      354.328125,
+      442.90625
+    ],
+    "overlay": [
+      354.328125,
+      442.90625
+    ],
+    "referenceBoxes": 0,
+    "targetBoxes": 1
+  },
+  {
+    "label": "背面",
+    "natural": [
+      640,
+      800
+    ],
+    "display": [
+      354.34375,
+      442.921875
+    ],
+    "overlay": [
+      354.34375,
+      442.921875
+    ],
+    "referenceBoxes": 0,
+    "targetBoxes": 0
+  }
+]

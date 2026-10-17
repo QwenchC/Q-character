@@ -1,0 +1,265 @@
+{
+  "createdAt": "2026-10-17T03:19:37.970Z",
+  "files": [
+    {
+      "name": "android-after.png",
+      "size": 28099,
+      "sha256": "6691517a04674802827c034863071a1970dc5872c605de1dd40c0970dee401bc"
+    },
+    {
+      "name": "android-approval.json",
+      "size": 656,
+      "sha256": "2e096416db4f5b88cad1b209c32e80ce79df434d8b95f783e531926466ef1014"
+    },
+    {
+      "name": "android-artifact-confirmation.json",
+      "size": 7857,
+      "sha256": "0e22a87362d6d0c02a2b4a028c26b7a20c11a7ffcf29b013c8f21fcfa46887bc"
+    },
+    {
+      "name": "android-artifact-history.png",
+      "size": 360614,
+      "sha256": "77dd74cdd7a65406906392cd84803c433d4410c6c193c095c9685e4c716bf249"
+    },
+    {
+      "name": "android-artifact-initial.json",
+      "size": 16398,
+      "sha256": "30ea80cb762dbe36d069bc9f4eaf0537054dff6185ad614fe84af68b91e9d28d"
+    },
+    {
+      "name": "android-artifact-selected.png",
+      "size": 196284,
+      "sha256": "a9a3319017557645d9595892fba26dd7ddb81b6636036174e56f09291fa447d0"
+    },
+    {
+      "name": "android-before.png",
+      "size": 7948,
+      "sha256": "90942e5ea710b1455a3de6f7e19b62612e649b5e18dd8dda0a8be13ac42d5f5e"
+    },
+    {
+      "name": "android-buttons-initial.json",
+      "size": 14996,
+      "sha256": "88ffa61ee20210b247dc60365e3518578bec7a676a17709e44f52da33f501ac9"
+    },
+    {
+      "name": "android-candidate.png",
+      "size": 417204,
+      "sha256": "ab8d09c9e198b8c9a97c57150f6cb3eaf59503ccc788bdf60a33531f3eecf2b4"
+    },
+    {
+      "name": "android-capability.json",
+      "size": 765,
+      "sha256": "0601847bd0d27000410a53da8d5df1c989650489adf8869aa132fcab3210cdc1"
+    },
+    {
+      "name": "android-computed-blend.png",
+      "size": 17489,
+      "sha256": "721092c1300c5a8914b6be876f8e22e23679cf05f38b3818ece10edab92e0f2f"
+    },
+    {
+      "name": "android-confirmed-selection.png",
+      "size": 249378,
+      "sha256": "9d6f9c74f83a892c7eb00988f10967cdc5e627d98b2de2a73f1324f9a85df2da"
+    },
+    {
+      "name": "android-manual-confirmation.json",
+      "size": 7181,
+      "sha256": "8f6d93270a5200279b3c071210ac134aa26f0486246effb6029233704cee71d1"
+    },
+    {
+      "name": "android-manual-confirmed.png",
+      "size": 372636,
+      "sha256": "91d4038debea3c98c926460f0b24dd99e75849e7d11b11079fd2fc63f7a88dc3"
+    },
+    {
+      "name": "android-mask.png",
+      "size": 15427,
+      "sha256": "1fb55edef6bac22033ff175a3c9a093dc3221a639b6ed6d28583cb0a7b656fe2"
+    },
+    {
+      "name": "android-persistence.json",
+      "size": 373,
+      "sha256": "6192c60c6a9a01fbe8b1e21dc12e2b27939743ddc538dc73855e325e0ecdc2e6"
+    },
+    {
+      "name": "android-plain-blend.png",
+      "size": 17578,
+      "sha256": "f3e1336057a62ac92412820b7752a2b86639cb4a9a9cc3222b563c6d4e53bb59"
+    },
+    {
+      "name": "android-recheck.json",
+      "size": 16303,
+      "sha256": "22c45ebeb115b1ee2c363f0a3c44ffce7b16be34f94250b0c9f22a4b505dd1b1"
+    },
+    {
+      "name": "android-rechecked.png",
+      "size": 329160,
+      "sha256": "10bd8a96d639f9c77d984748966ee1b392777fd05b7ac342e653e67723127631"
+    },
+    {
+      "name": "android-region-geometry.json",
+      "size": 834,
+      "sha256": "9c72d7a90f64e166121e2ad4f93cc6311e9509085a8baa6e0031b2657ec27dfd"
+    },
+    {
+      "name": "android-repair-completed.json",
+      "size": 36345,
+      "sha256": "42b512efcb6506fa212667e8a8857f69f0d5e34f40cc24d7e18175209a34dbf9"
+    },
+    {
+      "name": "android-repair-history.json",
+      "size": 6998,
+      "sha256": "73fdbb26d708dbb350806631ab8a68ce8e1324a7b08c83f2d126e4fc7349f1c1"
+    },
+    {
+      "name": "android-repair-start.json",
+      "size": 6402,
+      "sha256": "eb23f552554f24f31be99602ba15734b3fb38d4d0ff8cffbb0e1ffd15693dd08"
+    },
+    {
+      "name": "android-selected-region.png",
+      "size": 167003,
+      "sha256": "1c51d56c2a9b9a3e810abbd504578a27c46444990b7f2a35d74f8eab0bee4819"
+    },
+    {
+      "name": "check-evidence.mjs",
+      "size": 3145,
+      "sha256": "c71cd56242c58c12540791e772fe7a3cb2c4ee98fdde199df20b17d9d8a4e293"
+    },
+    {
+      "name": "provenance.json",
+      "size": 907,
+      "sha256": "79a2f3bcc06472cc68d8d0be30d250b6743ca2853456d04b7713c1fc45ed8363"
+    },
+    {
+      "name": "REPORT.md",
+      "size": 8407,
+      "sha256": "384ca69421a676ac920429b08b0b35de289b41590bb90078944a946e274acada"
+    },
+    {
+      "name": "verification.json",
+      "size": 2754,
+      "sha256": "9a80d512543595cfc41641460afcada5881c2a926174f528572f4555f44c303f"
+    },
+    {
+      "name": "windows-after.png",
+      "size": 17826,
+      "sha256": "5b47a60244fc6cec3a8759a3cfb25fbf7af05ed7b05672faa287798ac0fc8ae6"
+    },
+    {
+      "name": "windows-approval.json",
+      "size": 656,
+      "sha256": "48433a7e431ba1b29031a990c5f9e5da81b750033a182070b8f95d12d8209625"
+    },
+    {
+      "name": "windows-artifact-confirmation.json",
+      "size": 7761,
+      "sha256": "8a3862e50b1f2e43145160b680e8ec7382d751be99201cf968cddbb29aaa3fe2"
+    },
+    {
+      "name": "windows-artifact-history.png",
+      "size": 128991,
+      "sha256": "a130ba11e199c0900e434c223f28b0682e290c0164a46b03fd81f22a87e6d13e"
+    },
+    {
+      "name": "windows-artifact-initial.json",
+      "size": 16424,
+      "sha256": "198ddd7938f24ec9b638cc3270fb00c2cfb029d0f6c15a0a6b9f66c741d626e7"
+    },
+    {
+      "name": "windows-artifact-selected.png",
+      "size": 129926,
+      "sha256": "48c92c31c0e541cc07dfb129c868848d35dc93b0ac518aa86fb89d9bdae62736"
+    },
+    {
+      "name": "windows-before.png",
+      "size": 7948,
+      "sha256": "90942e5ea710b1455a3de6f7e19b62612e649b5e18dd8dda0a8be13ac42d5f5e"
+    },
+    {
+      "name": "windows-buttons-initial.json",
+      "size": 15022,
+      "sha256": "b765046fff339e129244d10c3e95254413c06c5cf4fbc32564fbc57a542f0ebe"
+    },
+    {
+      "name": "windows-candidate.png",
+      "size": 417861,
+      "sha256": "cd09c30adc134c189f84ee16c5ba102a9dc49a582199b1f0d2bf915a96996ba1"
+    },
+    {
+      "name": "windows-capability.json",
+      "size": 174,
+      "sha256": "b3cbc4fbe9513b4472e905304ec58e27c533d2c086786ca907a466de00fedac8"
+    },
+    {
+      "name": "windows-computed-blend.png",
+      "size": 17826,
+      "sha256": "5b47a60244fc6cec3a8759a3cfb25fbf7af05ed7b05672faa287798ac0fc8ae6"
+    },
+    {
+      "name": "windows-confirmed-selection.png",
+      "size": 96136,
+      "sha256": "99c11faba9b618abe1c484aede9f9d3086dd50c606d36637f80d27626d992607"
+    },
+    {
+      "name": "windows-manual-confirmation.json",
+      "size": 7007,
+      "sha256": "50c5cada168f6dd94cc21310669e8e53744d19f206b9def0e4e1948838a74396"
+    },
+    {
+      "name": "windows-manual-confirmed.png",
+      "size": 137648,
+      "sha256": "9cb21f4f5bbd72abf4043caca7f28413bfa86b4225ddd73a684356686c58253c"
+    },
+    {
+      "name": "windows-mask.png",
+      "size": 17382,
+      "sha256": "16af8384ba3e2fed64bffd515a933baa8b00d44185215a47e079bc9ac0595e67"
+    },
+    {
+      "name": "windows-persistence.json",
+      "size": 363,
+      "sha256": "ab8f0ddee39501d0a0984a95959455625525a02faabc07d71806f9275ac1a543"
+    },
+    {
+      "name": "windows-plain-blend.png",
+      "size": 17791,
+      "sha256": "1d2a0d6e93e0852f20ea76757a7bc88efb26403c4b62d728a87116d41ccc68d7"
+    },
+    {
+      "name": "windows-recheck.json",
+      "size": 15961,
+      "sha256": "b1c50137028d201e1729a4251de1abad7d9bd2f54fc642a44c0a7add21daa454"
+    },
+    {
+      "name": "windows-rechecked.png",
+      "size": 127529,
+      "sha256": "5d7465ac7c3fe4f1dee13548596d6a79057e7ce5098a45fc118611002dabd502"
+    },
+    {
+      "name": "windows-region-geometry.json",
+      "size": 738,
+      "sha256": "1105ea2dca3d6ff5f3767b6244c9a3a2d64f2ef4f73d1e2320dbc4b4c87ff192"
+    },
+    {
+      "name": "windows-repair-completed.json",
+      "size": 35658,
+      "sha256": "77bc9792ad188a9c1e612f26fa6c3a3c3503e202eafcb8fbda55c416ed9cc74d"
+    },
+    {
+      "name": "windows-repair-history.json",
+      "size": 6919,
+      "sha256": "7ffc953901177a362222dd27883d7bf06d83c635c4d0ca3449d177be9f747134"
+    },
+    {
+      "name": "windows-repair-start.json",
+      "size": 6345,
+      "sha256": "7479a94f64373e30ade0c43c9962c3eed22ecc5f37de1ab38a1da8c10baab7e3"
+    },
+    {
+      "name": "windows-selected-region.png",
+      "size": 123284,
+      "sha256": "1d20683ab79bca9a803b8f38aab8dc54777dce71b18255ca2c72c540844ed913"
+    }
+  ]
+}

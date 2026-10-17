@@ -1,0 +1,1056 @@
+{
+  "job": {
+    "id": "a996c711-bebf-4921-bdf7-f6e231edfd34",
+    "projectId": "b85e0a9a-700d-4ebf-a2b4-7e4635c096c0",
+    "kind": "design",
+    "inputAssetId": "8d9c0ad7-1647-4edb-bf34-440613d25244",
+    "status": "completed",
+    "createdAt": "2026-10-17T03:13:14.901Z",
+    "message": "生成完成，已保存到作品。",
+    "seed": 2473523266,
+    "server": "http://127.0.0.1:8188",
+    "viewRole": "left",
+    "viewExpectedId": "8d9c0ad7-1647-4edb-bf34-440613d25244",
+    "referenceFindingId": "ad088e0a-f99a-4475-baa1-f759f0f052b0:0",
+    "repairMaskId": "17df1765-e1f4-41f1-a1ae-fd342168de48",
+    "repairInstruction": "以正面设计的两颗黄色纽扣为准：只移除目标图绿色上衣正中间多出的一颗黄色纽扣，将这一小块恢复为与周围一致的纯绿色布料。保留最上面和最下面两颗纽扣，保持当前图的相机、姿态、发型、脸、手臂、服装轮廓、裤子、鞋子和透明背景。不要新增纽扣、线条、口袋或饰物。",
+    "workflow": {
+      "1": {
+        "class_type": "UNETLoader",
+        "inputs": {
+          "unet_name": "qwen_image_2.1_int8_convrot.safetensors",
+          "weight_dtype": "default"
+        }
+      },
+      "2": {
+        "class_type": "CLIPLoader",
+        "inputs": {
+          "clip_name": "qwen3vl_8b_int8_convrot.safetensors",
+          "type": "qwen_image",
+          "device": "default"
+        }
+      },
+      "3": {
+        "class_type": "VAELoader",
+        "inputs": {
+          "vae_name": "qwen_image_2.1_vae_bf16.safetensors"
+        }
+      },
+      "4": {
+        "class_type": "LoadImage",
+        "inputs": {
+          "image": "qcharacter-dc8d83c3-273d-4a48-881c-fc89df3dd98d.png"
+        }
+      },
+      "5": {
+        "class_type": "TextEncodeQwenImage21",
+        "inputs": {
+          "clip": [
+            "2",
+            0
+          ],
+          "vae": [
+            "3",
+            0
+          ],
+          "prompt": "第一张是待修正的左侧目标图，其余图为同一角色其它方向的参考。保持第一张图的相机方向、姿势、比例、身份、取景、背景和未要求修改的部分。只修正指定区域，使服装、发型或配饰与参考设计合理衔接，不要把侧面改成正面、背面不要出现正面五官，不要改变角色或添加无关装饰。修正要求：以正面设计的两颗黄色纽扣为准：只移除目标图绿色上衣正中间多出的一颗黄色纽扣，将这一小块恢复为与周围一致的纯绿色布料。保留最上面和最下面两颗纽扣，保持当前图的相机、姿态、发型、脸、手臂、服装轮廓、裤子、鞋子和透明背景。不要新增纽扣、线条、口袋或饰物。",
+          "negative_prompt": "",
+          "resolution": 0,
+          "images.image_1": [
+            "4",
+            0
+          ],
+          "images.image_2": [
+            "20",
+            0
+          ],
+          "images.image_3": [
+            "21",
+            0
+          ]
+        }
+      },
+      "6": {
+        "class_type": "KSampler",
+        "inputs": {
+          "model": [
+            "1",
+            0
+          ],
+          "positive": [
+            "5",
+            0
+          ],
+          "negative": [
+            "5",
+            1
+          ],
+          "latent_image": [
+            "52",
+            0
+          ],
+          "seed": 2473523266,
+          "steps": 25,
+          "cfg": 1,
+          "sampler_name": "euler",
+          "scheduler": "simple",
+          "denoise": 1
+        }
+      },
+      "7": {
+        "class_type": "VAEDecode",
+        "inputs": {
+          "samples": [
+            "6",
+            0
+          ],
+          "vae": [
+            "3",
+            0
+          ]
+        }
+      },
+      "8": {
+        "class_type": "SaveImage",
+        "inputs": {
+          "images": [
+            "58",
+            0
+          ],
+          "filename_prefix": "QCharacter/local-repair"
+        }
+      },
+      "20": {
+        "class_type": "LoadImage",
+        "inputs": {
+          "image": "qcharacter-85bdd08b-4cc7-4444-bf56-cdffd84f1ba8.png"
+        }
+      },
+      "21": {
+        "class_type": "LoadImage",
+        "inputs": {
+          "image": "qcharacter-c826d8a8-5f26-4aab-a94e-342402056589.png"
+        }
+      },
+      "50": {
+        "class_type": "LoadImage",
+        "inputs": {
+          "image": "qcharacter-80ba5d84-df7b-493a-a827-7c569d9a75b3.png"
+        }
+      },
+      "51": {
+        "class_type": "ImageToMask",
+        "inputs": {
+          "image": [
+            "50",
+            0
+          ],
+          "channel": "red"
+        }
+      },
+      "52": {
+        "class_type": "SetLatentNoiseMask",
+        "inputs": {
+          "samples": [
+            "60",
+            0
+          ],
+          "mask": [
+            "51",
+            0
+          ]
+        }
+      },
+      "53": {
+        "class_type": "ImageScale",
+        "inputs": {
+          "image": [
+            "7",
+            0
+          ],
+          "upscale_method": "lanczos",
+          "width": 640,
+          "height": 800,
+          "crop": "disabled"
+        }
+      },
+      "54": {
+        "class_type": "ImageCompositeMasked",
+        "inputs": {
+          "destination": [
+            "4",
+            0
+          ],
+          "source": [
+            "53",
+            0
+          ],
+          "x": 0,
+          "y": 0,
+          "resize_source": false,
+          "mask": [
+            "51",
+            0
+          ]
+        }
+      },
+      "55": {
+        "class_type": "LoadBackgroundRemovalModel",
+        "inputs": {
+          "bg_removal_name": "birefnet.safetensors"
+        }
+      },
+      "56": {
+        "class_type": "RemoveBackground",
+        "inputs": {
+          "bg_removal_model": [
+            "55",
+            0
+          ],
+          "image": [
+            "54",
+            0
+          ]
+        }
+      },
+      "57": {
+        "class_type": "InvertMask",
+        "inputs": {
+          "mask": [
+            "56",
+            0
+          ]
+        }
+      },
+      "58": {
+        "class_type": "JoinImageWithAlpha",
+        "inputs": {
+          "image": [
+            "53",
+            0
+          ],
+          "alpha": [
+            "57",
+            0
+          ]
+        }
+      },
+      "59": {
+        "class_type": "ImageScale",
+        "inputs": {
+          "image": [
+            "4",
+            0
+          ],
+          "upscale_method": "lanczos",
+          "width": 640,
+          "height": 800,
+          "crop": "disabled"
+        }
+      },
+      "60": {
+        "class_type": "VAEEncode",
+        "inputs": {
+          "pixels": [
+            "59",
+            0
+          ],
+          "vae": [
+            "3",
+            0
+          ]
+        }
+      }
+    },
+    "engine": "qwen21-repair",
+    "promptId": "ab73010c-b26d-41ee-9b6e-92fbf7fc7984",
+    "node": "8",
+    "resultAssetId": "fb07b147-b81f-4027-8c42-443a82fa6483",
+    "finishedAt": "2026-10-17T03:13:53.390Z"
+  },
+  "project": {
+    "id": "b85e0a9a-700d-4ebf-a2b4-7e4635c096c0",
+    "name": "融合外网验收 · 纽扣修正",
+    "createdAt": "2026-10-17T03:09:45.815Z",
+    "updatedAt": "2026-10-17T03:13:53.813Z",
+    "description": "丸子头、绿色服装、卡其色下装的同一个角色。",
+    "ratio": "2.5",
+    "style": "clay",
+    "heightMm": 80,
+    "assets": [
+      {
+        "id": "3fff7820-cea3-4da6-8f21-764981aa72e2",
+        "filename": "998d8a30-d5a7-47c7-be5b-b1c109533268.png",
+        "kind": "cutout",
+        "label": "front",
+        "createdAt": "2026-10-17T03:09:45.816Z",
+        "viewRole": "front"
+      },
+      {
+        "id": "8d9c0ad7-1647-4edb-bf34-440613d25244",
+        "filename": "33b974cf-5399-4d15-97a5-ecaade8b26bc.png",
+        "kind": "cutout",
+        "label": "left",
+        "createdAt": "2026-10-17T03:09:45.819Z",
+        "viewRole": "left"
+      },
+      {
+        "id": "c035a588-70b7-4753-812a-77889607b17b",
+        "filename": "04f0fac7-52d0-44b9-9e33-dc57bcae9bf4.png",
+        "kind": "cutout",
+        "label": "back",
+        "createdAt": "2026-10-17T03:09:45.822Z",
+        "viewRole": "back"
+      },
+      {
+        "id": "17df1765-e1f4-41f1-a1ae-fd342168de48",
+        "filename": "6978a0e2-c4e7-4cb4-b565-fec823bf2281.png",
+        "kind": "mask",
+        "label": "局部重绘选区",
+        "createdAt": "2026-10-17T03:13:14.897Z",
+        "sourceAssetId": "8d9c0ad7-1647-4edb-bf34-440613d25244",
+        "viewRole": "left"
+      },
+      {
+        "id": "e6681f3c-0254-4fd6-b11f-e6a268ae5c60",
+        "filename": "bf00fc44-fa2a-4aef-bb40-e0c3bdbc5dc2.png",
+        "kind": "design",
+        "label": "局部重绘原图",
+        "createdAt": "2026-10-17T03:13:53.334Z",
+        "jobId": "a996c711-bebf-4921-bdf7-f6e231edfd34",
+        "sourceAssetId": "8d9c0ad7-1647-4edb-bf34-440613d25244",
+        "repairMaskId": "17df1765-e1f4-41f1-a1ae-fd342168de48",
+        "repairInstruction": "以正面设计的两颗黄色纽扣为准：只移除目标图绿色上衣正中间多出的一颗黄色纽扣，将这一小块恢复为与周围一致的纯绿色布料。保留最上面和最下面两颗纽扣，保持当前图的相机、姿态、发型、脸、手臂、服装轮廓、裤子、鞋子和透明背景。不要新增纽扣、线条、口袋或饰物。",
+        "viewRole": "left"
+      },
+      {
+        "id": "7d1a92db-67bc-4698-a85b-6b4793299d42",
+        "filename": "83e235d8-ec4c-42ea-b385-40696865768a.png",
+        "kind": "mask",
+        "label": "前景蒙版 · 白色保留",
+        "createdAt": "2026-10-17T03:13:53.382Z",
+        "jobId": "a996c711-bebf-4921-bdf7-f6e231edfd34",
+        "sourceAssetId": "e6681f3c-0254-4fd6-b11f-e6a268ae5c60"
+      },
+      {
+        "id": "fb07b147-b81f-4027-8c42-443a82fa6483",
+        "filename": "79e1950f-0b67-4652-9734-d4ed0cfeda93.png",
+        "kind": "cutout",
+        "label": "人物透明抠图 · 请检查衣服与配饰",
+        "createdAt": "2026-10-17T03:13:53.385Z",
+        "jobId": "a996c711-bebf-4921-bdf7-f6e231edfd34",
+        "sourceAssetId": "e6681f3c-0254-4fd6-b11f-e6a268ae5c60",
+        "maskAssetId": "7d1a92db-67bc-4698-a85b-6b4793299d42",
+        "parentCutoutId": "8d9c0ad7-1647-4edb-bf34-440613d25244",
+        "repairMaskId": "17df1765-e1f4-41f1-a1ae-fd342168de48",
+        "repairInstruction": "以正面设计的两颗黄色纽扣为准：只移除目标图绿色上衣正中间多出的一颗黄色纽扣，将这一小块恢复为与周围一致的纯绿色布料。保留最上面和最下面两颗纽扣，保持当前图的相机、姿态、发型、脸、手臂、服装轮廓、裤子、鞋子和透明背景。不要新增纽扣、线条、口袋或饰物。",
+        "revisionType": "repair",
+        "viewRole": "left"
+      }
+    ],
+    "jobs": [
+      {
+        "id": "ad088e0a-f99a-4475-baa1-f759f0f052b0",
+        "projectId": "b85e0a9a-700d-4ebf-a2b4-7e4635c096c0",
+        "kind": "review",
+        "status": "completed",
+        "createdAt": "2026-10-17T03:11:33.702Z",
+        "message": "视觉检查完成，请逐项核对标记与建议；确认后才会重绘。",
+        "seed": 0,
+        "server": "http://127.0.0.1:8188",
+        "visionModel": "qwen3.6:35b-a3b",
+        "engine": "local-vision",
+        "inputViewIds": {
+          "front": "3fff7820-cea3-4da6-8f21-764981aa72e2",
+          "left": "8d9c0ad7-1647-4edb-bf34-440613d25244",
+          "back": "c035a588-70b7-4753-812a-77889607b17b"
+        },
+        "workflow": {
+          "900": {
+            "class_type": "QCharacterVisionReview",
+            "inputs": {
+              "model": "qwen3.6:35b-a3b",
+              "description": "丸子头、绿色服装、卡其色下装的同一个角色。",
+              "review_policy": "repair-aware-v3",
+              "front": [
+                "920",
+                0
+              ],
+              "left": [
+                "921",
+                0
+              ],
+              "back": [
+                "922",
+                0
+              ]
+            }
+          },
+          "910": {
+            "class_type": "LoadImage",
+            "inputs": {
+              "image": "qcharacter-951876c8-8322-4760-88b7-269e4cffb025.png"
+            }
+          },
+          "911": {
+            "class_type": "LoadImage",
+            "inputs": {
+              "image": "qcharacter-9f57edbb-d4a7-4eb4-9e31-8f870912d799.png"
+            }
+          },
+          "912": {
+            "class_type": "LoadImage",
+            "inputs": {
+              "image": "qcharacter-bfaca8c7-e64f-4f44-9a29-8aa3c33cd607.png"
+            }
+          },
+          "920": {
+            "class_type": "JoinImageWithAlpha",
+            "inputs": {
+              "image": [
+                "910",
+                0
+              ],
+              "alpha": [
+                "910",
+                1
+              ]
+            }
+          },
+          "921": {
+            "class_type": "JoinImageWithAlpha",
+            "inputs": {
+              "image": [
+                "911",
+                0
+              ],
+              "alpha": [
+                "911",
+                1
+              ]
+            }
+          },
+          "922": {
+            "class_type": "JoinImageWithAlpha",
+            "inputs": {
+              "image": [
+                "912",
+                0
+              ],
+              "alpha": [
+                "912",
+                1
+              ]
+            }
+          }
+        },
+        "promptId": "82ee4092-4b85-48a8-b706-6c65f7e67eb1",
+        "reviewResult": {
+          "version": 3,
+          "analysis": {
+            "policy": "repair-aware-v3",
+            "repairs": {},
+            "candidateCount": 1,
+            "overviewMs": 10375,
+            "verificationMs": 9156,
+            "checks": [
+              {
+                "candidate_index": 0,
+                "role": "left",
+                "part": "clothes",
+                "kind": "count",
+                "title": "纽扣数量不一致",
+                "reason": "左侧视图（图2）中绿色上衣的纽扣数量为3个，而正面视图（图1）为2个。这是同一部件上独立实体数量的明确差异，非透视或遮挡可解释。",
+                "reference_evidence": "正面视图（图1）中，绿色上衣胸前区域清晰可见2个黄色圆形纽扣，呈垂直排列。",
+                "target_evidence": "左侧视图（图2）中，绿色上衣胸前区域清晰可见3个黄色圆形纽扣，呈垂直排列。",
+                "suggestion": "根据正面设计为准，将左侧视图中的纽扣数量减少为2个。",
+                "confidence": 0.95,
+                "reference_count": 2,
+                "target_count": 3,
+                "bbox": [
+                  187,
+                  526,
+                  812,
+                  784
+                ],
+                "reference_bbox": [
+                  187,
+                  526,
+                  812,
+                  784
+                ],
+                "verdict": "structural",
+                "reference_visibility": "clear",
+                "target_visibility": "clear",
+                "correspondence": "same_component",
+                "basis": "count",
+                "alternative": "none",
+                "count_unit": "per_component",
+                "model_verdict": "structural",
+                "gates": [],
+                "repair_relation": "none",
+                "repair_assessment": "none",
+                "component_evidence": "present",
+                "repair_evidence": "无该方向历史修正记录。",
+                "repair_coverage": null
+              }
+            ]
+          },
+          "id": "ad088e0a-f99a-4475-baa1-f759f0f052b0",
+          "createdAt": "2026-10-17T03:11:56.053Z",
+          "model": "qwen3.6:35b-a3b",
+          "elapsedMs": 19531,
+          "views": {
+            "front": "3fff7820-cea3-4da6-8f21-764981aa72e2",
+            "left": "8d9c0ad7-1647-4edb-bf34-440613d25244",
+            "back": "c035a588-70b7-4753-812a-77889607b17b"
+          },
+          "confirmed": false,
+          "summary": "复核候选关于左侧视图（图2）绿色上衣纽扣数量的差异。经独立观察，正面视图（图1）可见2个黄色圆形纽扣，而左侧视图（图2）在相同垂直位置清晰可见3个黄色圆形纽扣。该差异属于同一部件上独立实体数量的增加，非透视或遮挡所致，判定为真实结构差异。",
+          "observations": [
+            {
+              "role": "front",
+              "part": "hair",
+              "name": "发型结构",
+              "visible_count": null,
+              "description": "正面可见深棕色头发，顶部有两个圆形的丸子头（buns），面部五官清晰。"
+            },
+            {
+              "role": "front",
+              "part": "clothes",
+              "name": "服装结构",
+              "visible_count": 2,
+              "description": "正面可见绿色上衣，胸前垂直排列着2个黄色圆形纽扣。下身是卡其色裤子/裙子。"
+            },
+            {
+              "role": "front",
+              "part": "accessories",
+              "name": "配饰",
+              "visible_count": null,
+              "description": "未发现明显的独立配饰（如耳环、项链等）。"
+            },
+            {
+              "role": "left",
+              "part": "hair",
+              "name": "发型结构",
+              "visible_count": null,
+              "description": "左侧面可见深棕色头发，顶部有两个圆形的丸子头。面部五官清晰可见。"
+            },
+            {
+              "role": "left",
+              "part": "clothes",
+              "name": "服装结构",
+              "visible_count": 3,
+              "description": "左侧面可见绿色上衣，胸前垂直排列着3个黄色圆形纽扣。下身是卡其色裤子/裙子。"
+            },
+            {
+              "role": "left",
+              "part": "accessories",
+              "name": "配饰",
+              "visible_count": null,
+              "description": "未发现明显的独立配饰。"
+            },
+            {
+              "role": "back",
+              "part": "hair",
+              "name": "发型结构",
+              "visible_count": null,
+              "description": "背面可见深棕色头发，顶部有两个圆形的丸子头。面部不可见。"
+            },
+            {
+              "role": "back",
+              "part": "clothes",
+              "name": "服装结构",
+              "visible_count": 0,
+              "description": "背面可见绿色上衣背部，没有纽扣或其他装饰。下身是卡其色裤子/裙子。"
+            },
+            {
+              "role": "back",
+              "part": "accessories",
+              "name": "配饰",
+              "visible_count": null,
+              "description": "未发现明显的独立配饰。"
+            }
+          ],
+          "findings": [
+            {
+              "role": "left",
+              "part": "clothes",
+              "kind": "count",
+              "title": "纽扣数量不一致",
+              "evidence": "正面：正面视图（图1）中，绿色上衣胸前区域清晰可见2个黄色圆形纽扣，呈垂直排列。；目标：左侧视图（图2）中，绿色上衣胸前区域清晰可见3个黄色圆形纽扣，呈垂直排列。；复核：左侧视图（图2）中绿色上衣的纽扣数量为3个，而正面视图（图1）为2个。这是同一部件上独立实体数量的明确差异，非透视或遮挡可解释。",
+              "suggestion": "根据正面设计为准，将左侧视图中的纽扣数量减少为2个。",
+              "confidence": 0.95,
+              "reference_count": 2,
+              "target_count": 3,
+              "bbox": [
+                187,
+                526,
+                812,
+                784
+              ],
+              "reference_bbox": [
+                187,
+                526,
+                812,
+                784
+              ],
+              "assessmentIndex": 0,
+              "id": "ad088e0a-f99a-4475-baa1-f759f0f052b0:0",
+              "decision": "accepted",
+              "note": ""
+            }
+          ],
+          "uncertainties": [
+            "背面视图中没有显示纽扣，这可能是设计意图（如前开扣），也可能是遗漏。由于无法从正面直接验证背面是否有装饰，此处暂不判定为错误，但建议确认背面是否应有与正面一致的细节。"
+          ]
+        },
+        "finishedAt": "2026-10-17T03:11:56.055Z"
+      },
+      {
+        "id": "a996c711-bebf-4921-bdf7-f6e231edfd34",
+        "projectId": "b85e0a9a-700d-4ebf-a2b4-7e4635c096c0",
+        "kind": "design",
+        "inputAssetId": "8d9c0ad7-1647-4edb-bf34-440613d25244",
+        "status": "completed",
+        "createdAt": "2026-10-17T03:13:14.901Z",
+        "message": "生成完成，已保存到作品。",
+        "seed": 2473523266,
+        "server": "http://127.0.0.1:8188",
+        "viewRole": "left",
+        "viewExpectedId": "8d9c0ad7-1647-4edb-bf34-440613d25244",
+        "referenceFindingId": "ad088e0a-f99a-4475-baa1-f759f0f052b0:0",
+        "repairMaskId": "17df1765-e1f4-41f1-a1ae-fd342168de48",
+        "repairInstruction": "以正面设计的两颗黄色纽扣为准：只移除目标图绿色上衣正中间多出的一颗黄色纽扣，将这一小块恢复为与周围一致的纯绿色布料。保留最上面和最下面两颗纽扣，保持当前图的相机、姿态、发型、脸、手臂、服装轮廓、裤子、鞋子和透明背景。不要新增纽扣、线条、口袋或饰物。",
+        "workflow": {
+          "1": {
+            "class_type": "UNETLoader",
+            "inputs": {
+              "unet_name": "qwen_image_2.1_int8_convrot.safetensors",
+              "weight_dtype": "default"
+            }
+          },
+          "2": {
+            "class_type": "CLIPLoader",
+            "inputs": {
+              "clip_name": "qwen3vl_8b_int8_convrot.safetensors",
+              "type": "qwen_image",
+              "device": "default"
+            }
+          },
+          "3": {
+            "class_type": "VAELoader",
+            "inputs": {
+              "vae_name": "qwen_image_2.1_vae_bf16.safetensors"
+            }
+          },
+          "4": {
+            "class_type": "LoadImage",
+            "inputs": {
+              "image": "qcharacter-dc8d83c3-273d-4a48-881c-fc89df3dd98d.png"
+            }
+          },
+          "5": {
+            "class_type": "TextEncodeQwenImage21",
+            "inputs": {
+              "clip": [
+                "2",
+                0
+              ],
+              "vae": [
+                "3",
+                0
+              ],
+              "prompt": "第一张是待修正的左侧目标图，其余图为同一角色其它方向的参考。保持第一张图的相机方向、姿势、比例、身份、取景、背景和未要求修改的部分。只修正指定区域，使服装、发型或配饰与参考设计合理衔接，不要把侧面改成正面、背面不要出现正面五官，不要改变角色或添加无关装饰。修正要求：以正面设计的两颗黄色纽扣为准：只移除目标图绿色上衣正中间多出的一颗黄色纽扣，将这一小块恢复为与周围一致的纯绿色布料。保留最上面和最下面两颗纽扣，保持当前图的相机、姿态、发型、脸、手臂、服装轮廓、裤子、鞋子和透明背景。不要新增纽扣、线条、口袋或饰物。",
+              "negative_prompt": "",
+              "resolution": 0,
+              "images.image_1": [
+                "4",
+                0
+              ],
+              "images.image_2": [
+                "20",
+                0
+              ],
+              "images.image_3": [
+                "21",
+                0
+              ]
+            }
+          },
+          "6": {
+            "class_type": "KSampler",
+            "inputs": {
+              "model": [
+                "1",
+                0
+              ],
+              "positive": [
+                "5",
+                0
+              ],
+              "negative": [
+                "5",
+                1
+              ],
+              "latent_image": [
+                "52",
+                0
+              ],
+              "seed": 2473523266,
+              "steps": 25,
+              "cfg": 1,
+              "sampler_name": "euler",
+              "scheduler": "simple",
+              "denoise": 1
+            }
+          },
+          "7": {
+            "class_type": "VAEDecode",
+            "inputs": {
+              "samples": [
+                "6",
+                0
+              ],
+              "vae": [
+                "3",
+                0
+              ]
+            }
+          },
+          "8": {
+            "class_type": "SaveImage",
+            "inputs": {
+              "images": [
+                "58",
+                0
+              ],
+              "filename_prefix": "QCharacter/local-repair"
+            }
+          },
+          "20": {
+            "class_type": "LoadImage",
+            "inputs": {
+              "image": "qcharacter-85bdd08b-4cc7-4444-bf56-cdffd84f1ba8.png"
+            }
+          },
+          "21": {
+            "class_type": "LoadImage",
+            "inputs": {
+              "image": "qcharacter-c826d8a8-5f26-4aab-a94e-342402056589.png"
+            }
+          },
+          "50": {
+            "class_type": "LoadImage",
+            "inputs": {
+              "image": "qcharacter-80ba5d84-df7b-493a-a827-7c569d9a75b3.png"
+            }
+          },
+          "51": {
+            "class_type": "ImageToMask",
+            "inputs": {
+              "image": [
+                "50",
+                0
+              ],
+              "channel": "red"
+            }
+          },
+          "52": {
+            "class_type": "SetLatentNoiseMask",
+            "inputs": {
+              "samples": [
+                "60",
+                0
+              ],
+              "mask": [
+                "51",
+                0
+              ]
+            }
+          },
+          "53": {
+            "class_type": "ImageScale",
+            "inputs": {
+              "image": [
+                "7",
+                0
+              ],
+              "upscale_method": "lanczos",
+              "width": 640,
+              "height": 800,
+              "crop": "disabled"
+            }
+          },
+          "54": {
+            "class_type": "ImageCompositeMasked",
+            "inputs": {
+              "destination": [
+                "4",
+                0
+              ],
+              "source": [
+                "53",
+                0
+              ],
+              "x": 0,
+              "y": 0,
+              "resize_source": false,
+              "mask": [
+                "51",
+                0
+              ]
+            }
+          },
+          "55": {
+            "class_type": "LoadBackgroundRemovalModel",
+            "inputs": {
+              "bg_removal_name": "birefnet.safetensors"
+            }
+          },
+          "56": {
+            "class_type": "RemoveBackground",
+            "inputs": {
+              "bg_removal_model": [
+                "55",
+                0
+              ],
+              "image": [
+                "54",
+                0
+              ]
+            }
+          },
+          "57": {
+            "class_type": "InvertMask",
+            "inputs": {
+              "mask": [
+                "56",
+                0
+              ]
+            }
+          },
+          "58": {
+            "class_type": "JoinImageWithAlpha",
+            "inputs": {
+              "image": [
+                "53",
+                0
+              ],
+              "alpha": [
+                "57",
+                0
+              ]
+            }
+          },
+          "59": {
+            "class_type": "ImageScale",
+            "inputs": {
+              "image": [
+                "4",
+                0
+              ],
+              "upscale_method": "lanczos",
+              "width": 640,
+              "height": 800,
+              "crop": "disabled"
+            }
+          },
+          "60": {
+            "class_type": "VAEEncode",
+            "inputs": {
+              "pixels": [
+                "59",
+                0
+              ],
+              "vae": [
+                "3",
+                0
+              ]
+            }
+          }
+        },
+        "engine": "qwen21-repair",
+        "promptId": "ab73010c-b26d-41ee-9b6e-92fbf7fc7984",
+        "node": "8",
+        "resultAssetId": "fb07b147-b81f-4027-8c42-443a82fa6483",
+        "finishedAt": "2026-10-17T03:13:53.390Z"
+      }
+    ],
+    "multiView": {
+      "enabled": true,
+      "views": {
+        "front": "3fff7820-cea3-4da6-8f21-764981aa72e2",
+        "left": "fb07b147-b81f-4027-8c42-443a82fa6483",
+        "back": "c035a588-70b7-4753-812a-77889607b17b"
+      },
+      "fov": 20
+    },
+    "workspace": {
+      "sourceId": "fb07b147-b81f-4027-8c42-443a82fa6483",
+      "modelId": "",
+      "page": "design",
+      "inputMode": "image"
+    },
+    "visionReview": {
+      "version": 3,
+      "analysis": {
+        "policy": "repair-aware-v3",
+        "repairs": {},
+        "candidateCount": 1,
+        "overviewMs": 10375,
+        "verificationMs": 9156,
+        "checks": [
+          {
+            "candidate_index": 0,
+            "role": "left",
+            "part": "clothes",
+            "kind": "count",
+            "title": "纽扣数量不一致",
+            "reason": "左侧视图（图2）中绿色上衣的纽扣数量为3个，而正面视图（图1）为2个。这是同一部件上独立实体数量的明确差异，非透视或遮挡可解释。",
+            "reference_evidence": "正面视图（图1）中，绿色上衣胸前区域清晰可见2个黄色圆形纽扣，呈垂直排列。",
+            "target_evidence": "左侧视图（图2）中，绿色上衣胸前区域清晰可见3个黄色圆形纽扣，呈垂直排列。",
+            "suggestion": "根据正面设计为准，将左侧视图中的纽扣数量减少为2个。",
+            "confidence": 0.95,
+            "reference_count": 2,
+            "target_count": 3,
+            "bbox": [
+              187,
+              526,
+              812,
+              784
+            ],
+            "reference_bbox": [
+              187,
+              526,
+              812,
+              784
+            ],
+            "verdict": "structural",
+            "reference_visibility": "clear",
+            "target_visibility": "clear",
+            "correspondence": "same_component",
+            "basis": "count",
+            "alternative": "none",
+            "count_unit": "per_component",
+            "model_verdict": "structural",
+            "gates": [],
+            "repair_relation": "none",
+            "repair_assessment": "none",
+            "component_evidence": "present",
+            "repair_evidence": "无该方向历史修正记录。",
+            "repair_coverage": null
+          }
+        ]
+      },
+      "id": "ad088e0a-f99a-4475-baa1-f759f0f052b0",
+      "createdAt": "2026-10-17T03:11:56.053Z",
+      "model": "qwen3.6:35b-a3b",
+      "elapsedMs": 19531,
+      "views": {
+        "front": "3fff7820-cea3-4da6-8f21-764981aa72e2",
+        "left": "8d9c0ad7-1647-4edb-bf34-440613d25244",
+        "back": "c035a588-70b7-4753-812a-77889607b17b"
+      },
+      "confirmed": false,
+      "summary": "复核候选关于左侧视图（图2）绿色上衣纽扣数量的差异。经独立观察，正面视图（图1）可见2个黄色圆形纽扣，而左侧视图（图2）在相同垂直位置清晰可见3个黄色圆形纽扣。该差异属于同一部件上独立实体数量的增加，非透视或遮挡所致，判定为真实结构差异。",
+      "observations": [
+        {
+          "role": "front",
+          "part": "hair",
+          "name": "发型结构",
+          "visible_count": null,
+          "description": "正面可见深棕色头发，顶部有两个圆形的丸子头（buns），面部五官清晰。"
+        },
+        {
+          "role": "front",
+          "part": "clothes",
+          "name": "服装结构",
+          "visible_count": 2,
+          "description": "正面可见绿色上衣，胸前垂直排列着2个黄色圆形纽扣。下身是卡其色裤子/裙子。"
+        },
+        {
+          "role": "front",
+          "part": "accessories",
+          "name": "配饰",
+          "visible_count": null,
+          "description": "未发现明显的独立配饰（如耳环、项链等）。"
+        },
+        {
+          "role": "left",
+          "part": "hair",
+          "name": "发型结构",
+          "visible_count": null,
+          "description": "左侧面可见深棕色头发，顶部有两个圆形的丸子头。面部五官清晰可见。"
+        },
+        {
+          "role": "left",
+          "part": "clothes",
+          "name": "服装结构",
+          "visible_count": 3,
+          "description": "左侧面可见绿色上衣，胸前垂直排列着3个黄色圆形纽扣。下身是卡其色裤子/裙子。"
+        },
+        {
+          "role": "left",
+          "part": "accessories",
+          "name": "配饰",
+          "visible_count": null,
+          "description": "未发现明显的独立配饰。"
+        },
+        {
+          "role": "back",
+          "part": "hair",
+          "name": "发型结构",
+          "visible_count": null,
+          "description": "背面可见深棕色头发，顶部有两个圆形的丸子头。面部不可见。"
+        },
+        {
+          "role": "back",
+          "part": "clothes",
+          "name": "服装结构",
+          "visible_count": 0,
+          "description": "背面可见绿色上衣背部，没有纽扣或其他装饰。下身是卡其色裤子/裙子。"
+        },
+        {
+          "role": "back",
+          "part": "accessories",
+          "name": "配饰",
+          "visible_count": null,
+          "description": "未发现明显的独立配饰。"
+        }
+      ],
+      "findings": [
+        {
+          "role": "left",
+          "part": "clothes",
+          "kind": "count",
+          "title": "纽扣数量不一致",
+          "evidence": "正面：正面视图（图1）中，绿色上衣胸前区域清晰可见2个黄色圆形纽扣，呈垂直排列。；目标：左侧视图（图2）中，绿色上衣胸前区域清晰可见3个黄色圆形纽扣，呈垂直排列。；复核：左侧视图（图2）中绿色上衣的纽扣数量为3个，而正面视图（图1）为2个。这是同一部件上独立实体数量的明确差异，非透视或遮挡可解释。",
+          "suggestion": "根据正面设计为准，将左侧视图中的纽扣数量减少为2个。",
+          "confidence": 0.95,
+          "reference_count": 2,
+          "target_count": 3,
+          "bbox": [
+            187,
+            526,
+            812,
+            784
+          ],
+          "reference_bbox": [
+            187,
+            526,
+            812,
+            784
+          ],
+          "assessmentIndex": 0,
+          "id": "ad088e0a-f99a-4475-baa1-f759f0f052b0:0",
+          "decision": "accepted",
+          "note": ""
+        }
+      ],
+      "uncertainties": [
+        "背面视图中没有显示纽扣，这可能是设计意图（如前开扣），也可能是遗漏。由于无法从正面直接验证背面是否有装饰，此处暂不判定为错误，但建议确认背面是否应有与正面一致的细节。"
+      ]
+    }
+  }
+}

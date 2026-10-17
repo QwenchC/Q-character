@@ -1,0 +1,14 @@
+{
+  "version": "0.8.0 · Android",
+  "reportId": "6c35eab0-455d-412e-8e96-4fc0b117557c",
+  "confirmed": true,
+  "oldReviewsRetained": 2,
+  "repairs": {
+    "left": {
+      "viewId": "5e866a7e-58fb-4fcc-b317-17ab32aeb8f8",
+      "beforeId": "1be4ba94-901f-439e-a164-0d8268ac6866",
+      "maskId": "b564222d-a995-4202-93ba-9b7324e114ed"
+    }
+  },
+  "reloadPreserved": true
+}

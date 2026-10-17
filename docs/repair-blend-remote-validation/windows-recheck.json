@@ -1,0 +1,475 @@
+{
+  "job": {
+    "id": "f81978d7-ac53-4f05-8bd4-dc955f0fc70f",
+    "projectId": "b85e0a9a-700d-4ebf-a2b4-7e4635c096c0",
+    "kind": "review",
+    "status": "completed",
+    "createdAt": "2026-10-17T03:14:41.625Z",
+    "message": "视觉检查完成，请逐项核对标记与建议；确认后才会重绘。",
+    "seed": 0,
+    "server": "http://127.0.0.1:8188",
+    "visionModel": "qwen3.6:35b-a3b",
+    "engine": "local-vision",
+    "inputViewIds": {
+      "front": "3fff7820-cea3-4da6-8f21-764981aa72e2",
+      "left": "fb07b147-b81f-4027-8c42-443a82fa6483",
+      "back": "c035a588-70b7-4753-812a-77889607b17b"
+    },
+    "workflow": {
+      "900": {
+        "class_type": "QCharacterVisionReview",
+        "inputs": {
+          "model": "qwen3.6:35b-a3b",
+          "description": "丸子头、绿色服装、卡其色下装的同一个角色。",
+          "review_policy": "repair-aware-v3",
+          "front": [
+            "920",
+            0
+          ],
+          "left": [
+            "921",
+            0
+          ],
+          "back": [
+            "922",
+            0
+          ],
+          "left_before": [
+            "941",
+            0
+          ],
+          "left_selection": [
+            "951",
+            0
+          ]
+        }
+      },
+      "910": {
+        "class_type": "LoadImage",
+        "inputs": {
+          "image": "qcharacter-ac4d581a-b0ae-4d65-bc38-74eab955936c.png"
+        }
+      },
+      "911": {
+        "class_type": "LoadImage",
+        "inputs": {
+          "image": "qcharacter-81692453-ff35-49cc-bb81-5e15a9c33771.png"
+        }
+      },
+      "912": {
+        "class_type": "LoadImage",
+        "inputs": {
+          "image": "qcharacter-a234724f-c564-49e9-936e-d63a621c6445.png"
+        }
+      },
+      "920": {
+        "class_type": "JoinImageWithAlpha",
+        "inputs": {
+          "image": [
+            "910",
+            0
+          ],
+          "alpha": [
+            "910",
+            1
+          ]
+        }
+      },
+      "921": {
+        "class_type": "JoinImageWithAlpha",
+        "inputs": {
+          "image": [
+            "911",
+            0
+          ],
+          "alpha": [
+            "911",
+            1
+          ]
+        }
+      },
+      "922": {
+        "class_type": "JoinImageWithAlpha",
+        "inputs": {
+          "image": [
+            "912",
+            0
+          ],
+          "alpha": [
+            "912",
+            1
+          ]
+        }
+      },
+      "931": {
+        "class_type": "LoadImage",
+        "inputs": {
+          "image": "qcharacter-38636889-08fe-403e-87e0-a897e545402a.png"
+        }
+      },
+      "941": {
+        "class_type": "JoinImageWithAlpha",
+        "inputs": {
+          "image": [
+            "931",
+            0
+          ],
+          "alpha": [
+            "931",
+            1
+          ]
+        }
+      },
+      "951": {
+        "class_type": "LoadImage",
+        "inputs": {
+          "image": "qcharacter-e76b9c20-d5a6-4838-833a-ad6ff928bbca.png"
+        }
+      }
+    },
+    "promptId": "aafd106c-8a00-4312-82ef-e30eb27f4b42",
+    "reviewResult": {
+      "version": 3,
+      "analysis": {
+        "policy": "repair-aware-v3",
+        "repairs": {
+          "left": {
+            "viewId": "fb07b147-b81f-4027-8c42-443a82fa6483",
+            "beforeId": "8d9c0ad7-1647-4edb-bf34-440613d25244",
+            "maskId": "17df1765-e1f4-41f1-a1ae-fd342168de48"
+          }
+        },
+        "candidateCount": 2,
+        "overviewMs": 19016,
+        "verificationMs": 10453,
+        "checks": [
+          {
+            "candidate_index": 0,
+            "role": "left",
+            "part": "clothes",
+            "kind": "count",
+            "title": "Left view has an extra button on the chest.",
+            "reason": "左侧视图上衣多出一颗纽扣，属于真实结构差异。",
+            "reference_evidence": "正面参考图显示绿色上衣有2颗黄色纽扣，分别位于胸部和腹部位置。",
+            "target_evidence": "左侧视图（CURRENT）显示绿色上衣有3颗黄色纽扣，中间多出一颗。该部件具有清晰的轮廓和填充色，非模糊修补痕迹。",
+            "suggestion": "移除左侧视图中多余的中间黄色纽扣以匹配正面设计。",
+            "confidence": 0.95,
+            "reference_count": 2,
+            "target_count": 3,
+            "bbox": [
+              641,
+              578,
+              669,
+              606
+            ],
+            "reference_bbox": null,
+            "verdict": "uncertain",
+            "reference_visibility": "clear",
+            "target_visibility": "clear",
+            "correspondence": "same_component",
+            "basis": "count",
+            "alternative": "none",
+            "count_unit": "per_component",
+            "model_verdict": "structural",
+            "gates": [
+              "缺少正面对应区域"
+            ],
+            "repair_relation": "interior",
+            "repair_assessment": "component_change",
+            "component_evidence": "present",
+            "repair_evidence": "左侧视图CURRENT中该位置存在清晰的新增部件，非边界残留。",
+            "repair_coverage": {
+              "selected": 0,
+              "boundary": 0
+            }
+          },
+          {
+            "candidate_index": 1,
+            "role": "back",
+            "part": "clothes",
+            "kind": "structure",
+            "title": "Back view is missing shoes.",
+            "reason": "背面视角下脚部被身体遮挡，属于正常透视现象。",
+            "reference_evidence": "正面和左侧视图显示角色穿着深灰色鞋子。",
+            "target_evidence": "背面视图（CURRENT）中，腿部末端被绿色上衣下摆遮挡，未显示鞋子。",
+            "suggestion": "人工核对，暂不重绘。",
+            "confidence": 0.95,
+            "reference_count": null,
+            "target_count": 0,
+            "bbox": [
+              641,
+              873,
+              669,
+              901
+            ],
+            "reference_bbox": null,
+            "verdict": "perspective",
+            "reference_visibility": "clear",
+            "target_visibility": "hidden",
+            "correspondence": "different_surface",
+            "basis": "outline",
+            "alternative": "occlusion",
+            "count_unit": "per_component",
+            "model_verdict": "perspective",
+            "gates": [],
+            "repair_relation": "unknown",
+            "repair_assessment": "none",
+            "component_evidence": "absent",
+            "repair_evidence": "背面视图中该区域被遮挡，无可见部件。",
+            "repair_coverage": null
+          }
+        ]
+      },
+      "id": "f81978d7-ac53-4f05-8bd4-dc955f0fc70f",
+      "createdAt": "2026-10-17T03:15:10.301Z",
+      "model": "qwen3.6:35b-a3b",
+      "elapsedMs": 29469,
+      "views": {
+        "front": "3fff7820-cea3-4da6-8f21-764981aa72e2",
+        "left": "fb07b147-b81f-4027-8c42-443a82fa6483",
+        "back": "c035a588-70b7-4753-812a-77889607b17b"
+      },
+      "confirmed": false,
+      "summary": "复核了左侧视图和背面视图的候选项。左侧视图中绿色上衣多出的中间黄色圆形被判定为真实的结构差异（纽扣数量不一致），而非透视或修补痕迹，因为该部件具有清晰的轮廓和颜色，且与正面参考图明显不符。背面视图缺失鞋子被判定为遮挡/不可见，因为背面视角下脚部通常被身体遮挡，且候选项中的位置对应的是腿部末端而非鞋面。",
+      "observations": [
+        {
+          "role": "front",
+          "part": "hair",
+          "name": "Hair",
+          "visible_count": null,
+          "description": "Brown hair with two round buns (bear ears) on top."
+        },
+        {
+          "role": "front",
+          "part": "clothes",
+          "name": "Clothes",
+          "visible_count": 2,
+          "description": "Green long-sleeved top with two yellow buttons. Beige pants and dark grey shoes."
+        },
+        {
+          "role": "front",
+          "part": "accessories",
+          "name": "Accessories",
+          "visible_count": null,
+          "description": "No visible accessories other than clothing details."
+        },
+        {
+          "role": "left",
+          "part": "hair",
+          "name": "Hair",
+          "visible_count": null,
+          "description": "Brown hair with two round buns on top."
+        },
+        {
+          "role": "left",
+          "part": "clothes",
+          "name": "Clothes",
+          "visible_count": 3,
+          "description": "Green long-sleeved top with three yellow buttons (top, middle, bottom). Beige pants and dark grey shoes."
+        },
+        {
+          "role": "left",
+          "part": "accessories",
+          "name": "Accessories",
+          "visible_count": null,
+          "description": "No visible accessories other than clothing details."
+        },
+        {
+          "role": "back",
+          "part": "hair",
+          "name": "Hair",
+          "visible_count": null,
+          "description": "Brown hair with two round buns on top."
+        },
+        {
+          "role": "back",
+          "part": "clothes",
+          "name": "Clothes",
+          "visible_count": 0,
+          "description": "Green long-sleeved top. Beige pants. No shoes visible."
+        },
+        {
+          "role": "back",
+          "part": "accessories",
+          "name": "Accessories",
+          "visible_count": null,
+          "description": "No visible accessories other than clothing details."
+        }
+      ],
+      "findings": [],
+      "uncertainties": []
+    },
+    "finishedAt": "2026-10-17T03:15:10.303Z"
+  },
+  "report": {
+    "version": 3,
+    "analysis": {
+      "policy": "repair-aware-v3",
+      "repairs": {
+        "left": {
+          "viewId": "fb07b147-b81f-4027-8c42-443a82fa6483",
+          "beforeId": "8d9c0ad7-1647-4edb-bf34-440613d25244",
+          "maskId": "17df1765-e1f4-41f1-a1ae-fd342168de48"
+        }
+      },
+      "candidateCount": 2,
+      "overviewMs": 19016,
+      "verificationMs": 10453,
+      "checks": [
+        {
+          "candidate_index": 0,
+          "role": "left",
+          "part": "clothes",
+          "kind": "count",
+          "title": "Left view has an extra button on the chest.",
+          "reason": "左侧视图上衣多出一颗纽扣，属于真实结构差异。",
+          "reference_evidence": "正面参考图显示绿色上衣有2颗黄色纽扣，分别位于胸部和腹部位置。",
+          "target_evidence": "左侧视图（CURRENT）显示绿色上衣有3颗黄色纽扣，中间多出一颗。该部件具有清晰的轮廓和填充色，非模糊修补痕迹。",
+          "suggestion": "移除左侧视图中多余的中间黄色纽扣以匹配正面设计。",
+          "confidence": 0.95,
+          "reference_count": 2,
+          "target_count": 3,
+          "bbox": [
+            641,
+            578,
+            669,
+            606
+          ],
+          "reference_bbox": null,
+          "verdict": "uncertain",
+          "reference_visibility": "clear",
+          "target_visibility": "clear",
+          "correspondence": "same_component",
+          "basis": "count",
+          "alternative": "none",
+          "count_unit": "per_component",
+          "model_verdict": "structural",
+          "gates": [
+            "缺少正面对应区域"
+          ],
+          "repair_relation": "interior",
+          "repair_assessment": "component_change",
+          "component_evidence": "present",
+          "repair_evidence": "左侧视图CURRENT中该位置存在清晰的新增部件，非边界残留。",
+          "repair_coverage": {
+            "selected": 0,
+            "boundary": 0
+          }
+        },
+        {
+          "candidate_index": 1,
+          "role": "back",
+          "part": "clothes",
+          "kind": "structure",
+          "title": "Back view is missing shoes.",
+          "reason": "背面视角下脚部被身体遮挡，属于正常透视现象。",
+          "reference_evidence": "正面和左侧视图显示角色穿着深灰色鞋子。",
+          "target_evidence": "背面视图（CURRENT）中，腿部末端被绿色上衣下摆遮挡，未显示鞋子。",
+          "suggestion": "人工核对，暂不重绘。",
+          "confidence": 0.95,
+          "reference_count": null,
+          "target_count": 0,
+          "bbox": [
+            641,
+            873,
+            669,
+            901
+          ],
+          "reference_bbox": null,
+          "verdict": "perspective",
+          "reference_visibility": "clear",
+          "target_visibility": "hidden",
+          "correspondence": "different_surface",
+          "basis": "outline",
+          "alternative": "occlusion",
+          "count_unit": "per_component",
+          "model_verdict": "perspective",
+          "gates": [],
+          "repair_relation": "unknown",
+          "repair_assessment": "none",
+          "component_evidence": "absent",
+          "repair_evidence": "背面视图中该区域被遮挡，无可见部件。",
+          "repair_coverage": null
+        }
+      ]
+    },
+    "id": "f81978d7-ac53-4f05-8bd4-dc955f0fc70f",
+    "createdAt": "2026-10-17T03:15:10.301Z",
+    "model": "qwen3.6:35b-a3b",
+    "elapsedMs": 29469,
+    "views": {
+      "front": "3fff7820-cea3-4da6-8f21-764981aa72e2",
+      "left": "fb07b147-b81f-4027-8c42-443a82fa6483",
+      "back": "c035a588-70b7-4753-812a-77889607b17b"
+    },
+    "confirmed": false,
+    "summary": "复核了左侧视图和背面视图的候选项。左侧视图中绿色上衣多出的中间黄色圆形被判定为真实的结构差异（纽扣数量不一致），而非透视或修补痕迹，因为该部件具有清晰的轮廓和颜色，且与正面参考图明显不符。背面视图缺失鞋子被判定为遮挡/不可见，因为背面视角下脚部通常被身体遮挡，且候选项中的位置对应的是腿部末端而非鞋面。",
+    "observations": [
+      {
+        "role": "front",
+        "part": "hair",
+        "name": "Hair",
+        "visible_count": null,
+        "description": "Brown hair with two round buns (bear ears) on top."
+      },
+      {
+        "role": "front",
+        "part": "clothes",
+        "name": "Clothes",
+        "visible_count": 2,
+        "description": "Green long-sleeved top with two yellow buttons. Beige pants and dark grey shoes."
+      },
+      {
+        "role": "front",
+        "part": "accessories",
+        "name": "Accessories",
+        "visible_count": null,
+        "description": "No visible accessories other than clothing details."
+      },
+      {
+        "role": "left",
+        "part": "hair",
+        "name": "Hair",
+        "visible_count": null,
+        "description": "Brown hair with two round buns on top."
+      },
+      {
+        "role": "left",
+        "part": "clothes",
+        "name": "Clothes",
+        "visible_count": 3,
+        "description": "Green long-sleeved top with three yellow buttons (top, middle, bottom). Beige pants and dark grey shoes."
+      },
+      {
+        "role": "left",
+        "part": "accessories",
+        "name": "Accessories",
+        "visible_count": null,
+        "description": "No visible accessories other than clothing details."
+      },
+      {
+        "role": "back",
+        "part": "hair",
+        "name": "Hair",
+        "visible_count": null,
+        "description": "Brown hair with two round buns on top."
+      },
+      {
+        "role": "back",
+        "part": "clothes",
+        "name": "Clothes",
+        "visible_count": 0,
+        "description": "Green long-sleeved top. Beige pants. No shoes visible."
+      },
+      {
+        "role": "back",
+        "part": "accessories",
+        "name": "Accessories",
+        "visible_count": null,
+        "description": "No visible accessories other than clothing details."
+      }
+    ],
+    "findings": [],
+    "uncertainties": []
+  }
+}

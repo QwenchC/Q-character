@@ -1,0 +1,101 @@
+{
+  "windows": {
+    "version": "0.11.0",
+    "server": "http://127.0.0.1:8188",
+    "jobId": "a996c711-bebf-4921-bdf7-f6e231edfd34",
+    "promptId": "ab73010c-b26d-41ee-9b6e-92fbf7fc7984",
+    "seed": 2473523266,
+    "width": 640,
+    "height": 800,
+    "outside": 507742,
+    "outsideChanged": 0,
+    "inside": 4258,
+    "insideChanged": 3913,
+    "selectionAdjusted": 87929,
+    "buttonColors": {
+      "top": {
+        "before": 861,
+        "after": 861
+      },
+      "middle": {
+        "before": 861,
+        "after": 0
+      },
+      "bottom": {
+        "before": 861,
+        "after": 861
+      }
+    },
+    "extraButtonRemoved": true,
+    "slotAdvanced": true,
+    "oldReportState": "stale",
+    "rawImageConnected": true,
+    "clientComposite": {
+      "alphaMismatch": 0,
+      "maxOpaqueRgbError": 0
+    },
+    "sameCandidate": {
+      "bandPixels": 2504,
+      "plainMaskedBlendMeanAbsRGB": 4.779419595314182,
+      "actualMeanAbsRGB": 2.5130457933972115,
+      "reductionPercent": 47.41943570175254
+    },
+    "remoteCandidateMatches": null,
+    "candidateSha256": "cd09c30adc134c189f84ee16c5ba102a9dc49a582199b1f0d2bf915a96996ba1",
+    "staleGate": {
+      "status": "failed",
+      "message": "视图已更新，请重新运行本地视觉检测并确认。",
+      "noSubmission": true
+    }
+  },
+  "android": {
+    "version": "0.8.0 · Android",
+    "server": "https://frp-rib.com:35961",
+    "jobId": "f9f81235-0fd8-4b55-bc30-17c3e128ad26",
+    "promptId": "963a62d4-bd22-4448-a2cc-5f2aff54912f",
+    "seed": 1992114487,
+    "width": 640,
+    "height": 800,
+    "outside": 507536,
+    "outsideChanged": 0,
+    "inside": 4464,
+    "insideChanged": 4088,
+    "selectionAdjusted": 87807,
+    "buttonColors": {
+      "top": {
+        "before": 861,
+        "after": 861
+      },
+      "middle": {
+        "before": 861,
+        "after": 0
+      },
+      "bottom": {
+        "before": 861,
+        "after": 861
+      }
+    },
+    "extraButtonRemoved": true,
+    "slotAdvanced": true,
+    "oldReportState": "stale",
+    "rawImageConnected": true,
+    "clientComposite": {
+      "alphaMismatch": 0,
+      "maxOpaqueRgbError": 0
+    },
+    "sameCandidate": {
+      "bandPixels": 2504,
+      "plainMaskedBlendMeanAbsRGB": 2.4812300319488623,
+      "actualMeanAbsRGB": 1.401890308839215,
+      "reductionPercent": 43.50018777831286
+    },
+    "remoteCandidateMatches": true,
+    "pin": "02:2A:5F:0B:7B:62:F7:34:6B:D6:76:D2:C0:49:EC:08:56:1F:D4:B3:0B:2F:27:6B:D4:6E:61:56:C5:30:05:A6",
+    "candidateSha256": "ab8d09c9e198b8c9a97c57150f6cb3eaf59503ccc788bdf60a33531f3eecf2b4",
+    "staleGate": {
+      "status": "failed",
+      "message": "视图已更新，请重新运行本地视觉检测并确认。",
+      "noSubmission": true
+    }
+  }
+}

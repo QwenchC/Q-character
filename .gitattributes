@@ -8,3 +8,4 @@
 *.blend binary
 # Preserve the exact bytes referenced by this release's evidence manifest.
 docs/repair-blend-validation/** -text
+docs/repair-blend-remote-validation/** -text

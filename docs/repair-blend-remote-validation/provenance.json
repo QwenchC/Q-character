@@ -1,0 +1,24 @@
+{
+  "date": "2026-10-17T03:17:51.758Z",
+  "sourceCommit": "0c8d63f4c7e3adbaa66db741f4e092c9dd6d65df",
+  "release": "https://github.com/QwenchC/Q-character/releases/tag/v0.11.0",
+  "files": {
+    "Q-Character-Android-0.8.0.apk": {
+      "size": 4710202,
+      "sha256": "fe503c97c7f96fb931ac502cc609ee103d459db5480b8ea47593674721b089ae"
+    },
+    "Q-Character-Studio-0.11.0-Windows.exe": {
+      "size": 105393303,
+      "sha256": "63f0abeac9b03aecd523b70e22e6922fdbe00d7cdf1d9ae0c9a2e21523ac66fe"
+    }
+  },
+  "node": {
+    "__init__.py": "407e020422dbc354d8c7edf8d3d63fa2be2c357be638f1549ca8a1e44ea8e414",
+    "vision.py": "9926cbee34c890d28252c73f4f0492db74a10cdc4a151d7b8505ce45034563c2"
+  },
+  "nodeInstalledMatches": true,
+  "comfyBase": "http://127.0.0.1:8188",
+  "androidOrigin": "https://frp-rib.com:35961",
+  "androidDevice": "Android 36 x86_64 emulator, AVD q-character",
+  "codeChanged": false
+}

@@ -1,0 +1,14 @@
+{
+  "version": "0.11.0",
+  "reportId": "f81978d7-ac53-4f05-8bd4-dc955f0fc70f",
+  "confirmed": true,
+  "oldReviewsRetained": 2,
+  "repairs": {
+    "left": {
+      "viewId": "fb07b147-b81f-4027-8c42-443a82fa6483",
+      "beforeId": "8d9c0ad7-1647-4edb-bf34-440613d25244",
+      "maskId": "17df1765-e1f4-41f1-a1ae-fd342168de48"
+    }
+  },
+  "reloadPreserved": true
+}

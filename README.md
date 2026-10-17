@@ -96,3 +96,5 @@ Windows 0.11.0 / Android 0.8.0 可通过本机 Ollama 检查多视图的服装�
 0.10.1 / Android 0.7.1 修复小选区重绘保留原有多余结构的问题；已在重启后的日常 ComfyUI 和 Android 原外网地址完成新版复核、标记、确认、画笔、局部重绘与复检。两端样例均移除多余纽扣且选区外 RGBA 不变；Android 复检保留了修补痕迹提示并填写接受说明。见 [完整实测与限制](docs/vision-v2-remote-validation/REPORT.md)。
 
 0.11.0 / Android 0.8.0 改进局部重绘融合：候选图只混合一次，按选区周围材质小幅校色并减轻低对比边缘，选区外 RGBA 不变。视觉复检结合修正前图与实际选区，单独显示“可能为修补痕迹”；真实部件仍需独立证据，矛盾结果保留为证据不足。两端需更新客户端及 QCharacterVision 节点并重启 ComfyUI，历史报告继续可读。[使用与实测限制](docs/repair-blend-validation/REPORT.md)。
+
+2026-10-17 重启后，已在日常 ComfyUI 和 Android 原外网地址完成新版检查、区域标记、确认、画笔、重绘和复检。两端本轮均移除多余纽扣，选区外 RGBA 不变；复检仍出现误数，被降为证据不足，测试端逐图核对后显式确认。见 [重启后完整实测与限制](docs/repair-blend-remote-validation/REPORT.md)。
